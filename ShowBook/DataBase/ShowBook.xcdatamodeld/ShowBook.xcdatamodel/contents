@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22758" systemVersion="23E214" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="BookEntity" representedClassName="BookEntity" syncable="YES" codeGenerationType="class">
+        <attribute name="authorNames" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromDataTransformerName"/>
+        <attribute name="coverI" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="email" optional="YES" attributeType="String"/>
+        <attribute name="image" optional="YES" attributeType="Binary"/>
+        <attribute name="ratingsAverage" optional="YES" attributeType="Double" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="ratingsCount" optional="YES" attributeType="Integer 32" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="title" optional="YES" attributeType="String"/>
+    </entity>
+    <entity name="CountryEntity" representedClassName="CountryEntity" syncable="YES" codeGenerationType="class">
+        <attribute name="access" optional="YES" attributeType="String"/>
+        <attribute name="limit" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="offset" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="selectedCountryName" optional="YES" attributeType="String"/>
+        <attribute name="status" optional="YES" attributeType="String"/>
+        <attribute name="statusCode" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="total" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="version" optional="YES" attributeType="String"/>
+        <relationship name="data" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="DatumEntity"/>
+    </entity>
+    <entity name="DatumEntity" representedClassName="DatumEntity" syncable="YES" codeGenerationType="class">
+        <attribute name="country" optional="YES" attributeType="String"/>
+        <relationship name="region" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RegionEntity"/>
+    </entity>
+    <entity name="RegionEntity" representedClassName="RegionEntity" syncable="YES" codeGenerationType="class">
+        <attribute name="region" optional="YES" attributeType="String"/>
+    </entity>
+    <entity name="UserEntity" representedClassName=".UserEntity" syncable="YES" codeGenerationType="class">
+        <attribute name="email" optional="YES" attributeType="String"/>
+        <attribute name="isSuccessfullyLoggedIn" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="password" optional="YES" attributeType="String"/>
+    </entity>
+</model>
