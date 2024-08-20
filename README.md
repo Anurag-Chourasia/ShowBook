@@ -24,7 +24,7 @@ Demo App created using swiftUI and core data framework. Added unit testing. Desi
 -> can logout user from the logout button.
 -> can navigate to Book marK view.
 # Limitations 
-while saving books - not getting any id from api which means we had to use UUID() for distinguish and while saving core data auto generates id so no proper way to save books with using predicates of every given data in book struct. So when 2 book items have same title, author, rating, review, coverI(Cover id) only one will be saved. 
+while saving books - not getting any id from api which means we had to use UUID in model for distinguish and while saving core data auto generates id so no proper way to save books with using predicates of every given data in book struct. So when 2 book items have same title, author, rating, review, coverI(Cover id) only one will be saved. 
 
 # Bookmark View 
 -> shows the books from fetching it from core data.
