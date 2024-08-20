@@ -2,20 +2,20 @@
 Demo App created using swiftUI and core data framework. Added unit testing. Design Pattern used MVVM.
 
 # Sign Up View 
--> calls api to get list of countries and save it to core data along with last selected country.
--> for the first time it only calls api after that it fetches data from core data only.
--> Validate Email and Password using regex.
--> Save the user details in core data for login purpose.
+calls api to get list of countries and save it to core data along with last selected country.
+for the first time it only calls api after that it fetches data from core data only.
+Validate Email and Password using regex.
+Save the user details in core data for login purpose.
 
 # Login View 
--> Validate Email and Password using regex and check if user is present in core data.
+Validate Email and Password using regex and check if user is present in core data.
 
 # Dashboard View 
--> Can search books, add book mark by sliding the book items from tail and getting an button which can save book in core data.
--> filter book list with options such as title, average ratings, hits, also can clear the option selected.
--> can logout user from the logout button.
--> can navigate to Book marK view.
--> api call with debouncing textfield.
+Can search books, add book mark by sliding the book items from tail and getting an button which can save book in core data.
+filter book list with options such as title, average ratings, hits, also can clear the option selected.
+can logout user from the logout button.
+can navigate to Book marK view.
+api call with debouncing textfield.
 -> Load more books by stretching from bottom of the list to call api.
 
 # Dashboard View 
