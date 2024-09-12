@@ -85,6 +85,8 @@ class BookItemViewModel: ObservableObject {
     }
     
     func onDragChanged(_ translation: CGSize) {
-        showBookmarkButton = translation.width < 0 && abs(translation.width) > 50
+        withAnimation(.smooth) {
+            showBookmarkButton = translation.width < 0 && abs(translation.width) > 50
+        }
     }
 }
