@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import Kingfisher
 
 struct BookItem: View {
     @StateObject private var viewModel: BookItemViewModel
