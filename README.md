@@ -29,8 +29,7 @@ Internet is Required when navigating to sign up view and when searching books fr
    - View and reload bookmarked books.
    - Sessions and bookmarks are maintained per user.
    
-### How to check the test cases
-Recommended to run test cases on class after another, Testing all together might end up giving false result.
+### Recommended to run test cases one class after another, Testing all together might end up giving false result.
 
 ### Features
 - **Sign Up View**:
