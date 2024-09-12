@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import Kingfisher
 
 struct DashboardView: View {
     @Environment(\.managedObjectContext) private var viewContext

@@ -48,35 +48,34 @@ struct BookItem: View {
         VStack(alignment: .center, spacing: 0) {
             ZStack {
                 if let imageUrl = viewModel.imageURL {
-                    KFImage.url(imageUrl)
-                        .loadDiskFileSynchronously()
-                        .cacheMemoryOnly()
-                        .fade(duration: 0.25)
-                        .onProgress { _, _ in
-                            isLoading = true
+                    AsyncImage(url: imageUrl) { phase in
+                        switch phase {
+                        case .empty:
+                            emptyImageView
+                            
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: (CGFloat(100) / 5) * 3, height: 100)
+                                .clipped()
+                                .clipShape(RoundedRectangle(cornerRadius: 5))
+                                .overlay(RoundedRectangle(cornerRadius: 5)
+                                    .stroke(Color(UIColor(hex: "#22B6CA")), lineWidth: 1)
+                                    .frame(width: (CGFloat(100) / 5) * 3, height: 100))
+                                .onAppear {
+                                    isLoading = false
+                                }
+                            
+                        case .failure:
+                            emptyImageView
+                            
+                        @unknown default:
+                            emptyImageView
                         }
-                        .onSuccess { result in
-                            let imageSize = result.image.size
-                            isLoading = imageSize.width < 100 || imageSize.height < 100
-                        }
-                        .onFailure { _ in
-                            isLoading = true
-                        }
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: (CGFloat(100) / 5) * 3, height: 100)
-                        .clipped()
-                        .clipShape(RoundedRectangle(cornerRadius: 5))
-                        .overlay(RoundedRectangle(cornerRadius: 5)
-                            .stroke(Color(UIColor(hex: "#22B6CA")), lineWidth: 1)
-                            .frame(width: (CGFloat(100) / 5) * 3, height: 100))
+                    }
                 } else {
-                    RoundedRectangle(cornerRadius: 5)
-                        .foregroundColor(.white)
-                        .frame(width: (CGFloat(100) / 5) * 3, height: 100)
-                        .overlay(RoundedRectangle(cornerRadius: 5)
-                            .stroke(Color(UIColor(hex: "#22B6CA")), lineWidth: 1)
-                            .frame(width: (CGFloat(100) / 5) * 3, height: 100))
+                    emptyImageView
                 }
                 
                 if isLoading {
@@ -85,6 +84,26 @@ struct BookItem: View {
                 }
             }
             .frame(height: 100)
+        }
+    }
+    
+    
+    private var emptyImageView: some View {
+        ZStack{
+            RoundedRectangle(cornerRadius: 5)
+                .foregroundColor(.white)
+                .frame(width: (CGFloat(100) / 5) * 3, height: 100)
+                .overlay(RoundedRectangle(cornerRadius: 5)
+                 .stroke(Color(UIColor(hex: "#22B6CA")), lineWidth: 1)
+                 .frame(width: (CGFloat(100) / 5) * 3, height: 100))
+                .onAppear {
+                    isLoading = true
+                }
+            
+            if isLoading {
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle())
+            }
         }
     }
     
@@ -136,7 +155,7 @@ struct BookItem: View {
 // Preview
 struct BookItem_Previews: PreviewProvider {
     static var previews: some View {
-        BookItem(item: Book(title: "HI", ratingsAverage: 3.0, ratingsCount: 5, authorName: ["A"], coverI: 12, image: nil),
+        BookItem(item: Book(title: "HI", ratingsAverage: 3.0, ratingsCount: 5, authorName: ["A"], coverI: 0, image: nil),
                  fromBookMark: false)
     }
 }
