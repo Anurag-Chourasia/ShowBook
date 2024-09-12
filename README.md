@@ -11,7 +11,7 @@
 - **iOS Deployment Target**: 17.0
 - **Tested Simulators**: iPhone 15 Pro Max, iPhone SE (3rd Gen)
 
-### How to Use
+### How to Use the app
 Internet is Required when navigating to sign up view and when searching books from dashboard.
 1. **Sign Up**:
    - Complete all checkboxes to successfully register.
@@ -29,6 +29,9 @@ Internet is Required when navigating to sign up view and when searching books fr
    - View and reload bookmarked books.
    - Sessions and bookmarks are maintained per user.
    
+### How to check the test cases
+Recommended to run test cases on class after another, Testing all together might end up giving false result.
+
 ### Features
 - **Sign Up View**:
   - API call to fetch and save the list of countries to Core Data.
