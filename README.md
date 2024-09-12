@@ -11,9 +11,8 @@
 - **iOS Deployment Target**: 17.0
 - **Tested Simulators**: iPhone 15 Pro Max, iPhone SE (3rd Gen)
 
-### Internet is Required when navigating to sign up view and when searching books from dashboard.
-
 ### How to Use
+Internet is Required when navigating to sign up view and when searching books from dashboard.
 1. **Sign Up**:
    - Complete all checkboxes to successfully register.
    - Sign up first before logging in; credentials stored in the database.
