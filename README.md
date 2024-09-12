@@ -1,37 +1,55 @@
-# ShowBook
-Demo App created using swiftUI and core data framework. Added unit testing. Design Pattern used MVVM.
+## ShowBook
 
-# Sign Up View 
-calls api to get list of countries and save it to core data along with last selected country.<br/>
-for the first time it only calls api after that it fetches data from core data only.<br/>
-Validate Email and Password using regex.<br/>
-Save the user details in core data for login purpose.
+### Overview
+- **Demo App** created using **SwiftUI** and **Core Data** framework.
+- **Design Pattern**: MVVM
+- **Unit Testing**: Included
 
-# Login View 
-Validate Email and Password using regex and check if user is present in core data.
+### Project Details
+- **Xcode Version**: 15.4
+- **Swift Version**: 5
+- **iOS Deployment Target**: 17.0
+- **Tested Simulators**: iPhone 15 Pro Max, iPhone SE (3rd Gen)
 
-# Dashboard View 
-Can search books, add book mark by sliding the book items from tail and getting an button which can save book in core data.<br/>
-filter book list with options such as title, average ratings, hits, also can clear the option selected.<br/>
-can logout user from the logout button.<br/>
-can navigate to Book marK view.<br/>
-api call with debouncing textfield.<br/>
-Load more books by stretching from bottom of the list to call api.
+### How to Use
+1. **Sign Up**:
+   - Complete all checkboxes to successfully register.
+   - Sign up first before logging in; credentials stored in the database.
 
-# Dashboard View 
-Can search books, add book mark by sliding the book items from tail and getting an button which can save book in core data.<br/>
-filter book list with options such as title, average ratings, hits, also can clear the option selected.<br/>
-can logout user from the logout button.<br/>
-can navigate to Book marK view.
+2. **Login**:
+   - Validate and log in using credentials stored in Core Data.
 
-# Limitations 
-while saving books - not getting any id from api which means we had to use UUID in model for distinguish and while saving core data auto generates id so no proper way to save books with using predicates of every given data in book struct.<br/>
-So when 2 book items have same title, author, rating, review, coverI(Cover id) only one will be saved. 
+3. **Dashboard**:
+   - Search, filter, and bookmark books.
+   - Logout and access the Bookmark view.
+   - Load more books by scrolling.
 
-# Bookmark View 
-shows the books from fetching it from core data.<br/>
-can reload if the book is not present by stretching the list from top towards bottom.<br/>
-The App maintain can maintain session, authenticity, privacy.<br/>
-User 1 cannot see the bookmarked books of user 2 and vice versa.
+4. **Bookmark View**:
+   - View and reload bookmarked books.
+   - Sessions and bookmarks are maintained per user.
+   
+### Features
+- **Sign Up View**:
+  - API call to fetch and save the list of countries to Core Data.
+  - Validate email and password using regex.
+  - Save user details for login purpose.
 
+- **Login View**:
+  - Validate email and password using regex.
+  - Check user presence in Core Data.
 
+- **Dashboard View**:
+  - Search books with debouncing textfield.
+  - Add bookmarks by sliding book items and clicking the bookmark button.
+  - Filter book list by title, average ratings, and hits; clear selected options.
+  - Logout user and navigate to Bookmark view.
+  - Load more books by stretching the bottom of the list.
+
+- **Bookmark View**:
+  - Display bookmarked books fetched from Core Data.
+  - Reload bookmark list by stretching from top to bottom.
+  - Maintain user sessions and privacy; users cannot view each other's bookmarks.
+
+### Limitations
+- **Saving Books**: No API-provided IDs; UUIDs used for distinction.
+  - Books with the same title, author, rating, review, and cover ID are saved as a single entry.
