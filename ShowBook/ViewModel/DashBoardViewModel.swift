@@ -49,7 +49,7 @@ class DashboardViewModel: ObservableObject {
         }
         isBookLoading = true
         offset = 0
-        fetchBooks(title: "SwiftUI", offset: 0) {
+        fetchBooks(title: searchBook, offset: 0) {
 //            print("Fetch books process completed")
         }
     }
