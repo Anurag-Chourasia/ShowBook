@@ -29,12 +29,6 @@ struct BookItem: View {
                 .foregroundColor(Color(UIColor(hex: "#FFFFFF")))
                 .shadow(color: Color.black.opacity(0.4), radius: 3, x: 0, y: 0)
                 .padding(.horizontal, 13))
-            .gesture(
-                DragGesture()
-                    .onChanged { gesture in
-                        viewModel.onDragChanged(gesture.translation)
-                    }
-            )
             bookmarkButton
         }
         .onAppear {
@@ -109,11 +103,15 @@ struct BookItem: View {
     // MARK: - Book Details
     private var bookDetails: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text(viewModel.item.title)
-                .font(.footnote)
-                .lineLimit(2)
-                .foregroundColor(Color(UIColor(hex: "#233C7E")))
-                .padding(.bottom, 6)
+            HStack {
+                Text(viewModel.item.title)
+                    .font(.subheadline)
+                    .lineLimit(2)
+                    .foregroundColor(Color(UIColor(hex: "#233C7E")))
+                Spacer()
+                BookmarkButton(book: viewModel.item)
+            }
+            .padding(.bottom, 6)
             
             Text(viewModel.authorNames.isEmpty ? "No Author" : viewModel.authorNames)
                 .font(.footnote)
@@ -154,7 +152,7 @@ struct BookItem: View {
 // Preview
 struct BookItem_Previews: PreviewProvider {
     static var previews: some View {
-        BookItem(item: Book(title: "HI", ratingsAverage: 3.0, ratingsCount: 5, authorName: ["A"], coverI: 0, image: nil),
+        BookItem(item: Book(title: "The Magical  Winnie-the-Pooh", ratingsAverage: 3.0, ratingsCount: 5, authorName: ["A"], coverI: 0, image: nil),
                  fromBookMark: false)
     }
 }

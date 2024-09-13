@@ -72,7 +72,7 @@ class BookmarkButtonViewModel: ObservableObject {
     }
 
     
-    private func downloadImage(from url: URL, completion: @escaping (Data?) -> Void) {
+    func downloadImage(from url: URL, completion: @escaping (Data?) -> Void) {
         URLSession.shared.dataTask(with: url) { data, _, _ in
             completion(data)
         }.resume()

@@ -103,16 +103,21 @@ final class DashboardViewModelTests: XCTestCase {
     
     // Test case for fetch books success
     func testFetchBooksSuccess() {
-        let books = [Book(title: "SwiftUI", ratingsAverage: 4.5, ratingsCount: 10, authorName: ["Anurag"],coverI: 12345, image: nil )]
+        let books = [Book(title: "SwiftUI", ratingsAverage: 4.5, ratingsCount: 10, authorName: ["Anurag"], coverI: 12345, image: nil)]
         mockApi.result = .success(books)
         
-        viewModel.fetchBooks(title: "SwiftUI", offset: 0){
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1){
+        let expectation = XCTestExpectation(description: "Books fetched successfully")
+
+        viewModel.fetchBooks(title: "SwiftUI", offset: 0) {
+            DispatchQueue.main.async {
                 XCTAssertFalse(self.viewModel.isBookLoading)
                 XCTAssertFalse(self.viewModel.isLoadingMore)
                 XCTAssertEqual(self.viewModel.books, books)
+                expectation.fulfill()
             }
         }
+
+        wait(for: [expectation], timeout: 2.0)
     }
     
     // Test case for fetch books failure
@@ -120,13 +125,18 @@ final class DashboardViewModelTests: XCTestCase {
         let error = NSError(domain: "Test", code: 0, userInfo: [NSLocalizedDescriptionKey: "Network Error"])
         mockApi.result = .failure(error)
         
-        viewModel.fetchBooks(title: "SwiftUI", offset: 0){
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1){
+        let expectation = XCTestExpectation(description: "Fetch books fails and updates state")
+
+        viewModel.fetchBooks(title: "SwiftUI", offset: 0) {
+            DispatchQueue.main.async {
                 XCTAssertFalse(self.viewModel.isBookLoading)
                 XCTAssertTrue(self.viewModel.showAlert)
                 XCTAssertEqual(self.viewModel.errorMessage, "Network Error")
+                expectation.fulfill()
             }
         }
+
+        wait(for: [expectation], timeout: 2.0)
     }
     
     // Test case for perform search

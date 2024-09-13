@@ -14,7 +14,6 @@ struct DashboardView: View {
     
     var body: some View {
         NavigationView {
-            GeometryReader { geometry in
                 ZStack {
                     VStack(spacing: 0) {
                         headerView
@@ -57,7 +56,6 @@ struct DashboardView: View {
                         loadingIndicator
                     }
                 }
-            }
             .navigationViewStyle(StackNavigationViewStyle())
         }
     }

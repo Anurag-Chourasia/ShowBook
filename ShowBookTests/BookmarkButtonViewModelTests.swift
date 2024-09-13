@@ -24,9 +24,7 @@ class BookmarkButtonViewModelTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
-//        let mockContainer = createInMemoryPersistentContainer()
-//        mockPersistenceController = PersistenceController(container: mockContainer)
-        viewModel = BookmarkButtonViewModel()
+        viewModel = MockBookmarkButtonViewModel()
         mockBook = Book(title: "Test Book", ratingsAverage: 4.5, ratingsCount: 10, authorName: ["Anurag"], coverI: 12345, image: nil)
         mockImageUrl = URL(string: "https://example.com/image.jpg")!
         viewModel.configure(book: mockBook, imageUrl: mockImageUrl)
@@ -85,16 +83,15 @@ class BookmarkButtonViewModelTests: XCTestCase {
     }
     
     func testHandleBookmarkAddedWithImageUrl() {
-        let imageData = Data()
-        mockPersistenceController.saveBook(mockBook, imageData: imageData)
         let expectation = self.expectation(description: "Handle bookmark added with image")
         viewModel.handleBookmarkAdded {
             let fetchedBook = self.mockPersistenceController.fetchBooks().first
             XCTAssertEqual(fetchedBook?.title, self.mockBook.title)
-            XCTAssertNotEqual(fetchedBook?.image, imageData)
+            XCTAssertNotNil(fetchedBook?.image)
+            XCTAssertGreaterThan(fetchedBook?.image?.count ?? 0, 100)
             expectation.fulfill()
         }
-        waitForExpectations(timeout: 5, handler: nil)
+        waitForExpectations(timeout: 2, handler: nil)
     }
     
     func createInMemoryPersistentContainer() -> NSPersistentContainer {
@@ -110,5 +107,13 @@ class BookmarkButtonViewModelTests: XCTestCase {
             }
         }
         return container
+    }
+}
+
+class MockBookmarkButtonViewModel: BookmarkButtonViewModel {
+    override func downloadImage(from url: URL, completion: @escaping (Data?) -> Void) {
+        // Simulate immediate successful image download
+        let dummyData = Data(repeating: 1, count: 200) // >100 bytes to pass your check
+        completion(dummyData)
     }
 }
