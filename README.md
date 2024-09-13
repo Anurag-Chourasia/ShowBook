@@ -28,8 +28,6 @@ Internet is Required when navigating to sign up view and when searching books fr
 4. **Bookmark View**:
    - View and reload bookmarked books.
    - Sessions and bookmarks are maintained per user.
-   
-### Recommended to run test cases one class after another, Testing all together might end up giving false result.
 
 ### Features
 - **Sign Up View**:
