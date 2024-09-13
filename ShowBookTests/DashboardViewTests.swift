@@ -81,10 +81,11 @@ final class DashboardViewModelTests: XCTestCase {
         let books = [Book(title: "SwiftUI", ratingsAverage: 4.5, ratingsCount: 10, authorName: ["Anurag"],coverI: 12345, image: nil )]
         mockApi.result = .success(books)
         
-        viewModel.loadMoreBooksIfNeeded()
-        
+        viewModel.loadMoreBooksIfNeeded{
+        }
         XCTAssertTrue(viewModel.isLoadingMore)
         XCTAssertEqual(viewModel.offset, 10)
+            
     }
     
     // Test case for loading more books if not needed
@@ -92,10 +93,11 @@ final class DashboardViewModelTests: XCTestCase {
         viewModel.isLoadingMore = true
         viewModel.loadingMoreBookNotPossible = true
         
-        viewModel.loadMoreBooksIfNeeded()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1){
-            XCTAssertFalse(self.viewModel.isLoadingMore)
-            XCTAssertEqual(self.viewModel.offset, 0)
+        viewModel.loadMoreBooksIfNeeded{
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1){
+                XCTAssertFalse(self.viewModel.isLoadingMore)
+                XCTAssertEqual(self.viewModel.offset, 0)
+            }
         }
     }
     
@@ -104,11 +106,12 @@ final class DashboardViewModelTests: XCTestCase {
         let books = [Book(title: "SwiftUI", ratingsAverage: 4.5, ratingsCount: 10, authorName: ["Anurag"],coverI: 12345, image: nil )]
         mockApi.result = .success(books)
         
-        viewModel.fetchBooks(title: "SwiftUI", offset: 0)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1){
-            XCTAssertFalse(self.viewModel.isBookLoading)
-            XCTAssertFalse(self.viewModel.isLoadingMore)
-            XCTAssertEqual(self.viewModel.books, books)
+        viewModel.fetchBooks(title: "SwiftUI", offset: 0){
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1){
+                XCTAssertFalse(self.viewModel.isBookLoading)
+                XCTAssertFalse(self.viewModel.isLoadingMore)
+                XCTAssertEqual(self.viewModel.books, books)
+            }
         }
     }
     
@@ -117,11 +120,12 @@ final class DashboardViewModelTests: XCTestCase {
         let error = NSError(domain: "Test", code: 0, userInfo: [NSLocalizedDescriptionKey: "Network Error"])
         mockApi.result = .failure(error)
         
-        viewModel.fetchBooks(title: "SwiftUI", offset: 0)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1){
-            XCTAssertFalse(self.viewModel.isBookLoading)
-            XCTAssertTrue(self.viewModel.showAlert)
-            XCTAssertEqual(self.viewModel.errorMessage, "Network Error")
+        viewModel.fetchBooks(title: "SwiftUI", offset: 0){
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1){
+                XCTAssertFalse(self.viewModel.isBookLoading)
+                XCTAssertTrue(self.viewModel.showAlert)
+                XCTAssertEqual(self.viewModel.errorMessage, "Network Error")
+            }
         }
     }
     

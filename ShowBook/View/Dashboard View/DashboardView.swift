@@ -186,7 +186,9 @@ struct DashboardView: View {
                                 let threshold = screenHeight - 200
                                 let contentHeight = geo.frame(in: .global).maxY
                                 if contentHeight < threshold {
-                                    viewModel.loadMoreBooksIfNeeded()
+                                    viewModel.loadMoreBooksIfNeeded{
+                                        
+                                    }
                                 }
                             }
                     }

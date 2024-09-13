@@ -49,16 +49,19 @@ class DashboardViewModel: ObservableObject {
         }
         isBookLoading = true
         offset = 0
-        fetchBooks(title: searchBook, offset: offset)
+        fetchBooks(title: "SwiftUI", offset: 0) {
+//            print("Fetch books process completed")
+        }
     }
     
-    func fetchBooks(title: String, offset: Int) {
+    func fetchBooks(title: String, offset: Int, completion: @escaping () -> Void) {
         isLoadingMore = true
         api.fetchBooks(title: title, offset: offset) { [weak self] result in
             guard let self = self else { return }
             DispatchQueue.main.async {
                 self.isBookLoading = false
                 self.isLoadingMore = false
+                
                 switch result {
                 case .success(let books):
                     self.books = offset == 0 ? books : self.books + books
@@ -67,17 +70,25 @@ class DashboardViewModel: ObservableObject {
                     self.errorMessage = error.localizedDescription
                     self.showAlert = true
                 }
+                
+                completion()  // Notify that the process is completed
             }
         }
     }
+
     
-    func loadMoreBooksIfNeeded() {
+    func loadMoreBooksIfNeeded(completion: @escaping () -> Void) {
         guard !isLoadingMore, !loadingMoreBookNotPossible else {
             return
         }
-            isLoadingMore = true
-            offset += 10
-            fetchBooks(title: searchBook, offset: offset)
+        
+        isLoadingMore = true
+        offset += 10
+        
+        fetchBooks(title: searchBook, offset: offset) {
+            completion()
+        }
     }
+
 }
 
