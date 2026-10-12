@@ -6,10 +6,31 @@
 //
 
 import Foundation
+import CommonNetworking
 import Combine
 
 // MARK: - NetworkClass
 class NetworkClass: ObservableObject {
+    private let transport: CommonNetworking.HTTPClient
+
+    init(session: URLSession = .shared) {
+        transport = CommonNetworking.HTTPClient(session: session)
+    }
+
+    // Legacy callbacks remain off-main and have no caller-owned cancellation handle.
+    private func fetchData(from url: URL, completion: @escaping (Data?, URLResponse?, Error?) -> Void) {
+        Task.detached { [transport] in
+            do {
+                let response = try await transport.send(URLRequest(url: url))
+                completion(response.data, response.response, nil)
+            } catch is CancellationError {
+                completion(nil, nil, URLError(.cancelled))
+            } catch {
+                completion(nil, nil, error)
+            }
+        }
+    }
+
     var fetchBooksCalledCount = 0
     func fetchCountries(completion: @escaping (CountryModel?,Error?) -> Void) {
         guard let url = URL(string: "https://api.first.org/data/v1/countries") else {
@@ -18,7 +39,7 @@ class NetworkClass: ObservableObject {
             return
         }
         
-        let task = URLSession.shared.dataTask(with: url) { data, response, error in
+        fetchData(from: url) { data, response, error in
             guard let data = data else {
                 print("Failed to fetch data: \(error?.localizedDescription ?? "Unknown error")")
                 completion(nil,NSError(domain: "DataError", code: 0, userInfo: [NSLocalizedDescriptionKey : "No data received"]))
@@ -34,7 +55,7 @@ class NetworkClass: ObservableObject {
             }
         }
         
-        task.resume()
+
     }
     
     func fetchIPDetails(completion: @escaping (IPApiResponseModel?, Error?) -> Void) {
@@ -43,7 +64,7 @@ class NetworkClass: ObservableObject {
             return
         }
         
-        let task = URLSession.shared.dataTask(with: url) { data, response, error in
+        fetchData(from: url) { data, response, error in
             if let error = error {
                 completion(nil, error)
                 return
@@ -63,7 +84,7 @@ class NetworkClass: ObservableObject {
             }
         }
         
-        task.resume()
+
     }
 
     func fetchBooks(title: String, offset: Int, completion: @escaping (Result<[Book], Error>) -> Void) {
@@ -76,7 +97,7 @@ class NetworkClass: ObservableObject {
             return
         }
         
-        let task = URLSession.shared.dataTask(with: url) { data, response, error in
+        fetchData(from: url) { data, response, error in
             if let error = error {
                 print("fetchBooksCalledCount",self.fetchBooksCalledCount)
                 completion(.failure(error))
@@ -100,7 +121,7 @@ class NetworkClass: ObservableObject {
             }
         }
         
-        task.resume()
+
     }
 }
 

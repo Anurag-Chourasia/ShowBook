@@ -1,0 +1,51 @@
+{
+  "originHash" : "4b07e15fea1cfc318da90af2b9bfbae037fd74c4dda84dec7ab641ba2dc3ee97",
+  "pins" : [
+    {
+      "identity" : "commonnetworking",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Anurag-Chourasia/CommonNetworking.git",
+      "state" : {
+        "revision" : "d3e708aab3af0a8f3c183c81753bfc09ac6b6527",
+        "version" : "1.0.0"
+      }
+    },
+    {
+      "identity" : "designtokenskit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Anurag-Chourasia/DesignTokensKit.git",
+      "state" : {
+        "revision" : "81ec8b856b59846056fc6dc6aec2531dcd89ac23",
+        "version" : "1.0.0"
+      }
+    },
+    {
+      "identity" : "foundationkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Anurag-Chourasia/FoundationKit.git",
+      "state" : {
+        "revision" : "b8bedb9b587eeb5597a57e05ff60d4b236a22d6f",
+        "version" : "0.1.1"
+      }
+    },
+    {
+      "identity" : "localizationkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Anurag-Chourasia/LocalizationKit.git",
+      "state" : {
+        "revision" : "c93b19e2f40f8cebc3c5eb57b4c3ea0b5989cf52",
+        "version" : "0.1.1"
+      }
+    },
+    {
+      "identity" : "uicomponentskit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Anurag-Chourasia/UIComponentsKit.git",
+      "state" : {
+        "revision" : "a7fbdc444d1509202d80b5a64cfc5d2213039a3d",
+        "version" : "1.0.0"
+      }
+    }
+  ],
+  "version" : 3
+}

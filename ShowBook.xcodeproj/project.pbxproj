@@ -42,6 +42,11 @@
 		342B8A8E2C7279B300EC41C8 /* BookmarkViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342B8A8D2C7279B300EC41C8 /* BookmarkViewModelTests.swift */; };
 		342B8A902C727CB800EC41C8 /* BookmarkButtonViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342B8A8F2C727CB800EC41C8 /* BookmarkButtonViewModelTests.swift */; };
 		342B8A952C72890700EC41C8 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3403E2732C7064320063E7D0 /* Persistence.swift */; };
+		4AAED97CED59ADF39CD524D6 /* CommonNetworking in Frameworks */ = {isa = PBXBuildFile; productRef = 95732E385786F6E1232BBF15 /* CommonNetworking */; };
+		6C8873A6A96AECA6153C5AA7 /* FoundationKit in Frameworks */ = {isa = PBXBuildFile; productRef = 945F817B0BE1541EEA799DBF /* FoundationKit */; };
+		6A0EB3CEE74C24CBDA6E6A50 /* LocalizationKit in Frameworks */ = {isa = PBXBuildFile; productRef = C39F6585DE5D8CA74DD4BA50 /* LocalizationKit */; };
+		B35B2184E6B1F7F6457163DC /* DesignTokensKit in Frameworks */ = {isa = PBXBuildFile; productRef = 6FECFBEAEF2B8BF9370CC0C1 /* DesignTokensKit */; };
+		B589ADFBBB0E3489C7804265 /* UIComponentsKit in Frameworks */ = {isa = PBXBuildFile; productRef = 9E2E1528E27128C836A6B1F3 /* UIComponentsKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -101,6 +106,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4AAED97CED59ADF39CD524D6 /* CommonNetworking in Frameworks */,
+				6C8873A6A96AECA6153C5AA7 /* FoundationKit in Frameworks */,
+				6A0EB3CEE74C24CBDA6E6A50 /* LocalizationKit in Frameworks */,
+				B35B2184E6B1F7F6457163DC /* DesignTokensKit in Frameworks */,
+				B589ADFBBB0E3489C7804265 /* UIComponentsKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -320,6 +330,11 @@
 			);
 			name = ShowBook;
 			packageProductDependencies = (
+				95732E385786F6E1232BBF15 /* CommonNetworking */,
+				945F817B0BE1541EEA799DBF /* FoundationKit */,
+				C39F6585DE5D8CA74DD4BA50 /* LocalizationKit */,
+				6FECFBEAEF2B8BF9370CC0C1 /* DesignTokensKit */,
+				9E2E1528E27128C836A6B1F3 /* UIComponentsKit */,
 			);
 			productName = ShowBook;
 			productReference = 3403E26E2C7064310063E7D0 /* ShowBook.app */;
@@ -374,6 +389,11 @@
 			);
 			mainGroup = 3403E2652C7064310063E7D0;
 			packageReferences = (
+				AEB2D9BC476E0F608EBF52D1 /* CommonNetworking */,
+				AA9FA121FCA88E0B247E2FFB /* FoundationKit */,
+				C8FC995D988090DF0D402585 /* LocalizationKit */,
+				322BDFD7AF0CC5F9FD6C225E /* DesignTokensKit */,
+				6A3E98F756100CE40BD38FE1 /* UIComponentsKit */,
 			);
 			productRefGroup = 3403E26F2C7064310063E7D0 /* Products */;
 			projectDirPath = "";
@@ -461,6 +481,22 @@
 			targetProxy = 349364112C7111C8008A99F8 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		AEB2D9BC476E0F608EBF52D1 /* CommonNetworking */ = {isa = XCRemoteSwiftPackageReference; repositoryURL = "https://github.com/Anurag-Chourasia/CommonNetworking.git"; requirement = {kind = exactVersion; version = 1.0.0; }; };
+		AA9FA121FCA88E0B247E2FFB /* FoundationKit */ = {isa = XCRemoteSwiftPackageReference; repositoryURL = "https://github.com/Anurag-Chourasia/FoundationKit.git"; requirement = {kind = exactVersion; version = 0.1.1; }; };
+		C8FC995D988090DF0D402585 /* LocalizationKit */ = {isa = XCRemoteSwiftPackageReference; repositoryURL = "https://github.com/Anurag-Chourasia/LocalizationKit.git"; requirement = {kind = exactVersion; version = 0.1.1; }; };
+		322BDFD7AF0CC5F9FD6C225E /* DesignTokensKit */ = {isa = XCRemoteSwiftPackageReference; repositoryURL = "https://github.com/Anurag-Chourasia/DesignTokensKit.git"; requirement = {kind = exactVersion; version = 1.0.0; }; };
+		6A3E98F756100CE40BD38FE1 /* UIComponentsKit */ = {isa = XCRemoteSwiftPackageReference; repositoryURL = "https://github.com/Anurag-Chourasia/UIComponentsKit.git"; requirement = {kind = exactVersion; version = 1.0.0; }; };
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		95732E385786F6E1232BBF15 /* CommonNetworking */ = {isa = XCSwiftPackageProductDependency; package = AEB2D9BC476E0F608EBF52D1; productName = CommonNetworking; };
+		945F817B0BE1541EEA799DBF /* FoundationKit */ = {isa = XCSwiftPackageProductDependency; package = AA9FA121FCA88E0B247E2FFB; productName = FoundationKit; };
+		C39F6585DE5D8CA74DD4BA50 /* LocalizationKit */ = {isa = XCSwiftPackageProductDependency; package = C8FC995D988090DF0D402585; productName = LocalizationKit; };
+		6FECFBEAEF2B8BF9370CC0C1 /* DesignTokensKit */ = {isa = XCSwiftPackageProductDependency; package = 322BDFD7AF0CC5F9FD6C225E; productName = DesignTokensKit; };
+		9E2E1528E27128C836A6B1F3 /* UIComponentsKit */ = {isa = XCSwiftPackageProductDependency; package = 6A3E98F756100CE40BD38FE1; productName = UIComponentsKit; };
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCBuildConfiguration section */
 		3403E2962C7064330063E7D0 /* Debug */ = {

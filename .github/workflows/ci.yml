@@ -1,0 +1,75 @@
+name: Shared kits integration
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    # Xcode 27 runner is arm64 and currently in public preview.
+    runs-on: xcode-27
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    timeout-minutes: 45
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_27.0.0.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Record and verify toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -d "$DEVELOPER_DIR" || { echo "Required Xcode 27.0 is unavailable"; exit 1; }
+          xcodebuild -version | tee "$RUNNER_TEMP/xcode-version.txt"
+          xcrun swiftc --version | tee "$RUNNER_TEMP/swift-version.txt"
+          grep -Fxq 'Xcode 27.0' "$RUNNER_TEMP/xcode-version.txt"
+          grep -Fxq 'Build version 27A266a' "$RUNNER_TEMP/xcode-version.txt"
+          echo "SDKROOT=$(xcrun --sdk macosx --show-sdk-path)" >> "$GITHUB_ENV"
+          grep -Eq 'Apple Swift version 6\.4([. ]|$)' "$RUNNER_TEMP/swift-version.txt"
+
+      - name: Configure read-only private dependency access
+        env:
+          FOUNDATIONKIT_DEPLOY_KEY: ${{ secrets.FOUNDATIONKIT_DEPLOY_KEY }}
+          LOCALIZATIONKIT_DEPLOY_KEY: ${{ secrets.LOCALIZATIONKIT_DEPLOY_KEY }}
+        run: bash Scripts/configure-private-dependencies.sh
+
+      - name: Verify and resolve exact package pins
+        run: |
+          python3 Scripts/verify_pins.py
+          xcodebuild -resolvePackageDependencies -project ShowBook.xcodeproj -scheme ShowBook -onlyUsePackageVersionsFromResolvedFile -scmProvider system
+          python3 Scripts/verify_pins.py
+          git diff --exit-code -- '*.resolved'
+
+      - name: Test exact package revisions
+        run: python3 Scripts/test_dependencies.py
+
+      - name: Test deterministic networking adapter
+        run: python3 TestSupport/run-networking-tests.py
+
+      - name: Build app Debug for iOS Simulator
+        run: >-
+          xcodebuild -project ShowBook.xcodeproj -scheme ShowBook
+          -destination 'generic/platform=iOS Simulator'
+          -derivedDataPath "$RUNNER_TEMP/AppDerived"
+          -onlyUsePackageVersionsFromResolvedFile -disableAutomaticPackageResolution
+          -scmProvider system SDKROOT=iphonesimulator CODE_SIGNING_ALLOWED=NO build
+
+      - name: Run existing application tests
+        timeout-minutes: 15
+        run: bash TestSupport/run-app-tests.sh "$RUNNER_TEMP/AppDerived"
+
+      - name: Remove dependency credentials
+        if: always()
+        run: rm -rf "$RUNNER_TEMP/shared-kit-credentials"

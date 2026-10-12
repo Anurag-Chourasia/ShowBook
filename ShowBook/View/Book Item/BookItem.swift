@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import DesignTokensKit
+import UIComponentsKit
 
 struct BookItem: View {
     @StateObject private var viewModel: BookItemViewModel
@@ -18,17 +20,21 @@ struct BookItem: View {
     
     var body: some View {
         HStack {
-            HStack(spacing: 0) {
-                bookImage
-                bookDetails
-                Spacer()
+            SurfaceCard(
+                metrics: SurfaceMetrics(
+                    padding: EdgeInsets(top: Spacing.sixteen, leading: 23, bottom: Spacing.sixteen, trailing: 23),
+                    cornerRadius: 15),
+                colors: SemanticColors(surface: Color(UIColor(hex: "#FFFFFF"))),
+                cornerStyle: .continuous,
+                backgroundInsets: EdgeInsets(top: 0, leading: 13, bottom: 0, trailing: 13),
+                shadow: SurfaceShadow(color: Color.black.opacity(0.4), radius: 3)
+            ) {
+                HStack(spacing: 0) {
+                    bookImage
+                    bookDetails
+                    Spacer()
+                }
             }
-            .padding(.horizontal, 23)
-            .padding(.vertical, 16)
-            .background(RoundedRectangle(cornerRadius: 15)
-                .foregroundColor(Color(UIColor(hex: "#FFFFFF")))
-                .shadow(color: Color.black.opacity(0.4), radius: 3, x: 0, y: 0)
-                .padding(.horizontal, 13))
             bookmarkButton
         }
         .onAppear {
