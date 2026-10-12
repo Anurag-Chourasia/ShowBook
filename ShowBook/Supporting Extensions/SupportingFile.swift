@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import FoundationKit
 import Combine
 
 func isValidEmail(_ email: String) -> Bool {
@@ -73,7 +74,7 @@ struct CornerRadiusStyle: ViewModifier {
 
 extension UIColor {
     convenience init(hex: String, alpha: CGFloat = 1.0) {
-        var hexSanitized = hex.trimmingCharacters(in: .whitespacesAndNewlines)
+        var hexSanitized = StringFormatting.trimmed(hex)
         hexSanitized = hexSanitized.replacingOccurrences(of: "#", with: "")
         
         var rgb: UInt64 = 0
