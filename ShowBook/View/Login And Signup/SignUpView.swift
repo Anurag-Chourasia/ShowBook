@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import UIComponentsKit
+import DesignTokensKit
 
 struct SignUpView: View {
     @Environment(\.presentationMode) var presentationMode
@@ -53,30 +55,20 @@ struct SignUpView: View {
             Button(action: {
                 presentationMode.wrappedValue.dismiss()
             }) {
-                Image(systemName: "chevron.left")
-                    .renderingMode(.template)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 15, height: 15)
-                    .padding()
-                    .foregroundStyle(Color(UIColor(hex: "#07629B")))
-                    .background(
-                        RoundedRectangle(cornerRadius: 30)
-                            .stroke(Color(UIColor(hex: "#07629B")), lineWidth: 2)
-                    )
+                OutlinedIconLabel(systemImage: "chevron.left", color: ShowBookTheme.colors.action)
             }
-            .padding(.top, 20)
-            .padding(.leading, 20)
+            .padding(.top, Spacing.twenty)
+            .padding(.leading, Spacing.twenty)
             Spacer()
         }
-        .padding(.bottom, 30)
+        .padding(.bottom, Spacing.thirty)
     }
 
     private var welcomeText: some View {
         HStack(spacing: 0) {
             Text("Welcome,\nSign up to continue")
                 .font(.title)
-                .padding(.leading, 30)
+                .padding(.leading, Spacing.thirty)
             Spacer()
         }
         .padding(.bottom, 50)
@@ -89,10 +81,10 @@ struct SignUpView: View {
                                mandatoryField: true)
         }
         .background(
-            RoundedRectangle(cornerRadius: 26.5)
-                .stroke(Color(UIColor(hex: "#DADADA")), lineWidth: 1)
+            RoundedRectangle(cornerRadius: ShowBookTheme.fieldCornerRadius)
+                .stroke(ShowBookTheme.colors.border, lineWidth: StrokeWidth.one)
         )
-        .padding(.bottom, 20)
+        .padding(.bottom, Spacing.twenty)
         .padding(.horizontal, 34)
     }
 
@@ -103,10 +95,10 @@ struct SignUpView: View {
                                   mandatoryField: true)
         }
         .background(
-            RoundedRectangle(cornerRadius: 26.5)
-                .stroke(Color(UIColor(hex: "#DADADA")), lineWidth: 1)
+            RoundedRectangle(cornerRadius: ShowBookTheme.fieldCornerRadius)
+                .stroke(ShowBookTheme.colors.border, lineWidth: StrokeWidth.one)
         )
-        .padding(.bottom, 20)
+        .padding(.bottom, Spacing.twenty)
         .padding(.horizontal, 34)
     }
 
@@ -119,7 +111,7 @@ struct SignUpView: View {
             requirementItem(viewModel.password.hasNumberCharacter, text: "Must contain a number character")
             requirementItem(viewModel.password.count >= 8, text: "At least 8 characters")
         }
-        .padding(.horizontal, 20)
+        .padding(.horizontal, Spacing.twenty)
     }
 
     private func requirementItem(_ isValid: Bool, text: String) -> some View {
@@ -128,7 +120,7 @@ struct SignUpView: View {
             Text(text)
             Spacer()
         }
-        .padding(.vertical, 5)
+        .padding(.vertical, Spacing.five)
     }
 
     private var signUpButton: some View {
@@ -141,7 +133,7 @@ struct SignUpView: View {
                     .frame(height: 55)
                     .frame(maxWidth: .infinity)
                     .foregroundColor(.white)
-                    .background(RoundedRectangle(cornerRadius: 26.5))
+                    .background(RoundedRectangle(cornerRadius: ShowBookTheme.fieldCornerRadius))
             }
             .alert(isPresented: $viewModel.showAlert) {
                 Alert(title: Text("Error"),
@@ -158,20 +150,17 @@ struct SignUpView: View {
             
         
         }
-        .foregroundColor(Color(UIColor(hex: "#07629B")))
+        .foregroundColor(ShowBookTheme.colors.action)
         .padding(.vertical, 18)
         .padding(.horizontal, 33)
     }
 
     private var loadingOverlay: some View {
-        VStack {
-            Spacer()
-            ProgressView("Loading.")
-                .progressViewStyle(CircularProgressViewStyle())
-            Spacer()
+        CenteredProgressOverlay(width: UIScreen.main.bounds.width) {
+            Text("Loading.")
+        } background: {
+            ShowBookTheme.colors.surface.opacity(0.5)
         }
-        .frame(width: UIScreen.main.bounds.width)
-        .background(Color(UIColor(hex: "#FFFFFF")).opacity(0.5))
     }
 }
 

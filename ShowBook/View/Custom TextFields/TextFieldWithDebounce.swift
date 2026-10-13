@@ -7,6 +7,7 @@
 
 import Combine
 import SwiftUI
+import UIComponentsKit
 
 class TextFieldObserver: ObservableObject {
     @Published var searchText = ""
@@ -33,10 +34,10 @@ struct TextFieldWithDebounce: View {
         VStack {
             TextField("", text: $textObserver.searchText)
                 .padding(.trailing, 21)
-                .placeholder(when: textObserver.searchText.isEmpty) {
+                .fieldPlaceholder(when: textObserver.searchText.isEmpty) {
                     HStack {
                         Text("Search for Books")
-                            .foregroundColor(Color(UIColor(hex: "#242E3D")))
+                            .foregroundColor(ShowBookTheme.colors.foreground)
                             .font(.title3)
                     }
                 }

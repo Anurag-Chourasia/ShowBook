@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 import FoundationKit
+import DesignTokensKit
 import Combine
 
 func isValidEmail(_ email: String) -> Bool {
@@ -32,17 +33,14 @@ func isValidPassword(_ password: String) -> Bool {
 }
 
 
-extension View {
-    func placeholder<Content: View>(
-        when shouldShow: Bool,
-        alignment: Alignment = .leading,
-        @ViewBuilder placeholder: () -> Content) -> some View {
-            
-            ZStack(alignment: alignment) {
-                placeholder().opacity(shouldShow ? 1 : 0)
-                self
-            }
-        }
+enum ShowBookTheme {
+    static let colors = SemanticColors(
+        surface: Color(UIColor(hex: "#FFFFFF")),
+        foreground: Color(UIColor(hex: "#242E3D")),
+        border: Color(UIColor(hex: "#DADADA")),
+        action: Color(UIColor(hex: "#07629B")),
+        onAction: .white)
+    static let fieldCornerRadius: CGFloat = 26.5
 }
 
 extension View {

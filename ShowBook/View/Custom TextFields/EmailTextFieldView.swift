@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import UIComponentsKit
+import DesignTokensKit
 
 struct EmailTextFieldView: View {
     @Binding var email: String
@@ -15,7 +17,7 @@ struct EmailTextFieldView: View {
     private var emailField: some View {
         TextField("", text: $email)
             .padding(.trailing, 21)
-            .placeholder(when: email.isEmpty) {
+            .fieldPlaceholder(when: email.isEmpty) {
                 placeholderView
             }
             .frame(height: 53)
@@ -24,7 +26,7 @@ struct EmailTextFieldView: View {
     private var placeholderView: some View {
         HStack(spacing: 0) {
             Text(placeholderText)
-                .foregroundColor(Color(UIColor(hex: "#242E3D")))
+                .foregroundColor(ShowBookTheme.colors.foreground)
                 .font(.title2)
             if mandatoryField {
                 Text(" *")
@@ -38,7 +40,7 @@ struct EmailTextFieldView: View {
         Image("ProfileIcon")
             .resizable()
             .frame(width: 21, height: 21)
-            .padding(.vertical, 16)
+            .padding(.vertical, Spacing.sixteen)
             .padding(.horizontal, 19)
     }
     

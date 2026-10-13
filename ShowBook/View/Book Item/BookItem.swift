@@ -23,8 +23,8 @@ struct BookItem: View {
             SurfaceCard(
                 metrics: SurfaceMetrics(
                     padding: EdgeInsets(top: Spacing.sixteen, leading: 23, bottom: Spacing.sixteen, trailing: 23),
-                    cornerRadius: 15),
-                colors: SemanticColors(surface: Color(UIColor(hex: "#FFFFFF"))),
+                    cornerRadius: CornerRadius.fifteen),
+                colors: SemanticColors(surface: ShowBookTheme.colors.surface),
                 cornerStyle: .continuous,
                 backgroundInsets: EdgeInsets(top: 0, leading: 13, bottom: 0, trailing: 13),
                 shadow: SurfaceShadow(color: Color.black.opacity(0.4), radius: 3)

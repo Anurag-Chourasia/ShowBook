@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import UIComponentsKit
+import DesignTokensKit
 
 struct LoginView: View {
     @Environment(\.presentationMode) var presentationMode
@@ -44,30 +46,20 @@ struct LoginView: View {
             Button(action: {
                 presentationMode.wrappedValue.dismiss()
             }) {
-                Image(systemName: "chevron.left")
-                    .renderingMode(.template)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 15, height: 15)
-                    .padding()
-                    .foregroundStyle(Color(UIColor(hex: "#07629B")))
-                    .background(
-                        RoundedRectangle(cornerRadius: 30)
-                            .stroke(Color(UIColor(hex: "#07629B")), lineWidth: 2)
-                    )
+                OutlinedIconLabel(systemImage: "chevron.left", color: ShowBookTheme.colors.action)
             }
-            .padding(.top, 20)
-            .padding(.leading, 20)
+            .padding(.top, Spacing.twenty)
+            .padding(.leading, Spacing.twenty)
             Spacer()
         }
-        .padding(.bottom, 30)
+        .padding(.bottom, Spacing.thirty)
     }
 
     private var welcomeText: some View {
         HStack(spacing: 0) {
             Text("Welcome,\nlog in to continue")
                 .font(.title)
-                .padding(.leading, 30)
+                .padding(.leading, Spacing.thirty)
             Spacer()
         }
         .padding(.bottom, 50)
@@ -80,10 +72,10 @@ struct LoginView: View {
                                mandatoryField: true)
         }
         .overlay(
-            RoundedRectangle(cornerRadius: 26.5)
-                .stroke(Color(UIColor(hex: "#DADADA")), lineWidth: 1)
+            RoundedRectangle(cornerRadius: ShowBookTheme.fieldCornerRadius)
+                .stroke(ShowBookTheme.colors.border, lineWidth: StrokeWidth.one)
         )
-        .padding(.bottom, 14)
+        .padding(.bottom, Spacing.fourteen)
         .padding(.horizontal, 34)
     }
 
@@ -94,10 +86,10 @@ struct LoginView: View {
                                   mandatoryField: true)
         }
         .overlay(
-            RoundedRectangle(cornerRadius: 26.5)
-                .stroke(Color(UIColor(hex: "#DADADA")), lineWidth: 1)
+            RoundedRectangle(cornerRadius: ShowBookTheme.fieldCornerRadius)
+                .stroke(ShowBookTheme.colors.border, lineWidth: StrokeWidth.one)
         )
-        .padding(.bottom, 20)
+        .padding(.bottom, Spacing.twenty)
         .padding(.horizontal, 34)
     }
 
@@ -111,7 +103,7 @@ struct LoginView: View {
                     .frame(height: 55)
                     .frame(maxWidth: .infinity)
                     .foregroundColor(.white)
-                    .background(RoundedRectangle(cornerRadius: 26.5))
+                    .background(RoundedRectangle(cornerRadius: ShowBookTheme.fieldCornerRadius))
             }
             .alert(isPresented: $viewModel.showAlert) {
                 Alert(title: Text("Error"),
@@ -126,21 +118,18 @@ struct LoginView: View {
                 }
             }
         }
-        .foregroundStyle(Color(UIColor(hex: "#07629B")))
+        .foregroundStyle(ShowBookTheme.colors.action)
         .padding(.bottom, 18)
         .padding(.leading, 33)
         .padding(.trailing, 33)
     }
 
     private var loadingView: some View {
-        VStack {
-            Spacer()
-            ProgressView("Loading.")
-                .progressViewStyle(CircularProgressViewStyle())
-            Spacer()
+        CenteredProgressOverlay(width: UIScreen.main.bounds.width) {
+            Text("Loading.")
+        } background: {
+            ShowBookTheme.colors.surface.opacity(0.5)
         }
-        .frame(width: UIScreen.main.bounds.width)
-        .background(Color(UIColor(hex: "#FFFFFF")).opacity(0.5))
     }
 }
 

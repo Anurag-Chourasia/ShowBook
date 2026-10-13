@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import UIComponentsKit
+import DesignTokensKit
 
 struct BookmarkView: View {
     @Environment(\.managedObjectContext) private var viewContext
@@ -45,25 +47,15 @@ struct BookmarkView: View {
                 .font(.title)
             Spacer()
         }
-        .padding(.vertical, 20)
-        .padding(.horizontal, 20)
+        .padding(.vertical, Spacing.twenty)
+        .padding(.horizontal, Spacing.twenty)
     }
     
     private var backButton: some View {
         Button(action: {
             presentationMode.wrappedValue.dismiss()
         }) {
-            Image(systemName: "chevron.left")
-                .renderingMode(.template)
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(width: 15, height: 15)
-                .padding()
-                .foregroundStyle(Color(UIColor(hex: "#07629B")))
-                .background(
-                    RoundedRectangle(cornerRadius: 30)
-                        .stroke(Color(UIColor(hex: "#07629B")), lineWidth: 2)
-                )
+            OutlinedIconLabel(systemImage: "chevron.left", color: ShowBookTheme.colors.action)
         }
         .padding(.trailing)
     }
@@ -74,7 +66,7 @@ struct BookmarkView: View {
                     LazyVStack(spacing: 0) {
                         ForEach(viewModel.bookmarkBooks, id: \.self) { book in
                             BookItem(item: book, fromBookMark: true)
-                                .padding(.vertical, 5)
+                                .padding(.vertical, Spacing.five)
                                 .id(book.id)
                         }
                     }
@@ -89,20 +81,17 @@ struct BookmarkView: View {
                         }
                     )
                 }
-                .padding(.vertical, 10)
+                .padding(.vertical, Spacing.ten)
             }
         }
     
     private var bookLoadingIndicator: some View {
         GeometryReader { innerGeometry in
-            VStack {
-                Spacer()
-                ProgressView("Loading.")
-                    .progressViewStyle(CircularProgressViewStyle())
-                Spacer()
+            CenteredProgressOverlay(width: innerGeometry.size.width) {
+                Text("Loading.")
+            } background: {
+                ShowBookTheme.colors.surface.opacity(0.5)
             }
-            .frame(width: innerGeometry.size.width)
-            .background(Color(UIColor(hex: "#FFFFFF")).opacity(0.5))
         }
     }
 }

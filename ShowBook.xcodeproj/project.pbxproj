@@ -486,8 +486,8 @@
 		AEB2D9BC476E0F608EBF52D1 /* CommonNetworking */ = {isa = XCRemoteSwiftPackageReference; repositoryURL = "https://github.com/Anurag-Chourasia/CommonNetworking.git"; requirement = {kind = exactVersion; version = 1.0.0; }; };
 		AA9FA121FCA88E0B247E2FFB /* FoundationKit */ = {isa = XCRemoteSwiftPackageReference; repositoryURL = "https://github.com/Anurag-Chourasia/FoundationKit.git"; requirement = {kind = exactVersion; version = 0.1.1; }; };
 		C8FC995D988090DF0D402585 /* LocalizationKit */ = {isa = XCRemoteSwiftPackageReference; repositoryURL = "https://github.com/Anurag-Chourasia/LocalizationKit.git"; requirement = {kind = exactVersion; version = 0.1.1; }; };
-		322BDFD7AF0CC5F9FD6C225E /* DesignTokensKit */ = {isa = XCRemoteSwiftPackageReference; repositoryURL = "https://github.com/Anurag-Chourasia/DesignTokensKit.git"; requirement = {kind = exactVersion; version = 1.0.0; }; };
-		6A3E98F756100CE40BD38FE1 /* UIComponentsKit */ = {isa = XCRemoteSwiftPackageReference; repositoryURL = "https://github.com/Anurag-Chourasia/UIComponentsKit.git"; requirement = {kind = exactVersion; version = 1.0.0; }; };
+		322BDFD7AF0CC5F9FD6C225E /* DesignTokensKit */ = {isa = XCRemoteSwiftPackageReference; repositoryURL = "https://github.com/Anurag-Chourasia/DesignTokensKit.git"; requirement = {kind = exactVersion; version = 1.1.0; }; };
+		6A3E98F756100CE40BD38FE1 /* UIComponentsKit */ = {isa = XCRemoteSwiftPackageReference; repositoryURL = "https://github.com/Anurag-Chourasia/UIComponentsKit.git"; requirement = {kind = exactVersion; version = 1.1.0; }; };
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
