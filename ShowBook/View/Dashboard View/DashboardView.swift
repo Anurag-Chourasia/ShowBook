@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import UIComponentsKit
+import DesignTokensKit
 
 struct DashboardView: View {
     @Environment(\.managedObjectContext) private var viewContext
@@ -64,7 +66,7 @@ struct DashboardView: View {
         HStack {
             Text("ShowBook")
                 .font(.title)
-                .padding(.leading, 30)
+                .padding(.leading, Spacing.thirty)
             Spacer()
             NavigationLink(destination: BookmarkView()) {
                 Image(systemName: "bookmark.circle.fill")
@@ -73,7 +75,7 @@ struct DashboardView: View {
                     .frame(height: 35)
                     .foregroundColor(.black)
             }
-            .padding(.trailing, 30)
+            .padding(.trailing, Spacing.thirty)
             .accessibilityIdentifier("bookmarkButton")
             
             Button(action: {
@@ -85,9 +87,9 @@ struct DashboardView: View {
                     .aspectRatio(contentMode: .fit)
                     .frame(height: 30)
             }
-            .padding(.trailing, 20)
+            .padding(.trailing, Spacing.twenty)
         }
-        .padding(.vertical, 20)
+        .padding(.vertical, Spacing.twenty)
     }
     
     private var searchField: some View {
@@ -105,18 +107,18 @@ struct DashboardView: View {
                 }
         }
         .overlay(
-            RoundedRectangle(cornerRadius: 26.5)
-                .stroke(Color(UIColor(hex: "#DADADA")), lineWidth: 1)
+            RoundedRectangle(cornerRadius: ShowBookTheme.fieldCornerRadius)
+                .stroke(ShowBookTheme.colors.border, lineWidth: StrokeWidth.one)
         )
-        .padding(.bottom, 14)
-        .padding(.horizontal, 20)
+        .padding(.bottom, Spacing.fourteen)
+        .padding(.horizontal, Spacing.twenty)
     }
     
     private var sortByFilterView: some View {
         HStack(spacing: 0) {
             VStack {
                 Text("Sort by: ")
-                    .foregroundColor(Color(UIColor(hex: "#242E3D")))
+                    .foregroundColor(ShowBookTheme.colors.foreground)
                     .font(.system(size: 13))
                 Color.clear.frame(height: 3)
             }
@@ -131,7 +133,7 @@ struct DashboardView: View {
             
         }
         .frame(height: 31)
-        .padding(.bottom, 10)
+        .padding(.bottom, Spacing.ten)
     }
     
     private func filterButton(item: String) -> some View {
@@ -172,7 +174,7 @@ struct DashboardView: View {
                 LazyVStack(spacing: 0) {
                     ForEach(viewModel.filteredBooks, id: \.self) { book in
                         BookItem(item: book)
-                            .padding(.vertical, 5)
+                            .padding(.vertical, Spacing.five)
                             .id(book.id)
                     }
                 }
@@ -203,7 +205,7 @@ struct DashboardView: View {
                     }
                 }
             }
-            .padding(.vertical, 10)
+            .padding(.vertical, Spacing.ten)
         }
     }
     
@@ -211,27 +213,21 @@ struct DashboardView: View {
     
     private var loadingIndicator: some View {
         GeometryReader { innerGeometry in
-            VStack {
-                Spacer()
-                ProgressView("Loading.")
-                    .progressViewStyle(CircularProgressViewStyle())
-                Spacer()
+            CenteredProgressOverlay(width: innerGeometry.size.width) {
+                Text("Loading.")
+            } background: {
+                ShowBookTheme.colors.surface.opacity(0.5)
             }
-            .frame(width: innerGeometry.size.width)
-            .background(Color(UIColor(hex: "#FFFFFF")).opacity(0.5))
         }
     }
     
     private var bookLoadingIndicator: some View {
         GeometryReader { innerGeometry in
-            VStack {
-                Spacer()
-                ProgressView("Loading.")
-                    .progressViewStyle(CircularProgressViewStyle())
-                Spacer()
+            CenteredProgressOverlay(width: innerGeometry.size.width) {
+                Text("Loading.")
+            } background: {
+                ShowBookTheme.colors.surface.opacity(0.5)
             }
-            .frame(width: innerGeometry.size.width)
-            .background(Color(UIColor(hex: "#FFFFFF")).opacity(0.5))
         }
     }
 }

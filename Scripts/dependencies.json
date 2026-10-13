@@ -12,11 +12,11 @@
     "revision": "c93b19e2f40f8cebc3c5eb57b4c3ea0b5989cf52"
   },
   "designtokenskit": {
-    "version": "1.0.0",
-    "revision": "81ec8b856b59846056fc6dc6aec2531dcd89ac23"
+    "version": "1.1.0",
+    "revision": "b025478327d011ea9023a0db0fcbfff701002c22"
   },
   "uicomponentskit": {
-    "version": "1.0.0",
-    "revision": "a7fbdc444d1509202d80b5a64cfc5d2213039a3d"
+    "version": "1.1.0",
+    "revision": "32ba17c6037629c66c4d7c3b43982076fd4d2a9a"
   }
 }

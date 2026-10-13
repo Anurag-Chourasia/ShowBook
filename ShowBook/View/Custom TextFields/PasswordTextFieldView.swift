@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import UIComponentsKit
+import DesignTokensKit
 
 struct PasswordTextFieldView: View {
     @Binding private var text: String
@@ -28,7 +30,7 @@ struct PasswordTextFieldView: View {
             }
         }
         .padding(.trailing, 21)
-        .placeholder(when: text.isEmpty) {
+        .fieldPlaceholder(when: text.isEmpty) {
             placeholderView
         }
         .frame(height: 53)
@@ -38,7 +40,7 @@ struct PasswordTextFieldView: View {
     private var placeholderView: some View {
         HStack(spacing: 0) {
             Text(placeholderText)
-                .foregroundColor(Color(UIColor(hex: "#242E3D")))
+                .foregroundColor(ShowBookTheme.colors.foreground)
                 .font(.title2)
             if mandatoryField {
                 Text(" *")
@@ -58,7 +60,7 @@ struct PasswordTextFieldView: View {
                 .aspectRatio(contentMode: .fit)
                 .foregroundColor(.gray)
                 .frame(width: 20, height: 20)
-                .padding(.leading, 20)
+                .padding(.leading, Spacing.twenty)
                 .padding(.trailing, 22.58)
         }
     }
@@ -66,7 +68,7 @@ struct PasswordTextFieldView: View {
     var body: some View {
         ZStack(alignment: .trailing) {
             passwordField
-                .padding(.trailing, 32)
+                .padding(.trailing, Spacing.thirtyTwo)
 
             toggleVisibilityButton
         }
