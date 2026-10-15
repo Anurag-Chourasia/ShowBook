@@ -307,7 +307,7 @@ final class CredentialStorageTests: XCTestCase {
     }
 
     func testV1AndV2SQLiteStoresUpgradeAndRetainAccounts() throws {
-        for version in ["ShowBook", "ShowBookV2"] {
+        for version in ["ShowBook", "ShowBookV2", "ShowBookV3"] {
             let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
             try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
             defer { try? FileManager.default.removeItem(at: directory) }

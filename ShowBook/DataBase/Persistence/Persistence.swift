@@ -383,7 +383,8 @@ class PersistenceController {
             predicates.append(NSPredicate(format: "ANY authorNames == %@", authorName))
         }
         
-        fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
+        fetchRequest.predicate = book.key.map { NSPredicate(format: "workKey == %@ AND email == %@", $0, userEmail) }
+            ?? NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
         
         do {
             let results = try context.fetch(fetchRequest)
@@ -395,6 +396,7 @@ class PersistenceController {
                 bookEntity = BookEntity(context: context)
             }
             
+            bookEntity.workKey = book.key
             bookEntity.title = book.title
             bookEntity.ratingsAverage = book.ratingsAverage ?? 0.0
             bookEntity.ratingsCount = Int32(book.ratingsCount ?? 0)
@@ -432,7 +434,8 @@ class PersistenceController {
                     ratingsCount: Int(bookEntity.ratingsCount),
                     authorName: bookEntity.authorNames as? [String],
                     coverI: Int(bookEntity.coverI),
-                    image: bookEntity.image
+                    image: bookEntity.image,
+                    key: bookEntity.workKey
                 )
             }
             return books
@@ -447,7 +450,8 @@ class PersistenceController {
         let userEmail = UserDefaults.standard.value(forKey: "LoggedInUserEmail") as? String ?? ""
         
         let fetchRequest: NSFetchRequest<BookEntity> = BookEntity.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "title == %@ AND email == %@", book.title, userEmail)
+        fetchRequest.predicate = book.key.map { NSPredicate(format: "workKey == %@ AND email == %@", $0, userEmail) }
+            ?? NSPredicate(format: "title == %@ AND email == %@", book.title, userEmail)
         
         do {
             let results = try context.fetch(fetchRequest)

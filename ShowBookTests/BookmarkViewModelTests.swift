@@ -107,11 +107,12 @@ final class PersistenceRelationshipTests: XCTestCase {
     }
 
     func testLegacySQLiteStoreMigratesWithoutLosingData() throws {
+        for version in ["ShowBook", "ShowBookV2", "ShowBookV3"] {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         defer { try? FileManager.default.removeItem(at: directory) }
         let storeURL = directory.appendingPathComponent("fixture.sqlite")
-        let legacy = try model(version: "ShowBook")
+        let legacy = try model(version: version)
         let oldCoordinator = NSPersistentStoreCoordinator(managedObjectModel: legacy)
         let oldStore = try oldCoordinator.addPersistentStore(ofType: NSSQLiteStoreType, configurationName: nil, at: storeURL)
         let oldContext = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
@@ -154,5 +155,7 @@ final class PersistenceRelationshipTests: XCTestCase {
         let books = try context.fetch(NSFetchRequest<NSManagedObject>(entityName: "BookEntity"))
         XCTAssertEqual(books.count, 1)
         XCTAssertEqual(books.first?.value(forKey: "title") as? String, "Saved bookmark")
+        XCTAssertNil(books.first?.value(forKey: "workKey"))
+        }
     }
 }
