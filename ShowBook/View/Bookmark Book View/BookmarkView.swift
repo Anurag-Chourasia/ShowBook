@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import CoreData
 import UIComponentsKit
 import DesignTokensKit
 
@@ -16,12 +17,15 @@ struct BookmarkView: View {
     @StateObject private var viewModel = BookmarkViewModel()
     
     var body: some View {
-        VStack(spacing: 0) {
+        VStack(spacing: DesignMetric.p0) {
             headerView
             ZStack{
                 booksListView
                     .onAppear {
                         viewModel.loadBookmarks()
+                    }
+                    .onReceive(viewModel.persistenceController.$updatedBooks) { _ in
+                        viewModel.bookmarkBooks = viewModel.persistenceController.fetchBooks()
                     }
                     .alert(isPresented: $viewModel.showAlert) {
                         Alert(title: Text("Error"),
@@ -41,11 +45,12 @@ struct BookmarkView: View {
     }
     
     private var headerView: some View {
-        HStack(spacing: 0) {
+        HStack(spacing: DesignMetric.p0) {
             backButton
             Text("Saved Books")
-                .font(.title)
+                .font(Typography.title)
             Spacer()
+            BookLayoutPicker()
         }
         .padding(.vertical, Spacing.twenty)
         .padding(.horizontal, Spacing.twenty)
@@ -57,29 +62,13 @@ struct BookmarkView: View {
         }) {
             OutlinedIconLabel(systemImage: "chevron.left", color: ShowBookTheme.colors.action)
         }
-        .padding(.trailing)
+        .padding(.trailing, Spacing.system)
     }
     
     private var booksListView: some View {
             ScrollView(.vertical, showsIndicators: false) {
-                VStack(spacing: 0) {
-                    LazyVStack(spacing: 0) {
-                        ForEach(viewModel.bookmarkBooks, id: \.self) { book in
-                            BookItem(item: book, fromBookMark: true)
-                                .padding(.vertical, Spacing.five)
-                                .id(book.id)
-                        }
-                    }
-                    .background(
-                        GeometryReader { geo in
-                            Color.clear
-                                .onChange(of: geo.frame(in: .global).minY) {
-                                    if geo.frame(in: .global).minY > 0 {
-                                        viewModel.loadBookmarks()
-                                    }
-                                }
-                        }
-                    )
+                VStack(spacing: DesignMetric.p0) {
+                    BookCollection(books: viewModel.bookmarkBooks)
                 }
                 .padding(.vertical, Spacing.ten)
             }
@@ -90,7 +79,7 @@ struct BookmarkView: View {
             CenteredProgressOverlay(width: innerGeometry.size.width) {
                 Text("Loading.")
             } background: {
-                ShowBookTheme.colors.surface.opacity(0.5)
+                ShowBookTheme.colors.surface.opacity(OpacityToken.p0_5)
             }
         }
     }

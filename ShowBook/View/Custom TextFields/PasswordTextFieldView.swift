@@ -29,23 +29,23 @@ struct PasswordTextFieldView: View {
                 TextField("", text: $text)
             }
         }
-        .padding(.trailing, 21)
+        .padding(.trailing, DesignMetric.p21)
         .fieldPlaceholder(when: text.isEmpty) {
             placeholderView
         }
-        .frame(height: 53)
-        .padding(.leading, 19)
+        .frame(height: DesignMetric.p53)
+        .padding(.leading, DesignMetric.p19)
     }
 
     private var placeholderView: some View {
-        HStack(spacing: 0) {
+        HStack(spacing: DesignMetric.p0) {
             Text(placeholderText)
                 .foregroundColor(ShowBookTheme.colors.foreground)
-                .font(.title2)
+                .font(Typography.title2)
             if mandatoryField {
                 Text(" *")
-                    .foregroundColor(.red)
-                    .font(.title2)
+                    .foregroundColor(DesignColor.red)
+                    .font(Typography.title2)
             }
         }
     }
@@ -58,10 +58,10 @@ struct PasswordTextFieldView: View {
                 .renderingMode(.template)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
-                .foregroundColor(.gray)
-                .frame(width: 20, height: 20)
+                .foregroundColor(DesignColor.gray)
+                .frame(width: DesignMetric.p20, height: DesignMetric.p20)
                 .padding(.leading, Spacing.twenty)
-                .padding(.trailing, 22.58)
+                .padding(.trailing, DesignMetric.p22_58)
         }
     }
 

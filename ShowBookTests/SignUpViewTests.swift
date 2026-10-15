@@ -43,6 +43,39 @@ final class SignUpViewModelTests: XCTestCase {
         super.tearDown()
     }
 
+    func testIPFailureStopsLoadingAndKeepsCountriesAvailable() {
+        checkCountryLoading(empty: false, missingIP: false)
+    }
+
+    func testMissingIPResponseStopsLoading() {
+        checkCountryLoading(empty: false, missingIP: true)
+    }
+
+    func testEmptyCountryResponseDoesNotIndexIntoEmptyList() {
+        checkCountryLoading(empty: true, missingIP: false)
+    }
+
+    private func checkCountryLoading(empty: Bool, missingIP: Bool) {
+        let api = CountryLoadingNetwork()
+        api.empty = empty
+        api.missingIP = missingIP
+        signUpViewModel = SignUpViewModel(api: api)
+        signUpViewModel.setUpPersistenceController(controller: mockPersistenceController)
+        let finished = expectation(description: "country loading finishes")
+        signUpViewModel.$isLoading.dropFirst().filter { !$0 }.sink { _ in
+            finished.fulfill()
+        }.store(in: &cancellables)
+        signUpViewModel.loadData()
+        wait(for: [finished], timeout: 2)
+        XCTAssertTrue(signUpViewModel.showAlert)
+        XCTAssertFalse(signUpViewModel.isLoading)
+        XCTAssertEqual(signUpViewModel.countries, empty ? [] : ["India"])
+        XCTAssertEqual(api.ipRequests, empty ? 0 : 1)
+        if !empty {
+            XCTAssertEqual(mockPersistenceController.fetchSelectedCountryName(), "India")
+        }
+    }
+
     func testValidSignUp() {
         let expectation = XCTestExpectation(description: "Valid sign up should succeed")
 
@@ -268,5 +301,19 @@ final class SignUpViewModelTests: XCTestCase {
         }
         
         return container
+    }
+}
+
+private final class CountryLoadingNetwork: NetworkClass {
+    var empty = false
+    var missingIP = false
+    var ipRequests = 0
+    override func fetchCountries(completion: @escaping (CountryModel?, Error?) -> Void) {
+        completion(CountryModel(status: "OK", statusCode: 200, version: "1", access: "public", total: empty ? 0 : 1, offset: 0, limit: 100,
+                                data: empty ? [:] : ["IN": Datum(country: "India", region: .asia)]), nil)
+    }
+    override func fetchIPDetails(completion: @escaping (IPApiResponseModel?, Error?) -> Void) {
+        ipRequests += 1
+        completion(nil, missingIP ? nil : URLError(.notConnectedToInternet))
     }
 }

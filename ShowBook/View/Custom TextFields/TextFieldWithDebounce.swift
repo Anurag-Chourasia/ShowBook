@@ -1,3 +1,4 @@
+import DesignTokensKit
 //
 //  TextFieldWithDebounce.swift
 //  ShowBook
@@ -33,12 +34,12 @@ struct TextFieldWithDebounce: View {
     var body: some View {
         VStack {
             TextField("", text: $textObserver.searchText)
-                .padding(.trailing, 21)
+                .padding(.trailing, DesignMetric.p21)
                 .fieldPlaceholder(when: textObserver.searchText.isEmpty) {
                     HStack {
                         Text("Search for Books")
                             .foregroundColor(ShowBookTheme.colors.foreground)
-                            .font(.title3)
+                            .font(Typography.title3)
                     }
                 }
                 .onChange(of: textObserver.debouncedText) {

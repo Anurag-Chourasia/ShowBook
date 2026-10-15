@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import CoreData
 import UIComponentsKit
 import DesignTokensKit
 
@@ -17,9 +18,11 @@ struct DashboardView: View {
     var body: some View {
         NavigationView {
                 ZStack {
-                    VStack(spacing: 0) {
+                    VStack(spacing: DesignMetric.p0) {
                         headerView
                         searchField
+                        HStack { Spacer(); BookLayoutPicker() }
+                            .padding(.horizontal, Spacing.twenty)
                         ZStack {
                             if !viewModel.filteredBooks.isEmpty {
                                 VStack{
@@ -65,15 +68,15 @@ struct DashboardView: View {
     private var headerView: some View {
         HStack {
             Text("ShowBook")
-                .font(.title)
+                .font(Typography.title)
                 .padding(.leading, Spacing.thirty)
             Spacer()
             NavigationLink(destination: BookmarkView()) {
                 Image(systemName: "bookmark.circle.fill")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(height: 35)
-                    .foregroundColor(.black)
+                    .frame(height: DesignMetric.p35)
+                    .foregroundColor(DesignColor.black)
             }
             .padding(.trailing, Spacing.thirty)
             .accessibilityIdentifier("bookmarkButton")
@@ -85,7 +88,7 @@ struct DashboardView: View {
                 Image("Logout")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(height: 30)
+                    .frame(height: DesignMetric.p30)
             }
             .padding(.trailing, Spacing.twenty)
         }
@@ -96,14 +99,12 @@ struct DashboardView: View {
         HStack {
             Image(systemName: "book.fill")
                 .resizable()
-                .frame(width: 21, height: 21)
-                .padding([.top, .bottom], 16)
-                .padding([.leading, .trailing], 19)
+                .frame(width: DesignMetric.p21, height: DesignMetric.p21)
+                .padding([.top, .bottom], DesignMetric.p16)
+                .padding([.leading, .trailing], DesignMetric.p19)
             TextFieldWithDebounce(debouncedText: $viewModel.searchBook)
                 .onChange(of: viewModel.searchBook) {
-                    if !viewModel.isBookLoading && !viewModel.isLoadingMore {
-                        viewModel.performSearch()
-                    }
+                    viewModel.performSearch()
                 }
         }
         .overlay(
@@ -115,93 +116,38 @@ struct DashboardView: View {
     }
     
     private var sortByFilterView: some View {
-        HStack(spacing: 0) {
-            VStack {
-                Text("Sort by: ")
-                    .foregroundColor(ShowBookTheme.colors.foreground)
-                    .font(.system(size: 13))
-                Color.clear.frame(height: 3)
+        HStack {
+            Menu {
+                ForEach(viewModel.sortByCategoryArray, id: \.self) { category in
+                    Button(category) { viewModel.selectedCategoryFilter = category }
+                }
+                Button("Clear") { viewModel.selectedCategoryFilter = "" }
+            } label: {
+                Label(viewModel.selectedCategoryFilter.isEmpty ? "Sort by" : viewModel.selectedCategoryFilter,
+                      systemImage: "arrow.up.arrow.down")
             }
+            .font(Typography.subheadline)
             Spacer()
-            ForEach(viewModel.sortByCategoryArray, id: \.self) { item in
-                filterButton(item: item)
-            }
-            Spacer()
-            
-            clearButton
-            
-            
         }
-        .frame(height: 31)
+        .padding(.horizontal, Spacing.twenty)
         .padding(.bottom, Spacing.ten)
     }
-    
-    private func filterButton(item: String) -> some View {
-        Button(action: {
-            viewModel.selectedCategoryFilter = item
-        }) {
-            VStack {
-                Text(item)
-                    .foregroundColor(viewModel.selectedCategoryFilter == item ? .black : .gray)
-                    .font(.system(size: 13))
-                if viewModel.selectedCategoryFilter == item {
-                    Color(UIColor(hex: "#22B6CA"))
-                        .frame(height: 3)
-                        .clipShape(RoundedRectangle(cornerRadius: 1.5))
-                } else {
-                    Color.clear.frame(height: 3)
-                }
-            }
-        }
-    }
-    
-    private var clearButton: some View {
-        Button(action: {
-            viewModel.selectedCategoryFilter = ""
-        }) {
-            VStack {
-                Text("Clear")
-                    .foregroundColor(.gray)
-                    .font(.system(size: 13))
-                Color.clear.frame(height: 3)
-            }
-        }
-    }
-    
+
     private var booksListView: some View {
         ScrollView(.vertical, showsIndicators: false) {
-            VStack(spacing: 0) {
-                LazyVStack(spacing: 0) {
-                    ForEach(viewModel.filteredBooks, id: \.self) { book in
-                        BookItem(item: book)
-                            .padding(.vertical, Spacing.five)
-                            .id(book.id)
-                    }
+            VStack(spacing: DesignMetric.p0) {
+                BookCollection(books: viewModel.filteredBooks) {
+                    viewModel.loadMoreBooksIfNeeded {}
                 }
-                .background(
-                    GeometryReader { geo in
-                        Color.clear
-                            .onChange(of: geo.frame(in: .global).maxY) {
-                                let screenHeight = UIScreen.main.bounds.height
-                                let threshold = screenHeight - 200
-                                let contentHeight = geo.frame(in: .global).maxY
-                                if contentHeight < threshold {
-                                    viewModel.loadMoreBooksIfNeeded{
-                                        
-                                    }
-                                }
-                            }
-                    }
-                )
                 if viewModel.isLoadingMore {
                     ProgressView()
                         .progressViewStyle(CircularProgressViewStyle())
-                        .padding()
+                        .padding(.all, Spacing.system)
                 } else if !viewModel.loadingMoreBookNotPossible {
                     HStack {
                         Text("Loading More...")
-                            .padding()
-                            .foregroundColor(.black)
+                            .padding(.all, Spacing.system)
+                            .foregroundColor(DesignColor.black)
                     }
                 }
             }
@@ -216,7 +162,7 @@ struct DashboardView: View {
             CenteredProgressOverlay(width: innerGeometry.size.width) {
                 Text("Loading.")
             } background: {
-                ShowBookTheme.colors.surface.opacity(0.5)
+                ShowBookTheme.colors.surface.opacity(OpacityToken.p0_5)
             }
         }
     }
@@ -226,7 +172,7 @@ struct DashboardView: View {
             CenteredProgressOverlay(width: innerGeometry.size.width) {
                 Text("Loading.")
             } background: {
-                ShowBookTheme.colors.surface.opacity(0.5)
+                ShowBookTheme.colors.surface.opacity(OpacityToken.p0_5)
             }
         }
     }

@@ -22,39 +22,39 @@ class LoginViewModel: ObservableObject {
     }
     
     func handleLogin(userViewModel: UserViewModel) {
-        isLoading = true
-        if !email.isEmpty && !password.isEmpty {
-            showAlert = !isValidEmail(email)
-            if !showAlert {
-                if isValidPassword(password) {
-                    errorMessage = ""
-                    if let existingUser = persistenceController.fetchUser(email: email.lowercased()) {
-                        if existingUser.password == password {
-                            UserDefaults.standard.setValue(email.lowercased(), forKey: "LoggedInUserEmail")
-                            persistenceController.logInUser(email: email.lowercased())
-                            withAnimation(.easeInOut) {
-                                userViewModel.isLoggedIn = true
-                            }
-                        } else {
-                            showAlert = true
-                            errorMessage = "Wrong Password"
-                        }
-                    } else {
-                        showAlert = true
-                        errorMessage = "Sign Up first to login"
-                    }
-                } else {
-                    showAlert = true
-                    errorMessage = "Password Must contain 8 characters minimum including 1 alphabet, 1 number, and 1 special character like @,#"
-                }
-            } else {
-                errorMessage = "Enter a valid email"
-                showAlert = true
-            }
-        } else {
+        guard !isLoading else { return }
+        showAlert = false
+        errorMessage = ""
+        guard !email.isEmpty, !password.isEmpty else {
             errorMessage = "Fields cannot be empty"
             showAlert = true
+            return
         }
-        isLoading = false
+        guard isValidEmail(email) else {
+            errorMessage = "Enter a valid email"
+            showAlert = true
+            return
+        }
+        guard isValidPassword(password) else {
+            errorMessage = "Password Must contain 8 characters minimum including 1 alphabet, 1 number, and 1 special character like @,#"
+            showAlert = true
+            return
+        }
+        isLoading = true
+        let loginEmail = email.lowercased()
+        persistenceController.authenticate(email: loginEmail, password: password) { [weak self] result in
+            guard let self else { return }
+            self.isLoading = false
+            switch result {
+            case .success:
+                UserDefaults.standard.setValue(loginEmail, forKey: "LoggedInUserEmail")
+                self.password = ""
+                withAnimation(.easeInOut) { userViewModel.isLoggedIn = true }
+            case .failure(let error):
+                self.errorMessage = (error as? CredentialError)?.localizedDescription
+                    ?? "Unable to save login. Please try again."
+                self.showAlert = true
+            }
+        }
     }
 }

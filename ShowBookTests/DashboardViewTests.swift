@@ -76,31 +76,70 @@ final class DashboardViewModelTests: XCTestCase {
         XCTAssertEqual(viewModel.filteredBooks.map { $0.title }, ["Combine", "SwiftUI"])
     }
     
-    // Test case for loading more books if needed
-    func testLoadMoreBooksIfNeeded() {
-        let books = [Book(title: "SwiftUI", ratingsAverage: 4.5, ratingsCount: 10, authorName: ["Anurag"],coverI: 12345, image: nil )]
-        mockApi.result = .success(books)
-        
-        viewModel.loadMoreBooksIfNeeded{
-        }
-        XCTAssertTrue(viewModel.isLoadingMore)
-        XCTAssertEqual(viewModel.offset, 10)
-            
-    }
-    
-    // Test case for loading more books if not needed
-    func testLoadMoreBooksIfNotNeeded() {
-        viewModel.isLoadingMore = true
-        viewModel.loadingMoreBookNotPossible = true
-        
-        viewModel.loadMoreBooksIfNeeded{
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1){
-                XCTAssertFalse(self.viewModel.isLoadingMore)
+    func testPaginationFailureRetriesSameOffset() {
+        viewModel.searchBook = "Swift"
+        let book = Book(title: "Swift", ratingsAverage: nil, ratingsCount: nil, authorName: nil, coverI: nil, image: nil)
+        mockApi.result = .success([book])
+        let finished = expectation(description: "retry finishes")
+        viewModel.fetchBooks(title: "Swift", offset: 0) {
+            self.mockApi.result = .failure(URLError(.notConnectedToInternet))
+            self.viewModel.loadMoreBooksIfNeeded {
                 XCTAssertEqual(self.viewModel.offset, 0)
+                self.mockApi.result = .success([book])
+                self.viewModel.loadMoreBooksIfNeeded {
+                    XCTAssertEqual(self.mockApi.offsets, [0, 10, 10])
+                    XCTAssertEqual(self.viewModel.offset, 10)
+                    XCTAssertEqual(self.viewModel.books.count, 2)
+                    finished.fulfill()
+                }
             }
         }
+        wait(for: [finished], timeout: 2)
     }
-    
+
+    func testRejectedPaginationCompletesWithoutRequest() {
+        viewModel.isLoadingMore = true
+        var completed = false
+        viewModel.loadMoreBooksIfNeeded { completed = true }
+        XCTAssertTrue(completed)
+        XCTAssertTrue(mockApi.offsets.isEmpty)
+    }
+
+    func testNewestSearchWinsWhenResponsesArriveOutOfOrder() {
+        viewModel.searchBook = "First"
+        viewModel.performSearch()
+        viewModel.searchBook = "Second"
+        viewModel.performSearch()
+        XCTAssertEqual(mockApi.pending.count, 2)
+        let latest = Book(title: "Second", ratingsAverage: nil, ratingsCount: nil, authorName: nil, coverI: nil, image: nil)
+        mockApi.pending[1](.success([latest]))
+        mockApi.pending[0](.failure(URLError(.timedOut)))
+        let drained = expectation(description: "callbacks drained")
+        DispatchQueue.main.async {
+            XCTAssertEqual(self.viewModel.books, [latest])
+            XCTAssertFalse(self.viewModel.showAlert)
+            XCTAssertFalse(self.viewModel.isBookLoading)
+            drained.fulfill()
+        }
+        wait(for: [drained], timeout: 2)
+    }
+
+    func testClearingSearchInvalidatesPendingResponse() {
+        viewModel.searchBook = "Swift"
+        viewModel.performSearch()
+        viewModel.searchBook = ""
+        viewModel.performSearch()
+        mockApi.pending[0](.failure(URLError(.timedOut)))
+        let drained = expectation(description: "callbacks drained")
+        DispatchQueue.main.async {
+            XCTAssertTrue(self.viewModel.books.isEmpty)
+            XCTAssertFalse(self.viewModel.showAlert)
+            XCTAssertFalse(self.viewModel.isLoadingMore)
+            drained.fulfill()
+        }
+        wait(for: [drained], timeout: 2)
+    }
+
     // Test case for fetch books success
     func testFetchBooksSuccess() {
         let books = [Book(title: "SwiftUI", ratingsAverage: 4.5, ratingsCount: 10, authorName: ["Anurag"], coverI: 12345, image: nil)]
@@ -153,8 +192,12 @@ final class DashboardViewModelTests: XCTestCase {
 
 class MockNetworkClass: NetworkClass {
     var result: Result<[Book], Error>?
+    var offsets: [Int] = []
+    var pending: [(Result<[Book], Error>) -> Void] = []
     
     override func fetchBooks(title: String, offset: Int, completion: @escaping (Result<[Book], Error>) -> Void) {
+        offsets.append(offset)
+        pending.append(completion)
         if let result = result {
             completion(result)
         }

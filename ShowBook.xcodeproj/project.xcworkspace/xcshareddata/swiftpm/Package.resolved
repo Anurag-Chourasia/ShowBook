@@ -1,51 +1,51 @@
 {
-  "originHash" : "4b07e15fea1cfc318da90af2b9bfbae037fd74c4dda84dec7ab641ba2dc3ee97",
-  "pins" : [
+  "originHash": "4b07e15fea1cfc318da90af2b9bfbae037fd74c4dda84dec7ab641ba2dc3ee97",
+  "pins": [
     {
-      "identity" : "commonnetworking",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/Anurag-Chourasia/CommonNetworking.git",
-      "state" : {
-        "revision" : "d3e708aab3af0a8f3c183c81753bfc09ac6b6527",
-        "version" : "1.0.0"
+      "identity": "commonnetworking",
+      "kind": "remoteSourceControl",
+      "location": "https://github.com/Anurag-Chourasia/CommonNetworking.git",
+      "state": {
+        "revision": "d3e708aab3af0a8f3c183c81753bfc09ac6b6527",
+        "version": "1.0.0"
       }
     },
     {
-      "identity" : "designtokenskit",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/Anurag-Chourasia/DesignTokensKit.git",
-      "state" : {
-        "revision" : "b025478327d011ea9023a0db0fcbfff701002c22",
-        "version" : "1.1.0"
+      "identity": "designtokenskit",
+      "kind": "remoteSourceControl",
+      "location": "https://github.com/Anurag-Chourasia/DesignTokensKit.git",
+      "state": {
+        "revision": "35b72f251393f61d95ad580da8f9cebb04e93cbe",
+        "version": "1.2.0"
       }
     },
     {
-      "identity" : "foundationkit",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/Anurag-Chourasia/FoundationKit.git",
-      "state" : {
-        "revision" : "b8bedb9b587eeb5597a57e05ff60d4b236a22d6f",
-        "version" : "0.1.1"
+      "identity": "foundationkit",
+      "kind": "remoteSourceControl",
+      "location": "https://github.com/Anurag-Chourasia/FoundationKit.git",
+      "state": {
+        "revision": "b8bedb9b587eeb5597a57e05ff60d4b236a22d6f",
+        "version": "0.1.1"
       }
     },
     {
-      "identity" : "localizationkit",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/Anurag-Chourasia/LocalizationKit.git",
-      "state" : {
-        "revision" : "c93b19e2f40f8cebc3c5eb57b4c3ea0b5989cf52",
-        "version" : "0.1.1"
+      "identity": "localizationkit",
+      "kind": "remoteSourceControl",
+      "location": "https://github.com/Anurag-Chourasia/LocalizationKit.git",
+      "state": {
+        "revision": "c93b19e2f40f8cebc3c5eb57b4c3ea0b5989cf52",
+        "version": "0.1.1"
       }
     },
     {
-      "identity" : "uicomponentskit",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/Anurag-Chourasia/UIComponentsKit.git",
-      "state" : {
-        "revision" : "32ba17c6037629c66c4d7c3b43982076fd4d2a9a",
-        "version" : "1.1.0"
+      "identity": "uicomponentskit",
+      "kind": "remoteSourceControl",
+      "location": "https://github.com/Anurag-Chourasia/UIComponentsKit.git",
+      "state": {
+        "revision": "7b3296ce1cec548bf8cad36b7526ba41c07cc30e",
+        "version": "1.2.0"
       }
     }
   ],
-  "version" : 3
+  "version": 3
 }
