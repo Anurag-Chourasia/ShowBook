@@ -14,7 +14,11 @@ class NetworkClass: ObservableObject {
     private let transport: CommonNetworking.HTTPClient
 
     init(session: URLSession = .shared) {
+        #if DEBUG
+        transport = CommonNetworking.HTTPClient(session: session, logger: .console)
+        #else
         transport = CommonNetworking.HTTPClient(session: session)
+        #endif
     }
 
     // Legacy callbacks remain off-main and have no caller-owned cancellation handle.
