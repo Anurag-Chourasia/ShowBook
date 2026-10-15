@@ -47,6 +47,9 @@
 		6C8873A6A96AECA6153C5AA7 /* FoundationKit in Frameworks */ = {isa = PBXBuildFile; productRef = 945F817B0BE1541EEA799DBF /* FoundationKit */; };
 		B35B2184E6B1F7F6457163DC /* DesignTokensKit in Frameworks */ = {isa = PBXBuildFile; productRef = 6FECFBEAEF2B8BF9370CC0C1 /* DesignTokensKit */; };
 		B589ADFBBB0E3489C7804265 /* UIComponentsKit in Frameworks */ = {isa = PBXBuildFile; productRef = 9E2E1528E27128C836A6B1F3 /* UIComponentsKit */; };
+		A23000000000000000000010 /* BookDetailsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A23000000000000000000000; };
+		A23000000000000000000011 /* BookDetailsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A23000000000000000000001; };
+		A23000000000000000000012 /* BookDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A23000000000000000000002; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -101,6 +104,10 @@
 		3493640D2C7111C8008A99F8 /* ShowBookTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ShowBookTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C8122A766F8C4BE99DF91001 /* ShowBookV2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ShowBookV2.xcdatamodel; sourceTree = "<group>"; };
 		C8122A766F8C4BE99DF91002 /* ShowBookV3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ShowBookV3.xcdatamodel; sourceTree = "<group>"; };
+		C8122A766F8C4BE99DF91003 /* ShowBookV4.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ShowBookV4.xcdatamodel; sourceTree = "<group>"; };
+		A23000000000000000000000 /* BookDetailsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowBook/BookDetails/BookDetailsService.swift; sourceTree = SOURCE_ROOT; };
+		A23000000000000000000001 /* BookDetailsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowBook/BookDetails/BookDetailsViewModel.swift; sourceTree = SOURCE_ROOT; };
+		A23000000000000000000002 /* BookDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowBook/BookDetails/BookDetailsView.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -222,6 +229,9 @@
 			isa = PBXGroup;
 			children = (
 				3403E2B42C7065190063E7D0 /* Models.swift */,
+				A23000000000000000000002 /* BookDetailsView.swift */,
+				A23000000000000000000001 /* BookDetailsViewModel.swift */,
+				A23000000000000000000000 /* BookDetailsService.swift */,
 				3403E2B52C7065190063E7D0 /* NetworkClass.swift */,
 			);
 			path = Model;
@@ -446,6 +456,9 @@
 				3403E2B92C7065190063E7D0 /* EmailTextFieldView.swift in Sources */,
 				3403E2ED2C70EA0F0063E7D0 /* BookmarkButtonViewModel.swift in Sources */,
 				3403E2C12C7065190063E7D0 /* Models.swift in Sources */,
+				A23000000000000000000012 /* BookDetailsView.swift in Sources */,
+				A23000000000000000000011 /* BookDetailsViewModel.swift in Sources */,
+				A23000000000000000000010 /* BookDetailsService.swift in Sources */,
 				3403E2BC2C7065190063E7D0 /* SignUpView.swift in Sources */,
 				3403E2E02C70C11E0063E7D0 /* SignUpViewModel.swift in Sources */,
 				3403E2BA2C7065190063E7D0 /* LoginView.swift in Sources */,
@@ -850,8 +863,9 @@
 				3403E2762C7064320063E7D0 /* ShowBook.xcdatamodel */,
 				C8122A766F8C4BE99DF91001 /* ShowBookV2.xcdatamodel */,
 				C8122A766F8C4BE99DF91002 /* ShowBookV3.xcdatamodel */,
+				C8122A766F8C4BE99DF91003 /* ShowBookV4.xcdatamodel */,
 			);
-			currentVersion = C8122A766F8C4BE99DF91002 /* ShowBookV3.xcdatamodel */;
+			currentVersion = C8122A766F8C4BE99DF91003 /* ShowBookV4.xcdatamodel */;
 			path = ShowBook.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

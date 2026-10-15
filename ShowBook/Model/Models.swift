@@ -91,9 +91,10 @@ struct Book: Identifiable, Codable, Equatable, Hashable {
     let authorName: [String]?
     let coverI: Int?
     let image: Data?
+    var key: String? = nil
     
     enum CodingKeys: String, CodingKey {
-        case title
+        case title, key
         case ratingsAverage = "ratings_average"
         case ratingsCount = "ratings_count"
         case authorName = "author_name"

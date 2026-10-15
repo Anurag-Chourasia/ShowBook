@@ -13,7 +13,7 @@ Run `bash TestSupport/run-app-tests.sh DERIVED_DATA` for the existing ShowBookTe
 
 ## Versioned Core Data schema
 
-ShowBookV3 is the current model; it adds the optional passwordHash field while preserving V1 and V2 for automatic migration. `CountryEntity.data` and `DatumEntity.region` now have optional Nullify inverses. The original ShowBook model remains byte-for-byte intact so existing SQLite stores can migrate automatically.
+ShowBookV4 is the current model; it adds optional BookEntity.workKey while preserving V1, V2 and V3 for automatic migration. V3 introduced the optional passwordHash field. `CountryEntity.data` and `DatumEntity.region` now have optional Nullify inverses. The original ShowBook model remains byte-for-byte intact so existing SQLite stores can migrate automatically.
 
 The app target suppresses only momc's inverse-relationship warning category because the bundled historical V1 schema intentionally lacks those inverses. `PersistenceRelationshipTests` validates reciprocal inverses on **every current-model relationship**, inverse maintenance/deletion, and automatic SQLite migration preserving countries, shared regions and bookmarks. Other Core Data warning categories remain enabled. Do not remove the old model or weaken these tests to silence warnings.
 
@@ -24,10 +24,18 @@ New accounts store a versioned PBKDF2-HMAC-SHA256 verifier (600,000 iterations, 
 
 The production persistence controller migrates legacy accounts after opening its store. Registration, login verification, and startup migration run serially on background Core Data contexts. A failed account transaction is rolled back and retried on a later launch/login; other accounts can still migrate. Published UI state and completion callbacks return to the main queue. Synchronous saveUser is retained for existing test fixtures and also stores only hashes; app signup uses registerUser.
 
-CredentialStorageTests covers an independently computed PBKDF2 vector (Unicode and embedded NUL), random salts, wrong passwords, malformed records, duplicate signup, legacy login, idempotence, hashing/save failures, a corrupt account beside a valid one, read-only SQLite failures, and V1/V2 SQLite upgrades preserving existing accounts. Existing schema tests also validate V1 bookmark/country migration into the current model.
+CredentialStorageTests covers an independently computed PBKDF2 vector (Unicode and embedded NUL), random salts, wrong passwords, malformed records, duplicate signup, legacy login, idempotence, hashing/save failures, a corrupt account beside a valid one, read-only SQLite failures, and V1/V2/V3 SQLite upgrades preserving existing accounts. Existing schema tests also validate V1/V2/V3 bookmark/country migration into the current model.
 
 Migration clears logical plaintext values in the active store. It cannot revoke passwords already exposed or rewrite prior backups, and does not claim forensic erasure of historical SQLite/WAL pages. This remains a local-account app, not server-backed authentication.
 
 ## Shared catalog design
 
 CatalogTile and CatalogLayoutMenu come from UIComponentsKit 1.2.0; their metrics, colors and typography come from DesignTokensKit 1.2.0. Run `python3 Scripts/check_design_tokens.py` before submitting UI changes. CI rejects raw visual literals and implicit padding in application Swift sources. Numeric business data and conversion algorithms remain local. The scan is a source-pattern guard, not a Swift type checker.
+
+## Book and edition details
+
+Search results retain their Open Library work key. Tapping artwork or text in either catalog layout opens work details; the bookmark action remains separate. Details include description, subjects and first publication date when available, followed by paginated editions and individual edition metadata. Missing fields and covers have fallbacks. Older bookmarks without keys remain usable but require a fresh search for online details; titles are never guessed into identifiers.
+
+BookDetailsService owns the Open Library endpoints and uses CommonNetworking for transport. It validates work/edition identifiers, identifies the app via User-Agent, spaces detail requests by 0.4 seconds, caches successful decoded responses for five minutes (up to 100 entries), and supports cancellation. This pacing applies to details, not the existing search service. HTTP failures and decoding failures have retry states; an editions failure preserves the loaded work and the pagination offset.
+
+BookDetailsTests uses injected fixtures and URLProtocol to cover decoding, keys, requests, caching, HTTP failures, cancellation, pagination retries, persistence identity and phone/accessibility rendering. These tests require no live Open Library calls. Current-model bookmarks persist work keys; migration tests check that historical bookmarks survive with a nil key.

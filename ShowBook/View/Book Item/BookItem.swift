@@ -20,9 +20,14 @@ struct BookItem: View {
 
     var body: some View {
         CatalogTile(layout: layout, colors: SemanticColors(surface: DesignColor.groupedSecondary)) {
-            if !dynamicTypeSize.isAccessibilitySize { cover }
+            if !dynamicTypeSize.isAccessibilitySize {
+                NavigationLink { BookDetailsView(book: item) } label: { cover }
+                    .accessibilityLabel("Details for " + item.title)
+            }
         } details: {
             VStack(alignment: .leading, spacing: Spacing.eight) {
+                NavigationLink { BookDetailsView(book: item) } label: {
+                    VStack(alignment: .leading, spacing: Spacing.eight) {
                 Text(item.title)
                     .font(Typography.headline)
                     .foregroundStyle(DesignColor.primary)
@@ -45,6 +50,9 @@ struct BookItem: View {
                     .font(Typography.caption)
                     .foregroundStyle(DesignColor.secondary)
                     .fixedSize(horizontal: false, vertical: true)
+                    }
+                }.buttonStyle(.plain)
+                .accessibilityHint("Opens book details")
                 if dynamicTypeSize.isAccessibilitySize {
                     BookmarkButton(book: item, imageUrl: imageURL)
                 }
