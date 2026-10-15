@@ -1,7 +1,7 @@
 {
   "commonnetworking": {
-    "version": "1.0.0",
-    "revision": "d3e708aab3af0a8f3c183c81753bfc09ac6b6527"
+    "version": "1.1.0",
+    "revision": "2409f5209f5480953b6fa6507b63c8efd37d1259"
   },
   "foundationkit": {
     "version": "0.1.1",
