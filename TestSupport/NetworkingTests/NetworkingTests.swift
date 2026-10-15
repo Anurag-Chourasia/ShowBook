@@ -4,6 +4,7 @@ import XCTest
 
 private class FixtureProtocol: URLProtocol {
     class var status: Int { 200 }
+    class var title: String { "Swift book" }
     class var failure: URLError.Code? { nil }
     class var malformed: Bool { false }
     class var empty: Bool { false }
@@ -22,7 +23,7 @@ private class FixtureProtocol: URLProtocol {
         case "/search.json":
             file = "books"
             XCTAssertEqual(URLComponents(url: request.url!, resolvingAgainstBaseURL: false)?.queryItems,
-                [URLQueryItem(name: "title", value: "Swift book"), .init(name: "limit", value: "10"), .init(name: "offset", value: "20")])
+                [URLQueryItem(name: "title", value: Self.title), .init(name: "limit", value: "10"), .init(name: "offset", value: "20")])
         default: XCTFail("Unexpected request"); client?.urlProtocol(self, didFailWithError: URLError(.unsupportedURL)); return
         }
         let bytes = Self.empty ? Data() : Self.malformed ? Data("not json".utf8) : try! Data(contentsOf: Bundle.module.url(forResource: file, withExtension: "json")!)
@@ -31,6 +32,16 @@ private class FixtureProtocol: URLProtocol {
         client?.urlProtocolDidFinishLoading(self)
     }
     override func stopLoading() {}
+}
+private final class PunctuationProtocol: FixtureProtocol {
+    override class var title: String { "C++ & Swift? #1 = 50% / हिंदी" }
+    override func startLoading() {
+        if request.url?.path == "/search.json" {
+            XCTAssertNil(request.url?.fragment)
+            XCTAssertFalse(request.url!.absoluteString.contains("+"))
+        }
+        super.startLoading()
+    }
 }
 private final class Non2xxProtocol: FixtureProtocol { override class var status: Int { 500 } }
 private final class MalformedProtocol: FixtureProtocol { override class var malformed: Bool { true } }
@@ -52,7 +63,7 @@ final class NetworkingTests: XCTestCase {
             XCTAssertFalse(Thread.isMainThread)
             XCTAssertEqual(value != nil, success)
             if success { XCTAssertNil(error); XCTAssertEqual(value?.data["IN"]?.country, "India") }
-            else if transportError != nil { XCTAssertEqual((error as NSError?)?.domain, "DataError") }
+            else if let transportError { XCTAssertEqual((error as? URLError)?.code, transportError) }
             else { XCTAssertTrue(error is DecodingError) }
             countries.fulfill()
         }
@@ -64,7 +75,7 @@ final class NetworkingTests: XCTestCase {
             else { XCTAssertTrue(error is DecodingError) }
             ip.fulfill()
         }
-        api.fetchBooks(title: "Swift book", offset: 20) { result in
+        api.fetchBooks(title: fixture.title, offset: 20) { result in
             XCTAssertFalse(Thread.isMainThread)
             switch result {
             case .success(let values): XCTAssertTrue(success); XCTAssertEqual(values.first?.ratingsAverage, 4.5)
@@ -78,10 +89,20 @@ final class NetworkingTests: XCTestCase {
         await fulfillment(of: [countries, ip, books], timeout: 5)
         XCTAssertEqual(api.fetchBooksCalledCount, 1)
     }
+    func testAdditionalAndFutureRegionsRoundTrip() throws {
+        for name in ["Europe", "North America", "South America", "Oceania", "New server region"] {
+            let bytes = try JSONEncoder().encode(["country": "Example", "region": name])
+            let datum = try JSONDecoder().decode(Datum.self, from: bytes)
+            XCTAssertEqual(datum.region.rawValue, name)
+            let restored = try JSONDecoder().decode(Datum.self, from: JSONEncoder().encode(datum))
+            XCTAssertEqual(restored.region, datum.region)
+        }
+    }
+    func testPunctuationRemainsInsideTitleQueryValue() async { await check(PunctuationProtocol.self, success: true) }
     func testSuccessHeadersQueryPaginationAndDTOs() async { await check(FixtureProtocol.self, success: true) }
     func testNon2xxValidJSONStillSucceeds() async { await check(Non2xxProtocol.self, success: true) }
     func testMalformedJSONPreservesDecodingErrors() async { await check(MalformedProtocol.self, success: false) }
     func testEmpty204PreservesDecodingErrors() async { await check(EmptyProtocol.self, success: false) }
-    func testCancellationPreservesEndpointErrorAsymmetry() async { await check(CancelledProtocol.self, success: false, transportError: .cancelled) }
-    func testOfflinePreservesEndpointErrorAsymmetry() async { await check(OfflineProtocol.self, success: false, transportError: .notConnectedToInternet) }
+    func testCancellationPreservesTransportError() async { await check(CancelledProtocol.self, success: false, transportError: .cancelled) }
+    func testOfflinePreservesTransportError() async { await check(OfflineProtocol.self, success: false, transportError: .notConnectedToInternet) }
 }

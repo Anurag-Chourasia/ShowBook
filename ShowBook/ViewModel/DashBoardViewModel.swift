@@ -23,6 +23,8 @@ class DashboardViewModel: ObservableObject {
     
     var api = NetworkClass()
     var offset: Int = 0
+    private var requestID = UUID()
+    private var loadedTitle: String?
     
     var sortByCategoryArray: [String] = ["Title", "Average", "Hits"]
     
@@ -44,51 +46,50 @@ class DashboardViewModel: ObservableObject {
     }
     
     func performSearch() {
-        guard searchBook.count >= 3, !isBookLoading else {
-            return
-        }
-        isBookLoading = true
+        requestID = UUID()
+        books = []
+        loadedTitle = nil
         offset = 0
-        fetchBooks(title: searchBook, offset: 0) {
-//            print("Fetch books process completed")
-        }
+        loadingMoreBookNotPossible = false
+        showAlert = false
+        errorMessage = ""
+        isBookLoading = false
+        isLoadingMore = false
+        guard searchBook.count >= 3 else { return }
+        isBookLoading = true
+        fetchBooks(title: searchBook, offset: 0) {}
     }
-    
+
     func fetchBooks(title: String, offset: Int, completion: @escaping () -> Void) {
+        let id = UUID()
+        requestID = id
         isLoadingMore = true
         api.fetchBooks(title: title, offset: offset) { [weak self] result in
-            guard let self = self else { return }
             DispatchQueue.main.async {
+                defer { completion() }
+                guard let self, self.requestID == id else { return }
                 self.isBookLoading = false
                 self.isLoadingMore = false
-                
                 switch result {
                 case .success(let books):
                     self.books = offset == 0 ? books : self.books + books
+                    self.offset = offset
+                    self.loadedTitle = title
                     self.loadingMoreBookNotPossible = books.isEmpty
                 case .failure(let error):
                     self.errorMessage = error.localizedDescription
                     self.showAlert = true
                 }
-                
-                completion()  // Notify that the process is completed
             }
         }
     }
 
-    
     func loadMoreBooksIfNeeded(completion: @escaping () -> Void) {
-        guard !isLoadingMore, !loadingMoreBookNotPossible else {
+        guard !isLoadingMore, !isBookLoading, !loadingMoreBookNotPossible,
+              let loadedTitle, loadedTitle == searchBook else {
+            completion()
             return
         }
-        
-        isLoadingMore = true
-        offset += 10
-        
-        fetchBooks(title: searchBook, offset: offset) {
-            completion()
-        }
+        fetchBooks(title: loadedTitle, offset: offset + 10, completion: completion)
     }
-
 }
-

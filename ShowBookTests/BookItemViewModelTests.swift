@@ -8,6 +8,8 @@
 import XCTest
 import Combine
 import CoreData
+import SwiftUI
+import UIComponentsKit
 @testable import ShowBook
 
 class BookItemViewModelTests: XCTestCase {
@@ -125,5 +127,33 @@ class BookItemViewModelTests: XCTestCase {
             }
         }
         return container
+    }
+}
+
+
+@MainActor final class BookCatalogRenderingTests: XCTestCase {
+    func testListGridAndAccessibleCardsRenderInBothAppearances() throws {
+        let book = Book(title: "A long book title that remains readable in list and grid",
+                        ratingsAverage: 4.5, ratingsCount: 123, authorName: ["Example Author"], coverI: nil, image: nil)
+        for (name, layout, width, type, scheme) in [
+            ("phone-list-light", CatalogLayout.list, CGFloat(361), DynamicTypeSize.large, ColorScheme.light),
+            ("phone-grid-light", .grid, CGFloat(170), .large, .light),
+            ("tablet-grid-dark", .grid, CGFloat(210), .large, .dark),
+            ("accessible-phone-list-dark", .list, CGFloat(361), .accessibility5, .dark),
+            ("accessible-list-dark", .list, CGFloat(736), .accessibility5, .dark)
+        ] {
+            let view = BookItem(item: book, layout: layout)
+                .frame(width: width)
+                .environment(\.dynamicTypeSize, type)
+                .environment(\.colorScheme, scheme)
+            let renderer = ImageRenderer(content: view)
+            renderer.scale = 2
+            let image = try XCTUnwrap(renderer.uiImage)
+            XCTAssertGreaterThan(image.size.height, 0)
+            let attachment = XCTAttachment(image: image)
+            attachment.name = name
+            attachment.lifetime = .keepAlways
+            add(attachment)
+        }
     }
 }

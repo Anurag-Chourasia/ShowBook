@@ -7,18 +7,35 @@
 
 import CoreData
 import UIKit
+import CommonCrypto
+import Security
 
 class PersistenceController {
     static let shared = PersistenceController()
+    private let credentialQueue = DispatchQueue(label: "ShowBook.credentials", qos: .userInitiated)
     @Published var updatedBooks: [Book]?
-    var container: NSPersistentContainer
+    var container: NSPersistentContainer {
+        didSet { container.viewContext.automaticallyMergesChangesFromParent = true }
+    }
+
+    init(container: NSPersistentContainer) {
+        self.container = container
+        container.viewContext.automaticallyMergesChangesFromParent = true
+    }
 
     private init() {
         let managedObjectModel = PersistenceController.managedObjectModel()
         container = NSPersistentContainer(name: "ShowBook", managedObjectModel: managedObjectModel)
-        container.loadPersistentStores { (storeDescription, error) in
+        container.viewContext.automaticallyMergesChangesFromParent = true
+        container.loadPersistentStores { [weak self] (storeDescription, error) in
             if let error = error {
                 fatalError("Error loading Core Data stores: \(error)")
+            }
+            self?.migrateLegacyCredentials { result in
+                if case .failure = result {
+                    // Do not log credentials or managed objects. Login/next launch can retry.
+                    print("Credential migration could not complete; it will be retried.")
+                }
             }
         }
     }
@@ -127,7 +144,7 @@ class PersistenceController {
             var data: [String: Datum] = [:]
             firstCountryEntity.data?.forEach { (datumEntity) in
                 if let datum = datumEntity as? DatumEntity {
-                    let regionEnum = Region(rawValue: datum.region?.region ?? "") ?? .africa
+                    let regionEnum = Region(rawValue: datum.region?.region ?? Region.africa.rawValue)
                     data[datum.country ?? ""] = Datum(country: datum.country ?? "", region: regionEnum)
                 }
             }
@@ -170,22 +187,101 @@ class PersistenceController {
         }
     }
     
+    // Synchronous entry point retained for fixtures; app signup uses registerUser off-main.
     func saveUser(email: String, password: String) -> Bool {
-        let context = container.viewContext
-        
-        if let existingUser = fetchUser(email: email) {
-            print("User with email \(existingUser.email ?? "") already exists")
-            return false
-        }
-        
-        let userEntity = UserEntity(context: context)
-        userEntity.email = email
-        userEntity.password = password
-        userEntity.isSuccessfullyLoggedIn = true
-        saveContext()
-        return true
+        do {
+            try Self.createUser(in: container.viewContext, email: email, password: password)
+            return true
+        } catch { return false }
     }
-    
+
+    private static func createUser(in context: NSManagedObjectContext, email: String, password: String) throws {
+        let request: NSFetchRequest<UserEntity> = UserEntity.fetchRequest()
+        request.predicate = NSPredicate(format: "email == %@", email.lowercased())
+        guard try context.count(for: request) == 0 else { throw CredentialError.duplicateAccount }
+        let hash = try PasswordCredential.make(password)
+        let user = UserEntity(context: context)
+        user.email = email.lowercased()
+        user.passwordHash = hash
+        user.password = nil
+        user.isSuccessfullyLoggedIn = true
+        do { try context.save() }
+        catch { context.delete(user); throw error }
+    }
+
+    func registerUser(email: String, password: String, completion: @escaping (Result<Void, Error>) -> Void) {
+        let context = container.newBackgroundContext()
+        credentialQueue.async {
+            context.performAndWait {
+                let result = Result { try Self.createUser(in: context, email: email, password: password) }
+                DispatchQueue.main.async { completion(result) }
+            }
+        }
+    }
+
+    func authenticate(email: String, password: String, completion: @escaping (Result<Void, Error>) -> Void) {
+        let context = container.newBackgroundContext()
+        credentialQueue.async {
+            context.performAndWait {
+                let result = Result {
+                    let request: NSFetchRequest<UserEntity> = UserEntity.fetchRequest()
+                    request.predicate = NSPredicate(format: "email == %@", email.lowercased())
+                    guard let user = try context.fetch(request).first else { throw CredentialError.missingAccount }
+                    if let hash = user.passwordHash {
+                        guard try PasswordCredential.verify(password, encoded: hash) else { throw CredentialError.wrongPassword }
+                    } else {
+                        guard let legacy = user.password, legacy == password else { throw CredentialError.wrongPassword }
+                        user.passwordHash = try PasswordCredential.make(password)
+                    }
+                    user.password = nil
+                    user.isSuccessfullyLoggedIn = true
+                    do { try context.save() }
+                    catch { context.rollback(); throw error }
+                }
+                DispatchQueue.main.async { completion(result) }
+            }
+        }
+    }
+
+    func migrateLegacyCredentials(completion: @escaping (Result<Void, Error>) -> Void) {
+        let context = container.newBackgroundContext()
+        credentialQueue.async {
+            context.performAndWait {
+                let result = Result { try Self.migrateLegacyCredentials(in: context) }
+                DispatchQueue.main.async { completion(result) }
+            }
+        }
+    }
+
+
+    // Separate transaction per account: failure preserves that account for a later retry.
+    static func migrateLegacyCredentials(
+        in context: NSManagedObjectContext,
+        hashPassword: (String) throws -> String = PasswordCredential.make,
+        save: (NSManagedObjectContext) throws -> Void = { try $0.save() }
+    ) throws {
+        let request: NSFetchRequest<UserEntity> = UserEntity.fetchRequest()
+        request.predicate = NSPredicate(format: "password != nil")
+        var firstFailure: Error?
+        for user in try context.fetch(request) {
+            do {
+                guard let plaintext = user.password else { continue }
+                if let existing = user.passwordHash {
+                    // Never erase the legacy value behind a corrupt or mismatched hash.
+                    guard try PasswordCredential.verify(plaintext, encoded: existing) else { throw CredentialError.invalidRecord }
+                } else {
+                    user.passwordHash = try hashPassword(plaintext)
+                }
+                user.password = nil
+                try save(context)
+            } catch {
+                context.rollback()
+                if firstFailure == nil { firstFailure = error }
+            }
+        }
+        if let firstFailure { throw firstFailure }
+    }
+
     func fetchUser(email: String) -> UserEntity? {
         let context = container.viewContext
         
@@ -499,4 +595,61 @@ public extension NSManagedObject {
         self.init(entity: entity, insertInto: context)
     }
 
+}
+
+// MARK: - Password credentials
+
+enum CredentialError: LocalizedError {
+    case duplicateAccount, missingAccount, wrongPassword, invalidRecord, derivationFailed
+    var errorDescription: String? {
+        switch self {
+        case .duplicateAccount: return "User with this email already exists"
+        case .missingAccount: return "Sign Up first to login"
+        case .wrongPassword: return "Wrong Password"
+        case .invalidRecord, .derivationFailed: return "Unable to verify credentials. Please try again."
+        }
+    }
+}
+
+enum PasswordCredential {
+    private static let rounds: UInt32 = 600_000
+    private static let saltSize = 16
+    private static let keySize = 32
+
+    static func make(_ password: String) throws -> String {
+        var salt = [UInt8](repeating: 0, count: saltSize)
+        guard SecRandomCopyBytes(kSecRandomDefault, salt.count, &salt) == errSecSuccess else {
+            throw CredentialError.derivationFailed
+        }
+        let key = try derive(password, salt: salt)
+        return "pbkdf2-sha256$1$600000$\(Data(salt).base64EncodedString())$\(Data(key).base64EncodedString())"
+    }
+
+    static func verify(_ password: String, encoded: String) throws -> Bool {
+        let fields = encoded.split(separator: "$", omittingEmptySubsequences: false)
+        guard fields.count == 5, fields[0] == "pbkdf2-sha256", fields[1] == "1", fields[2] == "600000",
+              let salt = Data(base64Encoded: String(fields[3])), salt.count == saltSize,
+              let expected = Data(base64Encoded: String(fields[4])), expected.count == keySize else {
+            throw CredentialError.invalidRecord
+        }
+        let actual = try derive(password, salt: Array(salt))
+        // Compare all bytes; do not return at the first mismatch.
+        var difference: UInt8 = 0
+        for (a, b) in zip(actual, expected) { difference |= a ^ b }
+        return difference == 0
+    }
+
+    private static func derive(_ password: String, salt: [UInt8]) throws -> [UInt8] {
+        var key = [UInt8](repeating: 0, count: keySize)
+        let length = password.utf8.count
+        let status = password.withCString { bytes in
+            salt.withUnsafeBufferPointer { saltBytes in
+                CCKeyDerivationPBKDF(CCPBKDFAlgorithm(kCCPBKDF2), bytes, length,
+                                    saltBytes.baseAddress, saltBytes.count,
+                                    CCPseudoRandomAlgorithm(kCCPRFHmacAlgSHA256), rounds, &key, keySize)
+            }
+        }
+        guard status == kCCSuccess else { throw CredentialError.derivationFailed }
+        return key
+    }
 }

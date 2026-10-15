@@ -1,3 +1,4 @@
+import DesignTokensKit
 //
 //  WheelPickerView.swift
 //  ShowBook
@@ -6,6 +7,7 @@
 //
 
 import SwiftUI
+import CoreData
 
 struct WheelPickerView: View {
     @Binding var selectedCountryIndex: Int
@@ -22,7 +24,7 @@ struct WheelPickerView: View {
                         .tag(index)
                 }
             }
-            .frame(height: 140)
+            .frame(height: DesignMetric.p140)
             .pickerStyle(.wheel)
             .onChange(of: selectedCountryIndex){
                 let name = country[selectedCountryIndex]

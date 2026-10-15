@@ -16,22 +16,22 @@ struct EmailTextFieldView: View {
     
     private var emailField: some View {
         TextField("", text: $email)
-            .padding(.trailing, 21)
+            .padding(.trailing, DesignMetric.p21)
             .fieldPlaceholder(when: email.isEmpty) {
                 placeholderView
             }
-            .frame(height: 53)
+            .frame(height: DesignMetric.p53)
     }
 
     private var placeholderView: some View {
-        HStack(spacing: 0) {
+        HStack(spacing: DesignMetric.p0) {
             Text(placeholderText)
                 .foregroundColor(ShowBookTheme.colors.foreground)
-                .font(.title2)
+                .font(Typography.title2)
             if mandatoryField {
                 Text(" *")
-                    .foregroundColor(.red)
-                    .font(.title2)
+                    .foregroundColor(DesignColor.red)
+                    .font(Typography.title2)
             }
         }
     }
@@ -39,13 +39,13 @@ struct EmailTextFieldView: View {
     private var profileIcon: some View {
         Image("ProfileIcon")
             .resizable()
-            .frame(width: 21, height: 21)
+            .frame(width: DesignMetric.p21, height: DesignMetric.p21)
             .padding(.vertical, Spacing.sixteen)
-            .padding(.horizontal, 19)
+            .padding(.horizontal, DesignMetric.p19)
     }
     
     var body: some View {
-        HStack(spacing: 0) {
+        HStack(spacing: DesignMetric.p0) {
             profileIcon
             emailField
         }

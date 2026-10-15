@@ -19,7 +19,7 @@ struct LoginView: View {
             GeometryReader { geometry in
                 ScrollView {
                     ZStack {
-                        VStack(spacing: 0) {
+                        VStack(spacing: DesignMetric.p0) {
                             header
                             welcomeText
                             emailField
@@ -28,7 +28,7 @@ struct LoginView: View {
                             Spacer()
                         }
                         .frame(minHeight: geometry.size.height)
-                        .opacity(viewModel.isLoading ? 0.2 : 1.0)
+                        .opacity(viewModel.isLoading ? OpacityToken.p0_2 : OpacityToken.p1_0)
 
                         if viewModel.isLoading {
                             loadingView
@@ -42,7 +42,7 @@ struct LoginView: View {
     }
 
     private var header: some View {
-        HStack(spacing: 0) {
+        HStack(spacing: DesignMetric.p0) {
             Button(action: {
                 presentationMode.wrappedValue.dismiss()
             }) {
@@ -56,17 +56,17 @@ struct LoginView: View {
     }
 
     private var welcomeText: some View {
-        HStack(spacing: 0) {
+        HStack(spacing: DesignMetric.p0) {
             Text("Welcome,\nlog in to continue")
-                .font(.title)
+                .font(Typography.title)
                 .padding(.leading, Spacing.thirty)
             Spacer()
         }
-        .padding(.bottom, 50)
+        .padding(.bottom, DesignMetric.p50)
     }
 
     private var emailField: some View {
-        HStack(spacing: 0) {
+        HStack(spacing: DesignMetric.p0) {
             EmailTextFieldView(email: $viewModel.email,
                                placeholderText: "Email",
                                mandatoryField: true)
@@ -76,11 +76,11 @@ struct LoginView: View {
                 .stroke(ShowBookTheme.colors.border, lineWidth: StrokeWidth.one)
         )
         .padding(.bottom, Spacing.fourteen)
-        .padding(.horizontal, 34)
+        .padding(.horizontal, DesignMetric.p34)
     }
 
     private var passwordField: some View {
-        HStack(spacing: 0) {
+        HStack(spacing: DesignMetric.p0) {
             PasswordTextFieldView(text: $viewModel.password,
                                   placeholderText: "Password",
                                   mandatoryField: true)
@@ -90,19 +90,19 @@ struct LoginView: View {
                 .stroke(ShowBookTheme.colors.border, lineWidth: StrokeWidth.one)
         )
         .padding(.bottom, Spacing.twenty)
-        .padding(.horizontal, 34)
+        .padding(.horizontal, DesignMetric.p34)
     }
 
     private var loginButton: some View {
-        HStack(spacing: 0) {
+        HStack(spacing: DesignMetric.p0) {
             Button(action: {
                 viewModel.handleLogin(userViewModel: userViewModel)
             }) {
                 Text("Login")
-                    .font(.headline)
-                    .frame(height: 55)
+                    .font(Typography.headline)
+                    .frame(height: DesignMetric.p55)
                     .frame(maxWidth: .infinity)
-                    .foregroundColor(.white)
+                    .foregroundColor(DesignColor.white)
                     .background(RoundedRectangle(cornerRadius: ShowBookTheme.fieldCornerRadius))
             }
             .alert(isPresented: $viewModel.showAlert) {
@@ -119,16 +119,16 @@ struct LoginView: View {
             }
         }
         .foregroundStyle(ShowBookTheme.colors.action)
-        .padding(.bottom, 18)
-        .padding(.leading, 33)
-        .padding(.trailing, 33)
+        .padding(.bottom, DesignMetric.p18)
+        .padding(.leading, DesignMetric.p33)
+        .padding(.trailing, DesignMetric.p33)
     }
 
     private var loadingView: some View {
         CenteredProgressOverlay(width: UIScreen.main.bounds.width) {
             Text("Loading.")
         } background: {
-            ShowBookTheme.colors.surface.opacity(0.5)
+            ShowBookTheme.colors.surface.opacity(OpacityToken.p0_5)
         }
     }
 }

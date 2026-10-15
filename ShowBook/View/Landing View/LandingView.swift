@@ -1,3 +1,4 @@
+import DesignTokensKit
 //
 //  LandingView.swift
 //  ShowBook
@@ -15,7 +16,7 @@ struct LandingView: View {
         
         NavigationView {
             
-            VStack(alignment: .center, spacing: 0){
+            VStack(alignment: .center, spacing: DesignMetric.p0){
                 
                 headerView
                 
@@ -39,11 +40,11 @@ struct LandingView: View {
             Spacer()
             VStack{
                 Text("Show Book")
-                    .font(.largeTitle)
+                    .font(Typography.largeTitle)
             }
             Spacer()
         }
-        .padding(.top, 50)
+        .padding(.top, DesignMetric.p50)
     }
 
     private var logoView: some View {
@@ -52,7 +53,7 @@ struct LandingView: View {
                 Image("Logo")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(width: min(geo.size.width - 80, 400), height: geo.size.height)
+                    .frame(width: min(geo.size.width - DesignMetric.p80, DesignMetric.p400), height: geo.size.height)
                     .clipShape(Circle())
             }
             .frame(width: geo.size.width, alignment: .center)
@@ -66,29 +67,29 @@ struct LandingView: View {
             
             NavigationLink(destination: SignUpView()) {
                 Text("Sign Up")
-                    .font(.headline)
-                    .frame(width: 80)
-                    .padding()
-                    .background(Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(8)
+                    .font(Typography.headline)
+                    .frame(minWidth: DesignMetric.p80)
+                    .padding(.all, Spacing.system)
+                    .background(DesignColor.blue)
+                    .foregroundColor(DesignColor.white)
+                    .cornerRadius(DesignMetric.p8)
             }
             
             Spacer()
             
             NavigationLink(destination: LoginView()) {
                 Text("Login")
-                    .font(.headline)
-                    .frame(width: 80)
-                    .padding()
-                    .background(Color.green)
-                    .foregroundColor(.white)
-                    .cornerRadius(8)
+                    .font(Typography.headline)
+                    .frame(minWidth: DesignMetric.p80)
+                    .padding(.all, Spacing.system)
+                    .background(DesignColor.green)
+                    .foregroundColor(DesignColor.white)
+                    .cornerRadius(DesignMetric.p8)
             }
             
             Spacer()
         }
-        .padding(.bottom, 50)
+        .padding(.bottom, DesignMetric.p50)
     }
 }
 

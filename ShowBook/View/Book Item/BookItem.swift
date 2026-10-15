@@ -1,164 +1,136 @@
-//
-//  BookItem.swift
-//  ShowBook
-//
-//  Created by Anurag Chourasia on 17/08/24.
-//
-
 import SwiftUI
 import DesignTokensKit
 import UIComponentsKit
 
 struct BookItem: View {
-    @StateObject private var viewModel: BookItemViewModel
-    @State private var isLoading: Bool = true
-    
-    init(item: Book, fromBookMark: Bool = false) {
-        _viewModel = StateObject(wrappedValue: BookItemViewModel(item: item))
-        _isLoading = State(initialValue: true)
+    let item: Book
+    var layout: CatalogLayout = .list
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    init(item: Book, fromBookMark: Bool = false, layout: CatalogLayout = .list) {
+        self.item = item
+        self.layout = layout
     }
-    
+
+    private var imageURL: URL? {
+        guard let cover = item.coverI, cover > 0 else { return nil }
+        return URL(string: "https://covers.openlibrary.org/b/id/\(cover)-M.jpg")
+    }
+    private var coverSize: CGSize { layout == .grid ? CatalogMetrics.coverGridSize : CatalogMetrics.coverListSize }
+
     var body: some View {
-        HStack {
-            SurfaceCard(
-                metrics: SurfaceMetrics(
-                    padding: EdgeInsets(top: Spacing.sixteen, leading: 23, bottom: Spacing.sixteen, trailing: 23),
-                    cornerRadius: CornerRadius.fifteen),
-                colors: SemanticColors(surface: ShowBookTheme.colors.surface),
-                cornerStyle: .continuous,
-                backgroundInsets: EdgeInsets(top: 0, leading: 13, bottom: 0, trailing: 13),
-                shadow: SurfaceShadow(color: Color.black.opacity(0.4), radius: 3)
-            ) {
-                HStack(spacing: 0) {
-                    bookImage
-                    bookDetails
-                    Spacer()
-                }
-            }
-            bookmarkButton
-        }
-        .onAppear {
-            isLoading = !viewModel.isLoading
-        }
-    }
-    
-    // MARK: - Book Image
-    private var bookImage: some View {
-        VStack(alignment: .center, spacing: 0) {
-            ZStack {
-                if let imageUrl = viewModel.imageURL {
-                    AsyncImage(url: imageUrl) { phase in
-                        switch phase {
-                        case .empty:
-                            emptyImageView
-                            
-                        case .success(let image):
-                            image
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(width: (CGFloat(100) / 5) * 3, height: 100)
-                                .clipped()
-                                .clipShape(RoundedRectangle(cornerRadius: 5))
-                                .overlay(RoundedRectangle(cornerRadius: 5)
-                                    .stroke(Color(UIColor(hex: "#22B6CA")), lineWidth: 1)
-                                    .frame(width: (CGFloat(100) / 5) * 3, height: 100))
-                                .onAppear {
-                                    isLoading = false
-                                }
-                            
-                        case .failure:
-                            emptyImageView
-                            
-                        @unknown default:
-                            emptyImageView
-                        }
+        CatalogTile(layout: layout, colors: SemanticColors(surface: DesignColor.groupedSecondary)) {
+            if !dynamicTypeSize.isAccessibilitySize { cover }
+        } details: {
+            VStack(alignment: .leading, spacing: Spacing.eight) {
+                Text(item.title)
+                    .font(Typography.headline)
+                    .foregroundStyle(DesignColor.primary)
+                    .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : CatalogMetrics.listTitleLines)
+                Text(item.authorName?.joined(separator: ", ").nilIfEmpty ?? "No Author")
+                    .font(Typography.footnote)
+                    .foregroundStyle(DesignColor.secondary)
+                    .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : CatalogMetrics.listTitleLines)
+                if !dynamicTypeSize.isAccessibilitySize {
+                HStack(spacing: Spacing.zero) {
+                    ForEach(0..<CatalogMetrics.maximumRating, id: \.self) { index in
+                        Image(systemName: Double(index) < (item.ratingsAverage ?? 0).rounded(.down) ? "star.fill" : "star")
                     }
-                } else {
-                    emptyImageView
                 }
-                
-                if isLoading {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle())
+                .font(Typography.caption)
+                .foregroundStyle(DesignColor.yellow)
+                .accessibilityHidden(true)
+                }
+                Text("\((item.ratingsAverage ?? 0).formattedString(maxFractionDigits: 2)) average · \(item.ratingsCount ?? 0) ratings")
+                    .font(Typography.caption)
+                    .foregroundStyle(DesignColor.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                if dynamicTypeSize.isAccessibilitySize {
+                    BookmarkButton(book: item, imageUrl: imageURL)
                 }
             }
-            .frame(height: 100)
-        }
-    }
-    
-    
-    private var emptyImageView: some View {
-        ZStack{
-            RoundedRectangle(cornerRadius: 5)
-                .foregroundColor(.white)
-                .frame(width: (CGFloat(100) / 5) * 3, height: 100)
-                .overlay(RoundedRectangle(cornerRadius: 5)
-                 .stroke(Color(UIColor(hex: "#22B6CA")), lineWidth: 1)
-                 .frame(width: (CGFloat(100) / 5) * 3, height: 100))
-                .onAppear {
-                    isLoading = true
-                }
-            
-            if isLoading {
-                ProgressView()
-                    .progressViewStyle(CircularProgressViewStyle())
+            .frame(maxWidth: .infinity, alignment: .leading)
+        } accessory: {
+            if !dynamicTypeSize.isAccessibilitySize {
+                BookmarkButton(book: item, imageUrl: imageURL)
             }
         }
+        .accessibilityIdentifier("book-tile-\(layout.rawValue)")
     }
-    
-    // MARK: - Book Details
-    private var bookDetails: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            HStack {
-                Text(viewModel.item.title)
-                    .font(.subheadline)
-                    .lineLimit(2)
-                    .foregroundColor(Color(UIColor(hex: "#233C7E")))
-                Spacer()
-                BookmarkButton(book: viewModel.item)
-            }
-            .padding(.bottom, 6)
-            
-            Text(viewModel.authorNames.isEmpty ? "No Author" : viewModel.authorNames)
-                .font(.footnote)
-                .lineLimit(2)
-                .foregroundColor(Color(UIColor(hex: "#363636")))
-                .padding(.bottom, 8)
-            
-            HStack(spacing: 0) {
-                ForEach(0..<5) { index in
-                    Image(systemName: index < Int(viewModel.item.ratingsAverage ?? 0) ? "star.fill" : "star")
-                        .foregroundColor(.yellow)
-                }
-                Text("\(viewModel.item.ratingsCount ?? 0) Ratings")
-                    .font(.footnote)
-                    .padding(.leading, 10)
-            }
-            .padding(.bottom, 12)
-            
-            Text("\((viewModel.item.ratingsAverage ?? 0.0).formattedString(maxFractionDigits: 2)) Average Review")
-                .font(.footnote)
-                .padding(.bottom, 12)
-        }
-        .padding(.leading, 17)
-    }
-    
-    // MARK: - Bookmark Button
-    private var bookmarkButton: some View {
+
+    private var cover: some View {
         Group {
-            if viewModel.showBookmarkButton {
-                BookmarkButton(book: viewModel.item, imageUrl: viewModel.imageURL)
-                    .padding(.trailing, 10)
-                    .transition(.move(edge: .trailing))
-            }
+            if let data = item.image, let image = UIImage(data: data) {
+                Image(uiImage: image).resizable().scaledToFill()
+            } else if let imageURL {
+                AsyncImage(url: imageURL) { phase in
+                    switch phase {
+                    case .success(let image): image.resizable().scaledToFill()
+                    case .empty: placeholder.overlay { ProgressView() }
+                    default: placeholder
+                    }
+                }
+            } else { placeholder }
         }
+        .frame(width: coverSize.width, height: coverSize.height)
+        .clipShape(RoundedRectangle(cornerRadius: CatalogMetrics.coverRadius))
+        .accessibilityHidden(true)
+    }
+
+    private var placeholder: some View {
+        Rectangle().fill(DesignColor.grouped)
+            .overlay { Image(systemName: "book.closed").foregroundStyle(DesignColor.secondary) }
     }
 }
 
-// Preview
-struct BookItem_Previews: PreviewProvider {
-    static var previews: some View {
-        BookItem(item: Book(title: "The Magical  Winnie-the-Pooh", ratingsAverage: 3.0, ratingsCount: 5, authorName: ["A"], coverI: 0, image: nil),
-                 fromBookMark: false)
+private extension String {
+    var nilIfEmpty: String? { isEmpty ? nil : self }
+}
+
+/// Search and bookmarks share the same saved preference and accessibility fallback.
+struct BookLayoutPicker: View {
+    @AppStorage("bookCatalogLayout") private var storedLayout = CatalogLayout.list.rawValue
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @State private var showGridUnavailable = false
+
+    var body: some View {
+        CatalogLayoutMenu(selection: (CatalogLayout(rawValue: storedLayout) ?? .list).resolved(isAccessibilitySize: dynamicTypeSize.isAccessibilitySize),
+                          isAccessibilitySize: dynamicTypeSize.isAccessibilitySize,
+                          onSelect: { storedLayout = $0.rawValue },
+                          onGridUnavailable: { showGridUnavailable = true })
+            .accessibilityIdentifier("book-layout-menu")
+            .alert("List layout", isPresented: $showGridUnavailable) {
+                Button("OK", role: .cancel) {}
+            } message: { Text("List layout keeps book details readable at this text size.") }
+    }
+}
+
+struct BookCollection: View {
+    let books: [Book]
+    var onLastAppear: () -> Void = {}
+    @AppStorage("bookCatalogLayout") private var storedLayout = CatalogLayout.list.rawValue
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    private var layout: CatalogLayout {
+        (CatalogLayout(rawValue: storedLayout) ?? .list).resolved(isAccessibilitySize: dynamicTypeSize.isAccessibilitySize)
+    }
+
+    var body: some View {
+        Group {
+            if layout == .grid {
+                LazyVGrid(columns: [GridItem(.adaptive(minimum: CatalogMetrics.bookGridMinimum), spacing: Spacing.twelve)], spacing: Spacing.twelve) {
+                    tiles
+                }
+            } else {
+                LazyVStack(spacing: Spacing.twelve) { tiles }
+            }
+        }
+        .padding(.horizontal, Spacing.sixteen)
+    }
+
+    private var tiles: some View {
+        ForEach(books) { book in
+            BookItem(item: book, layout: layout)
+                .onAppear { if book.id == books.last?.id { onLastAppear() } }
+        }
     }
 }

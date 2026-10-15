@@ -43,8 +43,8 @@
 		342B8A902C727CB800EC41C8 /* BookmarkButtonViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342B8A8F2C727CB800EC41C8 /* BookmarkButtonViewModelTests.swift */; };
 		342B8A952C72890700EC41C8 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3403E2732C7064320063E7D0 /* Persistence.swift */; };
 		4AAED97CED59ADF39CD524D6 /* CommonNetworking in Frameworks */ = {isa = PBXBuildFile; productRef = 95732E385786F6E1232BBF15 /* CommonNetworking */; };
-		6C8873A6A96AECA6153C5AA7 /* FoundationKit in Frameworks */ = {isa = PBXBuildFile; productRef = 945F817B0BE1541EEA799DBF /* FoundationKit */; };
 		6A0EB3CEE74C24CBDA6E6A50 /* LocalizationKit in Frameworks */ = {isa = PBXBuildFile; productRef = C39F6585DE5D8CA74DD4BA50 /* LocalizationKit */; };
+		6C8873A6A96AECA6153C5AA7 /* FoundationKit in Frameworks */ = {isa = PBXBuildFile; productRef = 945F817B0BE1541EEA799DBF /* FoundationKit */; };
 		B35B2184E6B1F7F6457163DC /* DesignTokensKit in Frameworks */ = {isa = PBXBuildFile; productRef = 6FECFBEAEF2B8BF9370CC0C1 /* DesignTokensKit */; };
 		B589ADFBBB0E3489C7804265 /* UIComponentsKit in Frameworks */ = {isa = PBXBuildFile; productRef = 9E2E1528E27128C836A6B1F3 /* UIComponentsKit */; };
 /* End PBXBuildFile section */
@@ -99,6 +99,8 @@
 		342B8A8D2C7279B300EC41C8 /* BookmarkViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkViewModelTests.swift; sourceTree = "<group>"; };
 		342B8A8F2C727CB800EC41C8 /* BookmarkButtonViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkButtonViewModelTests.swift; sourceTree = "<group>"; };
 		3493640D2C7111C8008A99F8 /* ShowBookTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ShowBookTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C8122A766F8C4BE99DF91001 /* ShowBookV2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ShowBookV2.xcdatamodel; sourceTree = "<group>"; };
+		C8122A766F8C4BE99DF91002 /* ShowBookV3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ShowBookV3.xcdatamodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -368,7 +370,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1540;
-				LastUpgradeCheck = 1540;
+				LastUpgradeCheck = 2710;
 				TargetAttributes = {
 					3403E26D2C7064310063E7D0 = {
 						CreatedOnToolsVersion = 15.4;
@@ -389,11 +391,11 @@
 			);
 			mainGroup = 3403E2652C7064310063E7D0;
 			packageReferences = (
-				AEB2D9BC476E0F608EBF52D1 /* CommonNetworking */,
-				AA9FA121FCA88E0B247E2FFB /* FoundationKit */,
-				C8FC995D988090DF0D402585 /* LocalizationKit */,
-				322BDFD7AF0CC5F9FD6C225E /* DesignTokensKit */,
-				6A3E98F756100CE40BD38FE1 /* UIComponentsKit */,
+				AEB2D9BC476E0F608EBF52D1 /* XCRemoteSwiftPackageReference "CommonNetworking" */,
+				AA9FA121FCA88E0B247E2FFB /* XCRemoteSwiftPackageReference "FoundationKit" */,
+				C8FC995D988090DF0D402585 /* XCRemoteSwiftPackageReference "LocalizationKit" */,
+				322BDFD7AF0CC5F9FD6C225E /* XCRemoteSwiftPackageReference "DesignTokensKit" */,
+				6A3E98F756100CE40BD38FE1 /* XCRemoteSwiftPackageReference "UIComponentsKit" */,
 			);
 			productRefGroup = 3403E26F2C7064310063E7D0 /* Products */;
 			projectDirPath = "";
@@ -482,22 +484,6 @@
 		};
 /* End PBXTargetDependency section */
 
-/* Begin XCRemoteSwiftPackageReference section */
-		AEB2D9BC476E0F608EBF52D1 /* CommonNetworking */ = {isa = XCRemoteSwiftPackageReference; repositoryURL = "https://github.com/Anurag-Chourasia/CommonNetworking.git"; requirement = {kind = exactVersion; version = 1.0.0; }; };
-		AA9FA121FCA88E0B247E2FFB /* FoundationKit */ = {isa = XCRemoteSwiftPackageReference; repositoryURL = "https://github.com/Anurag-Chourasia/FoundationKit.git"; requirement = {kind = exactVersion; version = 0.1.1; }; };
-		C8FC995D988090DF0D402585 /* LocalizationKit */ = {isa = XCRemoteSwiftPackageReference; repositoryURL = "https://github.com/Anurag-Chourasia/LocalizationKit.git"; requirement = {kind = exactVersion; version = 0.1.1; }; };
-		322BDFD7AF0CC5F9FD6C225E /* DesignTokensKit */ = {isa = XCRemoteSwiftPackageReference; repositoryURL = "https://github.com/Anurag-Chourasia/DesignTokensKit.git"; requirement = {kind = exactVersion; version = 1.1.0; }; };
-		6A3E98F756100CE40BD38FE1 /* UIComponentsKit */ = {isa = XCRemoteSwiftPackageReference; repositoryURL = "https://github.com/Anurag-Chourasia/UIComponentsKit.git"; requirement = {kind = exactVersion; version = 1.1.0; }; };
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		95732E385786F6E1232BBF15 /* CommonNetworking */ = {isa = XCSwiftPackageProductDependency; package = AEB2D9BC476E0F608EBF52D1; productName = CommonNetworking; };
-		945F817B0BE1541EEA799DBF /* FoundationKit */ = {isa = XCSwiftPackageProductDependency; package = AA9FA121FCA88E0B247E2FFB; productName = FoundationKit; };
-		C39F6585DE5D8CA74DD4BA50 /* LocalizationKit */ = {isa = XCSwiftPackageProductDependency; package = C8FC995D988090DF0D402585; productName = LocalizationKit; };
-		6FECFBEAEF2B8BF9370CC0C1 /* DesignTokensKit */ = {isa = XCSwiftPackageProductDependency; package = 322BDFD7AF0CC5F9FD6C225E; productName = DesignTokensKit; };
-		9E2E1528E27128C836A6B1F3 /* UIComponentsKit */ = {isa = XCSwiftPackageProductDependency; package = 6A3E98F756100CE40BD38FE1; productName = UIComponentsKit; };
-/* End XCSwiftPackageProductDependency section */
-
 /* Begin XCBuildConfiguration section */
 		3403E2962C7064330063E7D0 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -533,7 +519,9 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = M4HZKMDG75;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -556,6 +544,7 @@
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -595,7 +584,9 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = M4HZKMDG75;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -611,6 +602,7 @@
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 			};
 			name = Release;
@@ -623,10 +615,12 @@
 				CODE_SIGN_ENTITLEMENTS = ShowBook/ShowBook.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"ShowBook/Preview Content\"";
-				DEVELOPMENT_TEAM = M4HZKMDG75;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
+				/* V1 is preserved for store migration. Current-model inverses are enforced by PersistenceRelationshipTests. */
+				MOMC_NO_INVERSE_RELATIONSHIP_WARNINGS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ShowBook/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Show Book";
@@ -665,10 +659,12 @@
 				CODE_SIGN_ENTITLEMENTS = ShowBook/ShowBook.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"ShowBook/Preview Content\"";
-				DEVELOPMENT_TEAM = M4HZKMDG75;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
+				/* V1 is preserved for store migration. Current-model inverses are enforced by PersistenceRelationshipTests. */
+				MOMC_NO_INVERSE_RELATIONSHIP_WARNINGS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ShowBook/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Show Book";
@@ -705,7 +701,6 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = M4HZKMDG75;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MARKETING_VERSION = 1.0;
@@ -728,7 +723,6 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = M4HZKMDG75;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MARKETING_VERSION = 1.0;
@@ -778,13 +772,86 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		322BDFD7AF0CC5F9FD6C225E /* XCRemoteSwiftPackageReference "DesignTokensKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Anurag-Chourasia/DesignTokensKit.git";
+			requirement = {
+				kind = exactVersion;
+				version = 1.2.0;
+			};
+		};
+		6A3E98F756100CE40BD38FE1 /* XCRemoteSwiftPackageReference "UIComponentsKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Anurag-Chourasia/UIComponentsKit.git";
+			requirement = {
+				kind = exactVersion;
+				version = 1.2.0;
+			};
+		};
+		AA9FA121FCA88E0B247E2FFB /* XCRemoteSwiftPackageReference "FoundationKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Anurag-Chourasia/FoundationKit.git";
+			requirement = {
+				kind = exactVersion;
+				version = 0.1.1;
+			};
+		};
+		AEB2D9BC476E0F608EBF52D1 /* XCRemoteSwiftPackageReference "CommonNetworking" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Anurag-Chourasia/CommonNetworking.git";
+			requirement = {
+				kind = exactVersion;
+				version = 1.0.0;
+			};
+		};
+		C8FC995D988090DF0D402585 /* XCRemoteSwiftPackageReference "LocalizationKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Anurag-Chourasia/LocalizationKit.git";
+			requirement = {
+				kind = exactVersion;
+				version = 0.1.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		6FECFBEAEF2B8BF9370CC0C1 /* DesignTokensKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 322BDFD7AF0CC5F9FD6C225E /* XCRemoteSwiftPackageReference "DesignTokensKit" */;
+			productName = DesignTokensKit;
+		};
+		945F817B0BE1541EEA799DBF /* FoundationKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AA9FA121FCA88E0B247E2FFB /* XCRemoteSwiftPackageReference "FoundationKit" */;
+			productName = FoundationKit;
+		};
+		95732E385786F6E1232BBF15 /* CommonNetworking */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AEB2D9BC476E0F608EBF52D1 /* XCRemoteSwiftPackageReference "CommonNetworking" */;
+			productName = CommonNetworking;
+		};
+		9E2E1528E27128C836A6B1F3 /* UIComponentsKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6A3E98F756100CE40BD38FE1 /* XCRemoteSwiftPackageReference "UIComponentsKit" */;
+			productName = UIComponentsKit;
+		};
+		C39F6585DE5D8CA74DD4BA50 /* LocalizationKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C8FC995D988090DF0D402585 /* XCRemoteSwiftPackageReference "LocalizationKit" */;
+			productName = LocalizationKit;
+		};
+/* End XCSwiftPackageProductDependency section */
+
 /* Begin XCVersionGroup section */
 		3403E2752C7064320063E7D0 /* ShowBook.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
 				3403E2762C7064320063E7D0 /* ShowBook.xcdatamodel */,
+				C8122A766F8C4BE99DF91001 /* ShowBookV2.xcdatamodel */,
+				C8122A766F8C4BE99DF91002 /* ShowBookV3.xcdatamodel */,
 			);
-			currentVersion = 3403E2762C7064320063E7D0 /* ShowBook.xcdatamodel */;
+			currentVersion = C8122A766F8C4BE99DF91002 /* ShowBookV3.xcdatamodel */;
 			path = ShowBook.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

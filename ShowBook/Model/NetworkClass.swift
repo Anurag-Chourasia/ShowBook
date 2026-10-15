@@ -40,6 +40,10 @@ class NetworkClass: ObservableObject {
         }
         
         fetchData(from: url) { data, response, error in
+            if let error {
+                completion(nil, error)
+                return
+            }
             guard let data = data else {
                 print("Failed to fetch data: \(error?.localizedDescription ?? "Unknown error")")
                 completion(nil,NSError(domain: "DataError", code: 0, userInfo: [NSLocalizedDescriptionKey : "No data received"]))
@@ -88,24 +92,27 @@ class NetworkClass: ObservableObject {
     }
 
     func fetchBooks(title: String, offset: Int, completion: @escaping (Result<[Book], Error>) -> Void) {
-        let baseURL = "https://openlibrary.org/search.json"
-        let limit = 10
-        let urlString = "\(baseURL)?title=\(title)&limit=\(limit)&offset=\(offset)"
+        var components = URLComponents(string: "https://openlibrary.org/search.json")!
+        components.queryItems = [
+            URLQueryItem(name: "title", value: title),
+            URLQueryItem(name: "limit", value: "10"),
+            URLQueryItem(name: "offset", value: String(offset))
+        ]
+        // Form-style query decoders interpret a literal plus as a space.
+        components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
         fetchBooksCalledCount += 1
-        guard let url = URL(string: urlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "") else {
+        guard let url = components.url else {
             completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])))
             return
         }
         
         fetchData(from: url) { data, response, error in
             if let error = error {
-                print("fetchBooksCalledCount",self.fetchBooksCalledCount)
                 completion(.failure(error))
                 return
             }
             
             guard let data = data else {
-                print("fetchBooksCalledCount",self.fetchBooksCalledCount)
                 completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "No data received"])))
                 return
             }
@@ -113,10 +120,8 @@ class NetworkClass: ObservableObject {
             do {
                 
                 let booksResponse = try JSONDecoder().decode(BooksResponse.self, from: data)
-                print("fetchBooksCalledCountSuccess",self.fetchBooksCalledCount)
                 completion(.success(booksResponse.docs))
             } catch {
-                print("fetchBooksCalledCount",self.fetchBooksCalledCount)
                 completion(.failure(error))
             }
         }

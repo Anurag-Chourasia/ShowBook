@@ -18,7 +18,9 @@ class SignUpViewModel: ObservableObject {
     @Published var countries: [String] = []
     @Published var selectedCountryIndex: Int = 0
     
-    private var api = NetworkClass()
+    private let api: NetworkClass
+
+    init(api: NetworkClass = NetworkClass()) { self.api = api }
     var persistenceController = PersistenceController.shared
     private var cancellables = Set<AnyCancellable>()
     
@@ -27,6 +29,8 @@ class SignUpViewModel: ObservableObject {
     }
     
     func handleSignUp(userViewModel: UserViewModel) {
+        guard !isLoading else { return }
+        showAlert = false
         isLoading = true
         if !email.isEmpty && !password.isEmpty {
             if !isValidEmail(email) {
@@ -55,21 +59,23 @@ class SignUpViewModel: ObservableObject {
     }
     
     private func performSignUp(userViewModel: UserViewModel) {
-        DispatchQueue.main.async {
-            if self.persistenceController.saveUser(email: self.email.lowercased(), password: self.password) {
-                UserDefaults.standard.setValue(self.email.lowercased(), forKey: "LoggedInUserEmail")
-                self.isLoading = false
-                withAnimation(.easeInOut) {
-                    userViewModel.isLoggedIn = true
-                }
-            } else {
-                self.errorMessage = "User with this email already exists"
+        let signupEmail = email.lowercased()
+        persistenceController.registerUser(email: signupEmail, password: password) { [weak self] result in
+            guard let self else { return }
+            self.isLoading = false
+            switch result {
+            case .success:
+                UserDefaults.standard.setValue(signupEmail, forKey: "LoggedInUserEmail")
+                self.password = ""
+                withAnimation(.easeInOut) { userViewModel.isLoggedIn = true }
+            case .failure(let error):
+                self.errorMessage = (error as? CredentialError)?.localizedDescription
+                    ?? "Unable to save account. Please try again."
                 self.showAlert = true
-                self.isLoading = false
             }
         }
     }
-    
+
     func loadData() {
         isLoading = true
         if let savedCountryModel = persistenceController.fetchCountryModel(),
@@ -88,47 +94,43 @@ class SignUpViewModel: ObservableObject {
     
     private func fetchCountriesAndIPDetails() {
         api.fetchCountries { [weak self] fetchedCountries, error in
-            guard let self = self else { return }
-            if let error = error {
-                DispatchQueue.main.async {
-                    self.errorMessage = error.localizedDescription
+            DispatchQueue.main.async {
+                guard let self else { return }
+                guard let fetchedCountries, error == nil else {
+                    self.errorMessage = error?.localizedDescription ?? "Unexpected error"
                     self.showAlert = true
                     self.isLoading = false
+                    return
                 }
-            } else if let fetchedCountries = fetchedCountries {
-                DispatchQueue.main.async {
-                    self.countries = fetchedCountries.data.map { $0.value.country }.sorted()
+                self.countries = fetchedCountries.data.map { $0.value.country }.sorted()
+                self.selectedCountryIndex = 0
+                guard let firstCountry = self.countries.first else {
+                    self.errorMessage = "No countries available"
+                    self.showAlert = true
+                    self.isLoading = false
+                    return
                 }
-                self.api.fetchIPDetails { response, error in
-                    if let error = error {
-                        DispatchQueue.main.async {
+                self.persistenceController.saveCountryModel(fetchedCountries)
+                self.persistenceController.saveDefaultCountryName(selectedCountryName: firstCountry)
+                self.api.fetchIPDetails { [weak self] response, error in
+                    DispatchQueue.main.async {
+                        guard let self else { return }
+                        defer { self.isLoading = false }
+                        if let error {
                             self.errorMessage = "Error fetching IP details: \(error.localizedDescription)"
                             self.showAlert = true
-                        }
-                    } else if let response = response {
-                        DispatchQueue.main.async {
+                        } else if let response {
                             self.selectedCountryIndex = self.countries.firstIndex(of: response.country) ?? 0
-                            self.persistenceController.saveCountryModel(fetchedCountries)
-                            let name = self.countries[self.selectedCountryIndex]
-                            self.persistenceController.saveDefaultCountryName(selectedCountryName: name)
-                            self.isLoading = false
-                        }
-                    } else {
-                        DispatchQueue.main.async {
+                            if self.countries.indices.contains(self.selectedCountryIndex) {
+                                self.persistenceController.saveDefaultCountryName(selectedCountryName: self.countries[self.selectedCountryIndex])
+                            }
+                        } else {
                             self.errorMessage = "Unexpected error"
                             self.showAlert = true
-                            self.isLoading = false
                         }
                     }
-                }
-            } else {
-                DispatchQueue.main.async {
-                    self.errorMessage = "Unexpected error"
-                    self.showAlert = true
-                    self.isLoading = false
                 }
             }
         }
     }
 }
-
