@@ -41,6 +41,7 @@ jobs:
 
       - name: Configure read-only private dependency access
         env:
+          DEVELOPERPROFILEKIT_DEPLOY_KEY: ${{ secrets.DEVELOPERPROFILEKIT_DEPLOY_KEY }}
           FOUNDATIONKIT_DEPLOY_KEY: ${{ secrets.FOUNDATIONKIT_DEPLOY_KEY }}
           LOCALIZATIONKIT_DEPLOY_KEY: ${{ secrets.LOCALIZATIONKIT_DEPLOY_KEY }}
         run: bash Scripts/configure-private-dependencies.sh

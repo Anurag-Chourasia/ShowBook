@@ -257,6 +257,13 @@ final class SearchNavigationRenderingTests: XCTestCase {
         }.environmentObject(user), name: "login-native-navigation")
     }
 
+    func testDeveloperScreenResourcesAndAccessibilityRender() async throws {
+        try await capture(NavigationStack { ShowBookDeveloperView() }, name: "developer-profile")
+        try await capture(NavigationStack { ShowBookDeveloperView() }
+            .environment(\.dynamicTypeSize, .accessibility3)
+            .environment(\.colorScheme, .dark), name: "developer-profile-accessibility")
+    }
+
     private func capture<V: View>(_ view: V, name: String) async throws {
         let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
         let previous = scene.windows.first(where: \.isKeyWindow)
