@@ -223,6 +223,7 @@ struct ShowBookDeveloperView: View {
             build: Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "—",
             disclaimer: "ShowBook is a book discovery application. Book metadata and covers are provided by Open Library. Availability and accuracy depend on the source records.\n\nSource: https://openlibrary.org"
         ), layout: CatalogLayout(rawValue: storedLayout) ?? .list)
+        .tint(DesignColor.blue)
         .navigationTitle("Know Your Developer")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar { ToolbarItem(placement: .topBarTrailing) { BookLayoutPicker() } }
