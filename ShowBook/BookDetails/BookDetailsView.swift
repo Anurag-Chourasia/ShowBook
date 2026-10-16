@@ -163,21 +163,20 @@ struct BookCoverPreview: View {
                 if let url = LibraryCover.url(coverID) {
                     AsyncImage(url: url) { phase in
                         if let image = phase.image {
-                            image.resizable().scaledToFit()
+                            image.resizable().scaledToFit().accessibilityLabel(title)
                         } else if let savedImage, let image = UIImage(data: savedImage) {
-                            Image(uiImage: image).resizable().scaledToFit()
+                            Image(uiImage: image).resizable().scaledToFit().accessibilityLabel(title)
                         } else if phase.error != nil {
                             unavailable
                         } else { ProgressView("Loading cover…") }
                     }
                 } else if let savedImage, let image = UIImage(data: savedImage) {
-                    Image(uiImage: image).resizable().scaledToFit()
+                    Image(uiImage: image).resizable().scaledToFit().accessibilityLabel(title)
                 } else { unavailable }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .padding(Spacing.sixteen)
             .background(DesignColor.grouped)
-            .accessibilityLabel(title)
             .accessibilityIdentifier("book-cover-preview")
             .navigationTitle("Cover preview")
             .navigationBarTitleDisplayMode(.inline)

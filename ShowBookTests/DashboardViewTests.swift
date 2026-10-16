@@ -276,12 +276,17 @@ final class SearchNavigationRenderingTests: XCTestCase {
                 .appAppearance().defaultAppStorage(defaults))
         window.makeKeyAndVisible()
         defer { window.isHidden = true; previous?.makeKeyAndVisible() }
+        try await Task.sleep(nanoseconds: 150_000_000)
+        let sheet = UIHostingController(rootView: Text("Presented sheet"))
+        window.rootViewController?.present(sheet, animated: false)
+        try await Task.sleep(nanoseconds: 150_000_000)
         for selection in [AppAppearance.dark, .light, .dark, .system, .light, .system] {
             defaults.set(selection.rawValue, forKey: "appAppearance")
             try await Task.sleep(nanoseconds: 150_000_000)
             XCTAssertEqual(window.overrideUserInterfaceStyle, selection.interfaceStyle)
             if selection != .system {
                 XCTAssertEqual(window.rootViewController?.traitCollection.userInterfaceStyle, selection.interfaceStyle)
+                XCTAssertEqual(sheet.traitCollection.userInterfaceStyle, selection.interfaceStyle)
             }
         }
     }
