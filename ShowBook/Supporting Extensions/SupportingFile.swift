@@ -35,9 +35,9 @@ func isValidPassword(_ password: String) -> Bool {
 
 enum ShowBookTheme {
     static let colors = SemanticColors(
-        surface: DesignColor.white,
-        foreground: DesignColor.ink,
-        border: DesignColor.lightBorder,
+        surface: DesignColor.groupedSecondary,
+        foreground: DesignColor.primary,
+        border: DesignColor.secondary,
         action: DesignColor.oceanAction,
         onAction: DesignColor.white)
     static let fieldCornerRadius: CGFloat = DesignMetric.p26_5

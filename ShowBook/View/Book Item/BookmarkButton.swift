@@ -30,7 +30,7 @@ struct BookmarkButton: View {
             .foregroundColor(viewModel.isBookmarked ? DesignColor.white : DesignColor.green)
             .padding(Spacing.eight)
             .frame(minWidth: TouchTarget.minimum, minHeight: TouchTarget.minimum)
-            .background(viewModel.isBookmarked ? DesignColor.green : DesignColor.white)
+            .background(viewModel.isBookmarked ? DesignColor.green : DesignColor.groupedSecondary)
             .clipShape(Circle())
             .shadow(radius: DesignMetric.p3)
     }

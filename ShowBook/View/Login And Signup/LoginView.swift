@@ -35,6 +35,7 @@ struct LoginView: View {
         }
         .navigationTitle("Login")
         .navigationBarTitleDisplayMode(.inline)
+        .showBookTools()
     }
 
     private var welcomeText: some View {

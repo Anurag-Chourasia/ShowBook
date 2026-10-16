@@ -25,6 +25,7 @@ struct SignUpView: View {
         .onAppear(perform: viewModel.loadData)
         .navigationTitle("Sign Up")
         .navigationBarTitleDisplayMode(.inline)
+        .showBookTools()
     }
 
     private var content: some View {
