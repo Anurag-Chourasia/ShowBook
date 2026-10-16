@@ -23,7 +23,8 @@ private class FixtureProtocol: URLProtocol {
         case "/search.json":
             file = "books"
             XCTAssertEqual(URLComponents(url: request.url!, resolvingAgainstBaseURL: false)?.queryItems,
-                [URLQueryItem(name: "title", value: Self.title), .init(name: "limit", value: "10"), .init(name: "offset", value: "20")])
+                [URLQueryItem(name: "title", value: Self.title), .init(name: "limit", value: "10"), .init(name: "offset", value: "20"),
+                 .init(name: "fields", value: "key,title,author_name,cover_i,ratings_average,ratings_count")])
         default: XCTFail("Unexpected request"); client?.urlProtocol(self, didFailWithError: URLError(.unsupportedURL)); return
         }
         let bytes = Self.empty ? Data() : Self.malformed ? Data("not json".utf8) : try! Data(contentsOf: Bundle.module.url(forResource: file, withExtension: "json")!)
@@ -89,6 +90,23 @@ final class NetworkingTests: XCTestCase {
         await fulfillment(of: [countries, ip, books], timeout: 5)
         XCTAssertEqual(api.fetchBooksCalledCount, 1)
     }
+    func testRatingAvailabilityHandlesMissingAndLegacyValues() throws {
+        for payload in [
+            #"{"title":"Unrated"}"#,
+            #"{"title":"Unrated","ratings_average":null,"ratings_count":null}"#,
+            #"{"title":"Legacy","ratings_average":0,"ratings_count":0}"#,
+            #"{"title":"Partial","ratings_average":4.5}"#,
+            #"{"title":"Partial","ratings_count":10}"#,
+            #"{"title":"Invalid","ratings_average":6,"ratings_count":10}"#
+        ] {
+            let book = try JSONDecoder().decode(Book.self, from: Data(payload.utf8))
+            XCTAssertNil(book.availableRating)
+        }
+        let book = try JSONDecoder().decode(Book.self, from: Data(#"{"title":"Rated","ratings_average":4.222857,"ratings_count":1050}"#.utf8))
+        XCTAssertEqual(book.availableRating?.average, 4.222857)
+        XCTAssertEqual(book.availableRating?.count, 1050)
+    }
+
     func testAdditionalAndFutureRegionsRoundTrip() throws {
         for name in ["Europe", "North America", "South America", "Oceania", "New server region"] {
             let bytes = try JSONEncoder().encode(["country": "Example", "region": name])

@@ -92,6 +92,13 @@ struct Book: Identifiable, Codable, Equatable, Hashable {
     let coverI: Int?
     let image: Data?
     var key: String? = nil
+
+    // Missing ratings and legacy bookmark zero defaults are not real scores.
+    var availableRating: (average: Double, count: Int)? {
+        guard let average = ratingsAverage, average.isFinite, (0...5).contains(average),
+              let count = ratingsCount, count > 0 else { return nil }
+        return (average, count)
+    }
     
     enum CodingKeys: String, CodingKey {
         case title, key
