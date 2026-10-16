@@ -57,7 +57,7 @@ actor BookDetailsService: BookDetailsServing {
 
     init(session: URLSession = .shared) {
         #if DEBUG
-        client = CommonNetworking.HTTPClient(session: session, logger: .console)
+        client = CommonNetworking.HTTPClient(session: session, logger: ProcessInfo.processInfo.environment["HTTP_LOGGING"] == "1" ? .console : nil)
         #else
         client = CommonNetworking.HTTPClient(session: session)
         #endif

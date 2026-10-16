@@ -5,6 +5,7 @@ import UIComponentsKit
 struct BookItem: View {
     let item: Book
     var layout: CatalogLayout = .list
+    @State private var previewPresented = false
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     init(item: Book, fromBookMark: Bool = false, layout: CatalogLayout = .list) {
@@ -23,6 +24,8 @@ struct BookItem: View {
             if !dynamicTypeSize.isAccessibilitySize {
                 NavigationLink { BookDetailsView(book: item) } label: { cover }
                     .accessibilityLabel("Details for " + item.title)
+                    .accessibilityHint("Tap for details. Hold to preview the cover.")
+                    .highPriorityGesture(LongPressGesture().onEnded { _ in previewPresented = true })
             }
         } details: {
             VStack(alignment: .leading, spacing: Spacing.eight) {
@@ -70,6 +73,10 @@ struct BookItem: View {
             }
         }
         .accessibilityIdentifier("book-tile-\(layout.rawValue)")
+        .accessibilityAction(named: "Preview cover") { previewPresented = true }
+        .sheet(isPresented: $previewPresented) {
+            BookCoverPreview(coverID: item.coverI, savedImage: item.image, title: item.title)
+        }
     }
 
     private var cover: some View {

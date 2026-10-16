@@ -15,7 +15,7 @@ class NetworkClass: ObservableObject {
 
     init(session: URLSession = .shared) {
         #if DEBUG
-        transport = CommonNetworking.HTTPClient(session: session, logger: .console)
+        transport = CommonNetworking.HTTPClient(session: session, logger: ProcessInfo.processInfo.environment["HTTP_LOGGING"] == "1" ? .console : nil)
         #else
         transport = CommonNetworking.HTTPClient(session: session)
         #endif
@@ -38,7 +38,9 @@ class NetworkClass: ObservableObject {
     var fetchBooksCalledCount = 0
     func fetchCountries(completion: @escaping (CountryModel?,Error?) -> Void) {
         guard let url = URL(string: "https://api.first.org/data/v1/countries") else {
+            #if DEBUG
             print("Invalid URL")
+            #endif
             completion(nil,NSError(domain: "URLCreationError", code: 0, userInfo: [NSLocalizedDescriptionKey : "Invalid URL"]))
             return
         }
@@ -49,7 +51,9 @@ class NetworkClass: ObservableObject {
                 return
             }
             guard let data = data else {
+                #if DEBUG
                 print("Failed to fetch data: \(error?.localizedDescription ?? "Unknown error")")
+                #endif
                 completion(nil,NSError(domain: "DataError", code: 0, userInfo: [NSLocalizedDescriptionKey : "No data received"]))
                 return
             }
@@ -58,7 +62,9 @@ class NetworkClass: ObservableObject {
                 let jsonResponse = try decoder.decode(CountryModel.self, from: data)
                 completion(jsonResponse,nil)
             } catch {
+                #if DEBUG
                 print("Failed to decode JSON: \(error.localizedDescription)")
+                #endif
                 completion(nil,error)
             }
         }

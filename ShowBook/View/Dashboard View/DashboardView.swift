@@ -43,6 +43,7 @@ struct DashboardView: View {
                         Spacer()
                     }
                     .navigationTitle("ShowBook")
+                    .showBookTools()
                     .navigationBarTitleDisplayMode(.inline)
                     .toolbar {
                         ToolbarItemGroup(placement: .topBarTrailing) {
@@ -50,9 +51,6 @@ struct DashboardView: View {
                                 Label("Saved books", systemImage: "bookmark")
                             }
                             .accessibilityIdentifier("bookmarkButton")
-                            NavigationLink(destination: ShowBookDeveloperView()) {
-                                Label("Know Your Developer", systemImage: "person.crop.circle")
-                            }
                             Button { viewModel.logOutAlert = true } label: {
                                 Label("Log out", systemImage: "rectangle.portrait.and.arrow.right")
                             }
@@ -174,7 +172,7 @@ struct DashboardView: View {
                     HStack {
                         Text("Loading More...")
                             .padding(.all, Spacing.system)
-                            .foregroundColor(DesignColor.black)
+                            .foregroundColor(DesignColor.primary)
                     }
                 }
             }
@@ -225,6 +223,7 @@ struct ShowBookDeveloperView: View {
         ), layout: CatalogLayout(rawValue: storedLayout) ?? .list)
         .tint(DesignColor.blue)
         .navigationTitle("Know Your Developer")
+        .showBookTools(includeDeveloper: false)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar { ToolbarItem(placement: .topBarTrailing) { BookLayoutPicker() } }
     }

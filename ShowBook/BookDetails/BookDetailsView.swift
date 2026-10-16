@@ -56,6 +56,7 @@ struct BookDetailsView: View {
         }
         .navigationTitle("Book details")
         .navigationBarTitleDisplayMode(.inline)
+        .showBookTools()
         .task(id: reload) { await model.load() }
         .task(id: more) { if more > 0 { await model.loadMoreEditions() } }
     }
@@ -96,6 +97,7 @@ struct EditionDetailsView: View {
             }.frame(maxWidth: .infinity, alignment: .leading).padding(Spacing.twenty)
         }
         .navigationTitle("Edition details").navigationBarTitleDisplayMode(.inline)
+        .showBookTools()
         .task(id: reload) {
             loading = true; error = nil
             defer { loading = false }
@@ -118,6 +120,7 @@ struct EditionDetailsView: View {
 struct LibraryCover: View {
     let coverID: Int?
     let savedImage: Data?
+    @State private var previewPresented = false
     static func url(_ id: Int?) -> URL? {
         guard let id, id > 0 else { return nil }
         return URL(string: "https://covers.openlibrary.org/b/id/\(id)-L.jpg?default=false")
@@ -135,7 +138,60 @@ struct LibraryCover: View {
             } else { placeholder }
         }
         .frame(width: CatalogMetrics.coverGridSize.width, height: CatalogMetrics.coverGridSize.height)
-        .accessibilityHidden(true)
+        .contentShape(Rectangle())
+        .onLongPressGesture { previewPresented = true }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Book cover")
+        .accessibilityAction(named: "Preview cover") { previewPresented = true }
+        .sheet(isPresented: $previewPresented) {
+            BookCoverPreview(coverID: coverID, savedImage: savedImage, title: "Book cover")
+        }
     }
     private var placeholder: some View { Image(systemName: "book.closed").font(Typography.largeTitle).foregroundStyle(DesignColor.secondary) }
+}
+
+/// Uses the large cover when available and retains saved artwork for offline viewing.
+struct BookCoverPreview: View {
+    let coverID: Int?
+    let savedImage: Data?
+    let title: String
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            Group {
+                if let url = LibraryCover.url(coverID) {
+                    AsyncImage(url: url) { phase in
+                        if let image = phase.image {
+                            image.resizable().scaledToFit().accessibilityLabel(title)
+                        } else if let savedImage, let image = UIImage(data: savedImage) {
+                            Image(uiImage: image).resizable().scaledToFit().accessibilityLabel(title)
+                        } else if phase.error != nil {
+                            unavailable
+                        } else { ProgressView("Loading cover…") }
+                    }
+                } else if let savedImage, let image = UIImage(data: savedImage) {
+                    Image(uiImage: image).resizable().scaledToFit().accessibilityLabel(title)
+                } else { unavailable }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .padding(Spacing.sixteen)
+            .background(DesignColor.grouped)
+            .accessibilityIdentifier("book-cover-preview")
+            .navigationTitle("Cover preview")
+            .navigationBarTitleDisplayMode(.inline)
+            .showBookTools()
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button("Done") { dismiss() }
+                }
+            }
+        }
+    }
+    private var unavailable: some View {
+        VStack(spacing: Spacing.twelve) {
+            Image(systemName: "book.closed").font(Typography.largeTitle)
+            Text("Cover unavailable").font(Typography.headline)
+        }.foregroundStyle(DesignColor.secondary)
+    }
 }
