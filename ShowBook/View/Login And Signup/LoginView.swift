@@ -10,49 +10,31 @@ import UIComponentsKit
 import DesignTokensKit
 
 struct LoginView: View {
-    @Environment(\.presentationMode) var presentationMode
     @EnvironmentObject var userViewModel: UserViewModel
     @StateObject private var viewModel = LoginViewModel()
 
     var body: some View {
-        NavigationView {
-            GeometryReader { geometry in
-                ScrollView {
-                    ZStack {
-                        VStack(spacing: DesignMetric.p0) {
-                            header
-                            welcomeText
-                            emailField
-                            passwordField
-                            loginButton
-                            Spacer()
-                        }
-                        .frame(minHeight: geometry.size.height)
-                        .opacity(viewModel.isLoading ? OpacityToken.p0_2 : OpacityToken.p1_0)
+        GeometryReader { geometry in
+            ScrollView {
+                ZStack {
+                    VStack(spacing: DesignMetric.p0) {
+                        welcomeText
+                        emailField
+                        passwordField
+                        loginButton
+                        Spacer()
+                    }
+                    .frame(minHeight: geometry.size.height)
+                    .opacity(viewModel.isLoading ? OpacityToken.p0_2 : OpacityToken.p1_0)
 
-                        if viewModel.isLoading {
-                            loadingView
-                        }
+                    if viewModel.isLoading {
+                        loadingView
                     }
                 }
             }
         }
-        .navigationBarBackButtonHidden()
-        .navigationViewStyle(StackNavigationViewStyle())
-    }
-
-    private var header: some View {
-        HStack(spacing: DesignMetric.p0) {
-            Button(action: {
-                presentationMode.wrappedValue.dismiss()
-            }) {
-                OutlinedIconLabel(systemImage: "chevron.left", color: ShowBookTheme.colors.action)
-            }
-            .padding(.top, Spacing.twenty)
-            .padding(.leading, Spacing.twenty)
-            Spacer()
-        }
-        .padding(.bottom, Spacing.thirty)
+        .navigationTitle("Login")
+        .navigationBarTitleDisplayMode(.inline)
     }
 
     private var welcomeText: some View {
@@ -62,6 +44,7 @@ struct LoginView: View {
                 .padding(.leading, Spacing.thirty)
             Spacer()
         }
+        .padding(.top, Spacing.twenty)
         .padding(.bottom, DesignMetric.p50)
     }
 
@@ -134,7 +117,7 @@ struct LoginView: View {
 }
 
 #Preview {
-    LoginView()
-        .environmentObject(UserViewModel())
-        .navigationViewStyle(StackNavigationViewStyle())
+    NavigationStack {
+        LoginView().environmentObject(UserViewModel())
+    }
 }

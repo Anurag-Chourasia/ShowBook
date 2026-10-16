@@ -10,30 +10,26 @@ import UIComponentsKit
 import DesignTokensKit
 
 struct SignUpView: View {
-    @Environment(\.presentationMode) var presentationMode
     @StateObject private var viewModel = SignUpViewModel()
     @EnvironmentObject var userViewModel: UserViewModel
 
     var body: some View {
-        NavigationView {
-            GeometryReader { geometry in
-                ZStack {
-                    content
-                    if viewModel.isLoading {
-                        loadingOverlay
-                    }
+        GeometryReader { geometry in
+            ZStack {
+                content
+                if viewModel.isLoading {
+                    loadingOverlay
                 }
             }
-            .onAppear(perform: viewModel.loadData)
         }
-        .navigationViewStyle(StackNavigationViewStyle())
-        .navigationBarHidden(true)
+        .onAppear(perform: viewModel.loadData)
+        .navigationTitle("Sign Up")
+        .navigationBarTitleDisplayMode(.inline)
     }
 
     private var content: some View {
         ScrollView {
             VStack(spacing: DesignMetric.p0) {
-                header
                 welcomeText
                 Spacer()
                 emailField
@@ -50,20 +46,6 @@ struct SignUpView: View {
         }
     }
 
-    private var header: some View {
-        HStack(spacing: DesignMetric.p0) {
-            Button(action: {
-                presentationMode.wrappedValue.dismiss()
-            }) {
-                OutlinedIconLabel(systemImage: "chevron.left", color: ShowBookTheme.colors.action)
-            }
-            .padding(.top, Spacing.twenty)
-            .padding(.leading, Spacing.twenty)
-            Spacer()
-        }
-        .padding(.bottom, Spacing.thirty)
-    }
-
     private var welcomeText: some View {
         HStack(spacing: DesignMetric.p0) {
             Text("Welcome,\nSign up to continue")
@@ -71,6 +53,7 @@ struct SignUpView: View {
                 .padding(.leading, Spacing.thirty)
             Spacer()
         }
+        .padding(.top, Spacing.twenty)
         .padding(.bottom, DesignMetric.p50)
     }
 
@@ -165,7 +148,7 @@ struct SignUpView: View {
 }
 
 #Preview {
-    SignUpView()
-        .environmentObject(UserViewModel())
-        .navigationViewStyle(StackNavigationViewStyle())
+    NavigationStack {
+        SignUpView().environmentObject(UserViewModel())
+    }
 }

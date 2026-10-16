@@ -39,3 +39,9 @@ Search results retain their Open Library work key. Tapping artwork or text in ei
 BookDetailsService owns the Open Library endpoints and uses CommonNetworking for transport. It validates work/edition identifiers, identifies the app via User-Agent, spaces detail requests by 0.4 seconds, caches successful decoded responses for five minutes (up to 100 entries), and supports cancellation. This pacing applies to details, not the existing search service. HTTP failures and decoding failures have retry states; an editions failure preserves the loaded work and the pagination offset.
 
 BookDetailsTests uses injected fixtures and URLProtocol to cover decoding, keys, requests, caching, HTTP failures, cancellation, pagination retries, persistence identity and phone/accessibility rendering. These tests require no live Open Library calls. Current-model bookmarks persist work keys; migration tests check that historical bookmarks survive with a nil key.
+
+## Search states and navigation
+
+Before searching, Dashboard displays a start-search banner. Queries under three non-whitespace characters display typing guidance and do not start requests. A successful empty first page displays “No books found”; network failures remain distinct and offer retry. Existing results remain visible when a later page is empty or fails. Tests cover initial/short/loading/empty/failure/reset states and stale callbacks. Scene-hosted captures cover start and empty banners plus native Login navigation.
+
+Landing and Dashboard each own one NavigationStack for their authentication state. Login, Sign Up, Saved Books and details inherit their parent's stack and native back navigation. Dashboard Saved/Log Out actions and Saved Books layout selection use native toolbar items.
