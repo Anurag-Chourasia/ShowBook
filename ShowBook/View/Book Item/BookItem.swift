@@ -36,20 +36,26 @@ struct BookItem: View {
                     .font(Typography.footnote)
                     .foregroundStyle(DesignColor.secondary)
                     .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : CatalogMetrics.listTitleLines)
+                if let rating = item.availableRating {
                 if !dynamicTypeSize.isAccessibilitySize {
                 HStack(spacing: Spacing.zero) {
                     ForEach(0..<CatalogMetrics.maximumRating, id: \.self) { index in
-                        Image(systemName: Double(index) < (item.ratingsAverage ?? 0).rounded(.down) ? "star.fill" : "star")
+                        Image(systemName: Double(index) < rating.average.rounded(.down) ? "star.fill" : "star")
                     }
                 }
                 .font(Typography.caption)
                 .foregroundStyle(DesignColor.yellow)
                 .accessibilityHidden(true)
                 }
-                Text("\((item.ratingsAverage ?? 0).formattedString(maxFractionDigits: 2)) average · \(item.ratingsCount ?? 0) ratings")
+                Text("\(rating.average.formattedString(maxFractionDigits: 2)) average · \(rating.count) ratings")
                     .font(Typography.caption)
                     .foregroundStyle(DesignColor.secondary)
                     .fixedSize(horizontal: false, vertical: true)
+                } else {
+                    Text("Not rated")
+                        .font(Typography.caption)
+                        .foregroundStyle(DesignColor.secondary)
+                }
                     }
                 }.buttonStyle(.plain)
                 .accessibilityHint("Opens book details")

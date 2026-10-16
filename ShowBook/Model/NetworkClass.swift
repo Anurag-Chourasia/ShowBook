@@ -100,7 +100,8 @@ class NetworkClass: ObservableObject {
         components.queryItems = [
             URLQueryItem(name: "title", value: title),
             URLQueryItem(name: "limit", value: "10"),
-            URLQueryItem(name: "offset", value: String(offset))
+            URLQueryItem(name: "offset", value: String(offset)),
+            URLQueryItem(name: "fields", value: "key,title,author_name,cover_i,ratings_average,ratings_count")
         ]
         // Form-style query decoders interpret a literal plus as a space.
         components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
