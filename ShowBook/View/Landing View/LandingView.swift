@@ -14,7 +14,7 @@ struct LandingView: View {
     
     var body: some View {
         
-        NavigationView {
+        NavigationStack {
             
             VStack(alignment: .center, spacing: DesignMetric.p0){
                 
@@ -29,8 +29,8 @@ struct LandingView: View {
                 navigationButtons
                 
             }
-            .navigationBarBackButtonHidden()
-            .navigationViewStyle(StackNavigationViewStyle())
+            .navigationTitle("Welcome")
+            .navigationBarTitleDisplayMode(.inline)
         }
        
     }
@@ -96,5 +96,4 @@ struct LandingView: View {
 #Preview {
     LandingView()
         .environmentObject(UserViewModel())
-        .navigationViewStyle(StackNavigationViewStyle())
 }

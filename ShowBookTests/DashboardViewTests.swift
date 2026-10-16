@@ -29,6 +29,38 @@ final class DashboardViewModelTests: XCTestCase {
         super.tearDown()
     }
     
+    func testSearchStatesDistinguishInitialShortEmptyAndFailure() {
+        XCTAssertEqual(viewModel.searchState, .idle)
+        viewModel.searchBook = "   "
+        viewModel.performSearch()
+        XCTAssertEqual(viewModel.searchState, .idle)
+        XCTAssertTrue(mockApi.pending.isEmpty)
+        viewModel.searchBook = "ab"
+        viewModel.performSearch()
+        XCTAssertEqual(viewModel.searchState, .tooShort)
+        XCTAssertTrue(mockApi.pending.isEmpty)
+        viewModel.searchBook = "Unknown title"
+        viewModel.performSearch()
+        XCTAssertEqual(viewModel.searchState, .loading)
+        mockApi.pending[0](.success([]))
+        let drained = expectation(description: "empty then failed search")
+        DispatchQueue.main.async {
+            XCTAssertEqual(self.viewModel.searchState, .empty)
+            self.viewModel.searchBook = "Another title"
+            self.viewModel.performSearch()
+            XCTAssertEqual(self.viewModel.searchState, .loading)
+            self.mockApi.pending[1](.failure(URLError(.notConnectedToInternet)))
+            DispatchQueue.main.async {
+                XCTAssertEqual(self.viewModel.searchState, .failed)
+                self.viewModel.searchBook = ""
+                self.viewModel.performSearch()
+                XCTAssertEqual(self.viewModel.searchState, .idle)
+                drained.fulfill()
+            }
+        }
+        wait(for: [drained], timeout: 2)
+    }
+
     // Test case for logout alert
     func testLogoutAlertShown() {
         // Given
@@ -117,6 +149,7 @@ final class DashboardViewModelTests: XCTestCase {
         let drained = expectation(description: "callbacks drained")
         DispatchQueue.main.async {
             XCTAssertEqual(self.viewModel.books, [latest])
+            XCTAssertEqual(self.viewModel.searchState, .results)
             XCTAssertFalse(self.viewModel.showAlert)
             XCTAssertFalse(self.viewModel.isBookLoading)
             drained.fulfill()
@@ -201,5 +234,44 @@ class MockNetworkClass: NetworkClass {
         if let result = result {
             completion(result)
         }
+    }
+}
+
+@MainActor
+final class SearchNavigationRenderingTests: XCTestCase {
+    func testSearchBannersAndNativeLoginNavigationRender() async throws {
+        let user = UserViewModel()
+        let model = DashboardViewModel()
+        let api = MockNetworkClass()
+        model.api = api
+        try await capture(DashboardView().environmentObject(model).environmentObject(user), name: "search-start")
+        model.searchBook = "No matching book"
+        api.result = .success([])
+        model.performSearch()
+        await Task.yield()
+        try await capture(DashboardView().environmentObject(model).environmentObject(user)
+            .environment(\.dynamicTypeSize, .accessibility3), name: "search-empty-accessibility")
+        try await capture(NavigationStack(path: .constant(["login"])) {
+            Text("Welcome").navigationTitle("Welcome")
+                .navigationDestination(for: String.self) { _ in LoginView() }
+        }.environmentObject(user), name: "login-native-navigation")
+    }
+
+    private func capture<V: View>(_ view: V, name: String) async throws {
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let previous = scene.windows.first(where: \.isKeyWindow)
+        let window = UIWindow(windowScene: scene)
+        window.frame = CGRect(x: 0, y: 0, width: 390, height: 844)
+        window.rootViewController = UIHostingController(rootView: view)
+        window.makeKeyAndVisible()
+        defer { window.isHidden = true; previous?.makeKeyAndVisible() }
+        try await Task.sleep(nanoseconds: 400_000_000)
+        let image = UIGraphicsImageRenderer(size: window.bounds.size).image { _ in
+            XCTAssertTrue(window.drawHierarchy(in: window.bounds, afterScreenUpdates: true))
+        }
+        let attachment = XCTAttachment(image: image)
+        attachment.name = name
+        attachment.lifetime = .keepAlways
+        add(attachment)
     }
 }

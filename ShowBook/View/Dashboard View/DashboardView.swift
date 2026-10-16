@@ -16,13 +16,14 @@ struct DashboardView: View {
     @EnvironmentObject var userViewModel: UserViewModel
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
                 ZStack {
                     VStack(spacing: DesignMetric.p0) {
-                        headerView
                         searchField
-                        HStack { Spacer(); BookLayoutPicker() }
-                            .padding(.horizontal, Spacing.twenty)
+                        if !viewModel.filteredBooks.isEmpty {
+                            HStack { Spacer(); BookLayoutPicker() }
+                                .padding(.horizontal, Spacing.twenty)
+                        }
                         ZStack {
                             if !viewModel.filteredBooks.isEmpty {
                                 VStack{
@@ -31,13 +32,28 @@ struct DashboardView: View {
                                 }
                             }
                             
+                            if viewModel.filteredBooks.isEmpty && !viewModel.isBookLoading {
+                                searchStateBanner
+                            }
                             if viewModel.isBookLoading {
                                 bookLoadingIndicator
                             }
                         }
                         Spacer()
                     }
-                    .navigationBarBackButtonHidden()
+                    .navigationTitle("ShowBook")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItemGroup(placement: .topBarTrailing) {
+                            NavigationLink(destination: BookmarkView()) {
+                                Label("Saved books", systemImage: "bookmark")
+                            }
+                            .accessibilityIdentifier("bookmarkButton")
+                            Button { viewModel.logOutAlert = true } label: {
+                                Label("Log out", systemImage: "rectangle.portrait.and.arrow.right")
+                            }
+                        }
+                    }
                     .alert(isPresented: $viewModel.showAlert) {
                         Alert(title: Text("Error"),
                               message: Text(viewModel.errorMessage),
@@ -61,40 +77,47 @@ struct DashboardView: View {
                         loadingIndicator
                     }
                 }
-            .navigationViewStyle(StackNavigationViewStyle())
         }
     }
     
-    private var headerView: some View {
-        HStack {
-            Text("ShowBook")
-                .font(Typography.title)
-                .padding(.leading, Spacing.thirty)
-            Spacer()
-            NavigationLink(destination: BookmarkView()) {
-                Image(systemName: "bookmark.circle.fill")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(height: DesignMetric.p35)
-                    .foregroundColor(DesignColor.black)
+    private var searchStateBanner: some View {
+        ScrollView {
+            SurfaceCard {
+                StateMessage {
+                    Image(systemName: viewModel.searchState == .failed ? "wifi.exclamationmark" : "magnifyingglass")
+                } title: {
+                    Text(searchStateTitle).multilineTextAlignment(.center)
+                } detail: {
+                    Text(searchStateDetail)
+                } actions: {
+                    if viewModel.searchState == .failed {
+                        Button("Retry") { viewModel.performSearch() }
+                    }
+                }
+                .frame(maxWidth: .infinity)
             }
-            .padding(.trailing, Spacing.thirty)
-            .accessibilityIdentifier("bookmarkButton")
-            
-            Button(action: {
-                viewModel.isLoading = true
-                viewModel.logOutAlert = true
-            }) {
-                Image("Logout")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(height: DesignMetric.p30)
-            }
-            .padding(.trailing, Spacing.twenty)
+            .padding(Spacing.twenty)
+            .accessibilityIdentifier("search-state-banner")
         }
-        .padding(.vertical, Spacing.twenty)
     }
-    
+
+    private var searchStateTitle: String {
+        switch viewModel.searchState {
+        case .empty: return "No books found"
+        case .failed: return "Unable to search"
+        case .tooShort: return "Keep typing"
+        default: return "Start searching to see books"
+        }
+    }
+
+    private var searchStateDetail: String {
+        switch viewModel.searchState {
+        case .empty: return "No matches for “\(viewModel.searchBook)”. Check the spelling or try another book title."
+        case .failed: return "We couldn’t load books. Check your connection and try again."
+        default: return "Enter at least 3 characters of a book title to begin."
+        }
+    }
+
     private var searchField: some View {
         HStack {
             Image(systemName: "book.fill")
@@ -183,6 +206,5 @@ struct DashboardView_Previews: PreviewProvider {
         DashboardView()
             .environmentObject(UserViewModel())
             .environmentObject(DashboardViewModel())
-            .navigationViewStyle(StackNavigationViewStyle())
     }
 }

@@ -25,11 +25,22 @@ class DashboardViewModel: ObservableObject {
     var offset: Int = 0
     private var requestID = UUID()
     private var loadedTitle: String?
+
+    enum SearchState: Equatable { case idle, tooShort, loading, results, empty, failed }
+    var searchState: SearchState {
+        let query = searchBook.trimmingCharacters(in: .whitespacesAndNewlines)
+        if query.isEmpty { return .idle }
+        if query.count < 3 { return .tooShort }
+        if isBookLoading { return .loading }
+        if !books.isEmpty { return .results }
+        if !errorMessage.isEmpty { return .failed }
+        return loadedTitle == searchBook ? .empty : .idle
+    }
     
     var sortByCategoryArray: [String] = ["Title", "Average", "Hits"]
     
     var filteredBooks: [Book] {
-        guard searchBook.count >= 3 else {
+        guard searchBook.trimmingCharacters(in: .whitespacesAndNewlines).count >= 3 else {
             return []
         }
         
@@ -55,7 +66,7 @@ class DashboardViewModel: ObservableObject {
         errorMessage = ""
         isBookLoading = false
         isLoadingMore = false
-        guard searchBook.count >= 3 else { return }
+        guard searchBook.trimmingCharacters(in: .whitespacesAndNewlines).count >= 3 else { return }
         isBookLoading = true
         fetchBooks(title: searchBook, offset: 0) {}
     }

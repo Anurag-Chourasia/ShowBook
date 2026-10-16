@@ -17,7 +17,6 @@ struct ShowBookApp: App {
             ContentView()
                 .environmentObject(userViewModel)
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
-                .navigationViewStyle(StackNavigationViewStyle())
         }
     }
 }

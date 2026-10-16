@@ -18,7 +18,6 @@ struct BookmarkView: View {
     
     var body: some View {
         VStack(spacing: DesignMetric.p0) {
-            headerView
             ZStack{
                 booksListView
                     .onAppear {
@@ -40,29 +39,11 @@ struct BookmarkView: View {
             }
             
         }
-        .navigationBarBackButtonHidden()
-        .navigationViewStyle(StackNavigationViewStyle())
-    }
-    
-    private var headerView: some View {
-        HStack(spacing: DesignMetric.p0) {
-            backButton
-            Text("Saved Books")
-                .font(Typography.title)
-            Spacer()
-            BookLayoutPicker()
+        .navigationTitle("Saved Books")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) { BookLayoutPicker() }
         }
-        .padding(.vertical, Spacing.twenty)
-        .padding(.horizontal, Spacing.twenty)
-    }
-    
-    private var backButton: some View {
-        Button(action: {
-            presentationMode.wrappedValue.dismiss()
-        }) {
-            OutlinedIconLabel(systemImage: "chevron.left", color: ShowBookTheme.colors.action)
-        }
-        .padding(.trailing, Spacing.system)
     }
     
     private var booksListView: some View {
@@ -86,6 +67,5 @@ struct BookmarkView: View {
 }
 
 #Preview {
-    BookmarkView()
-        .navigationViewStyle(StackNavigationViewStyle())
+    NavigationStack { BookmarkView() }
 }
