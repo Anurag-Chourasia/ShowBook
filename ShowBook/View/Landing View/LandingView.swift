@@ -31,6 +31,13 @@ struct LandingView: View {
             }
             .navigationTitle("Welcome")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    NavigationLink(destination: ShowBookDeveloperView()) {
+                        Label("Know Your Developer", systemImage: "person.crop.circle")
+                    }
+                }
+            }
         }
        
     }

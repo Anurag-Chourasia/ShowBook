@@ -45,3 +45,9 @@ BookDetailsTests uses injected fixtures and URLProtocol to cover decoding, keys,
 Before searching, Dashboard displays a start-search banner. Queries under three non-whitespace characters display typing guidance and do not start requests. A successful empty first page displays “No books found”; network failures remain distinct and offer retry. Existing results remain visible when a later page is empty or fails. Tests cover initial/short/loading/empty/failure/reset states and stale callbacks. Scene-hosted captures cover start and empty banners plus native Login navigation.
 
 Landing and Dashboard each own one NavigationStack for their authentication state. Login, Sign Up, Saved Books and details inherit their parent's stack and native back navigation. Dashboard Saved/Log Out actions and Saved Books layout selection use native toolbar items.
+
+## Private developer profile module
+
+DeveloperProfileKit 1.0.0 owns the developer portrait, biography, social assets/links, expandable summary and app-information/disclaimer presentation. Apps supply their own name/version/build/disclaimer and navigation. The package uses the existing exact DesignTokensKit/UIComponentsKit versions. The app dependency record and Xcode lockfile verify the package commit.
+
+The repository is private. Local builds need an authorized GitHub account with read access; CI uses a dedicated read-only deploy key stored as DEVELOPERPROFILEKIT_DEPLOY_KEY. The existing trusted-workflow SSH configuration routes only this repository through that key and removes temporary credentials after the run. No private keys are committed.

@@ -50,6 +50,7 @@
 		A23000000000000000000010 /* BookDetailsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A23000000000000000000000; };
 		A23000000000000000000011 /* BookDetailsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A23000000000000000000001; };
 		A23000000000000000000012 /* BookDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A23000000000000000000002; };
+		A25000000000000000000003 /* DeveloperProfileKit in Frameworks */ = {isa = PBXBuildFile; productRef = A25000000000000000000002 /* DeveloperProfileKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -115,6 +116,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A25000000000000000000003 /* DeveloperProfileKit in Frameworks */,
 				4AAED97CED59ADF39CD524D6 /* CommonNetworking in Frameworks */,
 				6C8873A6A96AECA6153C5AA7 /* FoundationKit in Frameworks */,
 				6A0EB3CEE74C24CBDA6E6A50 /* LocalizationKit in Frameworks */,
@@ -342,6 +344,7 @@
 			);
 			name = ShowBook;
 			packageProductDependencies = (
+				A25000000000000000000002 /* DeveloperProfileKit */,
 				95732E385786F6E1232BBF15 /* CommonNetworking */,
 				945F817B0BE1541EEA799DBF /* FoundationKit */,
 				C39F6585DE5D8CA74DD4BA50 /* LocalizationKit */,
@@ -401,6 +404,7 @@
 			);
 			mainGroup = 3403E2652C7064310063E7D0;
 			packageReferences = (
+				A25000000000000000000001 /* XCRemoteSwiftPackageReference "DeveloperProfileKit" */,
 				AEB2D9BC476E0F608EBF52D1 /* XCRemoteSwiftPackageReference "CommonNetworking" */,
 				AA9FA121FCA88E0B247E2FFB /* XCRemoteSwiftPackageReference "FoundationKit" */,
 				C8FC995D988090DF0D402585 /* XCRemoteSwiftPackageReference "LocalizationKit" */,
@@ -826,6 +830,11 @@
 				version = 0.1.1;
 			};
 		};
+		A25000000000000000000001 /* XCRemoteSwiftPackageReference "DeveloperProfileKit" */ = {
+            isa = XCRemoteSwiftPackageReference;
+            repositoryURL = "https://github.com/Anurag-Chourasia/DeveloperProfileKit.git";
+            requirement = { kind = exactVersion; version = 1.0.0; };
+        };
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -854,6 +863,11 @@
 			package = C8FC995D988090DF0D402585 /* XCRemoteSwiftPackageReference "LocalizationKit" */;
 			productName = LocalizationKit;
 		};
+		A25000000000000000000002 /* DeveloperProfileKit */ = {
+            isa = XCSwiftPackageProductDependency;
+            package = A25000000000000000000001 /* XCRemoteSwiftPackageReference "DeveloperProfileKit" */;
+            productName = DeveloperProfileKit;
+        };
 /* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */

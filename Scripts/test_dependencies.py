@@ -2,7 +2,7 @@ import json,tempfile,subprocess
 from pathlib import Path
 root=Path(__file__).resolve().parents[1]
 expected=json.loads((root/'Scripts/dependencies.json').read_text())
-names={'commonnetworking':'CommonNetworking','foundationkit':'FoundationKit','localizationkit':'LocalizationKit','designtokenskit':'DesignTokensKit','uicomponentskit':'UIComponentsKit'}
+names={'developerprofilekit':'DeveloperProfileKit','commonnetworking':'CommonNetworking','foundationkit':'FoundationKit','localizationkit':'LocalizationKit','designtokenskit':'DesignTokensKit','uicomponentskit':'UIComponentsKit'}
 with tempfile.TemporaryDirectory(prefix='verified-kits-') as temp:
  for identity,pin in expected.items():
   name=names[identity];p=Path(temp)/name

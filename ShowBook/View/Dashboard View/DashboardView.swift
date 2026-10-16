@@ -9,6 +9,7 @@ import SwiftUI
 import CoreData
 import UIComponentsKit
 import DesignTokensKit
+import DeveloperProfileKit
 
 struct DashboardView: View {
     @Environment(\.managedObjectContext) private var viewContext
@@ -49,6 +50,9 @@ struct DashboardView: View {
                                 Label("Saved books", systemImage: "bookmark")
                             }
                             .accessibilityIdentifier("bookmarkButton")
+                            NavigationLink(destination: ShowBookDeveloperView()) {
+                                Label("Know Your Developer", systemImage: "person.crop.circle")
+                            }
                             Button { viewModel.logOutAlert = true } label: {
                                 Label("Log out", systemImage: "rectangle.portrait.and.arrow.right")
                             }
@@ -206,5 +210,21 @@ struct DashboardView_Previews: PreviewProvider {
         DashboardView()
             .environmentObject(UserViewModel())
             .environmentObject(DashboardViewModel())
+    }
+}
+
+struct ShowBookDeveloperView: View {
+    @AppStorage("bookCatalogLayout") private var storedLayout = CatalogLayout.list.rawValue
+
+    var body: some View {
+        DeveloperProfileView(app: DeveloperAppInfo(
+            name: "ShowBook",
+            version: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "—",
+            build: Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "—",
+            disclaimer: "ShowBook is a book discovery application. Book metadata and covers are provided by Open Library. Availability and accuracy depend on the source records.\n\nSource: https://openlibrary.org"
+        ), layout: CatalogLayout(rawValue: storedLayout) ?? .list)
+        .navigationTitle("Know Your Developer")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar { ToolbarItem(placement: .topBarTrailing) { BookLayoutPicker() } }
     }
 }

@@ -18,5 +18,9 @@
   "uicomponentskit": {
     "version": "1.2.0",
     "revision": "7b3296ce1cec548bf8cad36b7526ba41c07cc30e"
+  },
+  "developerprofilekit": {
+    "version": "1.0.0",
+    "revision": "3f7db216ba003ed8b7c46d0a14a7853dee02fc62"
   }
 }
