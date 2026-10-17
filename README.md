@@ -56,3 +56,20 @@ Internet is Required when navigating to sign up view and when searching books fr
 ### Limitations
 - **Saving Books**: No API-provided IDs; UUIDs used for distinction.
   - Books with the same title, author, rating, review, and cover ID are saved as a single entry.
+
+## Future Plans
+
+Proposed enhancements, not completed features. Extend existing implementations where applicable.
+
+| Enhance engineering skills | Enhance user experience |
+|---|---|
+| **Offline-first library:** local persistence, cache expiry, background refresh, and data migrations | Open saved books without internet and clearly identify outdated information. |
+| **Reliable search pipeline:** strengthen cancellation, request deduplication, pagination, and stale-response protection | Faster search, recent searches, and fewer loading interruptions. |
+| **Reading-progress model:** validated state transitions and persistent progress | Want to Read, Reading, Finished, and a Continue Reading section. |
+| **Cross-device sync:** conflict resolution, retry handling, and deletion tracking | Keep reading lists and progress consistent across devices. |
+| **Resilient image loading:** memory/disk caches, request coalescing, and cancellation | Faster covers, fewer blank images, and lower data usage. |
+| **Accessibility validation:** automated checks plus VoiceOver and Dynamic Type testing | Comfortable browsing with large text and assistive technologies. |
+| **Performance measurement:** launch benchmarks, scrolling analysis, and memory profiling | Smooth browsing as the saved library grows. |
+
+First priority: the offline-first reading library. Preserve search, filters, layout,
+and scroll position when returning from book details wherever that state currently resets.
