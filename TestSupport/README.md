@@ -42,9 +42,9 @@ BookDetailsTests uses injected fixtures and URLProtocol to cover decoding, keys,
 
 ## Search states and navigation
 
-Before searching, Dashboard displays a start-search banner. Queries under three non-whitespace characters display typing guidance and do not start requests. A successful empty first page displays “No books found”; network failures remain distinct and offer retry. Existing results remain visible when a later page is empty or fails. Tests cover initial/short/loading/empty/failure/reset states and stale callbacks. Scene-hosted captures cover start and empty banners plus native Login navigation.
+Before searching, Dashboard displays Discover when enabled; otherwise it displays a start-search banner. Queries under three non-whitespace characters display typing guidance and do not start requests. A successful empty first page displays “No books found”; network failures remain distinct and offer retry. Existing results remain visible when a later page is empty or fails. Tests cover initial/short/loading/empty/failure/reset states and stale callbacks. Scene-hosted captures cover start and empty banners plus native Login navigation.
 
-Landing and Dashboard each own one NavigationStack for their authentication state. Login, Sign Up, Saved Books and details inherit their parent's stack and native back navigation. Dashboard Saved/Log Out actions and Saved Books layout selection use native toolbar items.
+Landing and Dashboard each own one NavigationStack for their authentication state. Login, Sign Up, Saved Books and details inherit their parent's stack and native back navigation. Dashboard Saved/Log Out actions live in the hamburger menu; Saved Books layout selection is also grouped into its menu.
 
 ## Private developer profile module
 
@@ -60,7 +60,7 @@ Remove or disable that variable for normal testing; no HTTP body formatting or c
 
 ## Discover and developer launch page
 
-Debug builds launch into Developer settings. Choose a configuration and tap **Open ShowBook**. Reopen it from **App options → Developer settings**. Applying settings rebuilds the app navigation so screens and services pick up the configuration.
+Debug builds launch into Developer settings. Choose a configuration and tap **Open ShowBook**. Shake the device to reopen it above the current screen or sheet; there is no navigation-menu entry. Applying or dismissing the settings sheet rebuilds the app navigation so screens and services pick up the configuration.
 
 - Feature flags: Discover, cover previews and ratings. Release always enables these features.
 - HTTP logs: toggle full redacted console logs. The toggle takes precedence over `HTTP_LOGGING`; Release always passes a nil logger.
@@ -68,6 +68,6 @@ Debug builds launch into Developer settings. Choose a configuration and tap **Op
 - A/B override: Discover A uses list, B uses grid, with the existing accessibility list fallback. This is a local test override, not a remote experiment platform.
 - Version/build: simulate display metadata in Know Your Developer. These controls do not modify Info.plist, signing, installed version or App Store metadata.
 
-Discover uses the [Open Library Subjects API](https://openlibrary.org/dev/docs/api/subjects) for fiction, mystery, science and history, loading 12 works for the selected category. JSON cache lives under `Caches/Discover-v1`; live and each stub scenario have distinct files. A fresh cache lasts 24 hours; pull-to-refresh fetches again, falling back to an existing snapshot on failure. Cached titles survive relaunch; remote artwork is not guaranteed offline.
+Discover uses Open Library category search (`/search.json?q=subject:<category>`) for fiction, mystery, science and history, requesting up to 12 works plus rating averages/counts for the selected category. JSON cache lives under `Caches/Discover-v2`; live and each stub scenario have distinct files. A fresh cache lasts 24 hours; pull-to-refresh fetches again, falling back to an existing snapshot on failure. Cached titles survive relaunch; remote artwork is not guaranteed offline.
 
 `run-networking-tests.py` tests runtime policy in both Debug and Release. `DiscoverServiceTests` covers mapping, deduplication and persistent offline fallback; `DeveloperDiscoverRenderingTests` renders the developer launch page and Discover variants.
