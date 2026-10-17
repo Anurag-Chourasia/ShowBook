@@ -65,6 +65,7 @@ final class DiscoverServiceTests: XCTestCase {
         defaults.set("stub", forKey: "developer.source")
         defaults.set("success", forKey: "developer.scenario")
         try await capture(AppLaunchView().environmentObject(UserViewModel()), name: "developer-launch")
+        try await capture(AppLaunchView().environmentObject(UserViewModel()).environment(\.colorScheme, .dark), name: "developer-launch-dark")
         defaults.set("A", forKey: "developer.discoverVariant")
         try await capture(NavigationStack { DiscoverView() }.environment(\.colorScheme, .dark), name: "discover-list-dark")
         defaults.set("B", forKey: "developer.discoverVariant")

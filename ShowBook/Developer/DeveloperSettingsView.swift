@@ -1,4 +1,5 @@
 import SwiftUI
+import DesignTokensKit
 
 struct AppLaunchView: View {
     #if DEBUG
@@ -48,6 +49,7 @@ struct DeveloperSettingsView: View {
             Section {
                 Text("Developer settings are available only in Debug builds. Apply your configuration before opening the app.")
                 Button("Open ShowBook", action: onContinue)
+                    .foregroundStyle(DesignColor.primary)
                     .accessibilityIdentifier("developer-open-app")
             }
             Section("Feature flags") {
@@ -96,6 +98,7 @@ struct DeveloperSettingsView: View {
                     source = "live"; scenario = "success"; variant = "A"
                     version = ""; build = ""
                 }
+                .foregroundStyle(DesignColor.primary)
             }
         }
         .navigationTitle("Developer settings")
