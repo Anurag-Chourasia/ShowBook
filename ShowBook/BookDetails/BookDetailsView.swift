@@ -159,23 +159,18 @@ struct BookCoverPreview: View {
     let savedImage: Data?
     let title: String
     @Environment(\.dismiss) private var dismiss
+    @State private var image: UIImage?
+    @State private var loading = true
+    @State private var sharing = false
+    @State private var shareError: String?
 
     var body: some View {
         NavigationStack {
             Group {
-                if let url = LibraryCover.url(coverID) {
-                    AsyncImage(url: url) { phase in
-                        if let image = phase.image {
-                            image.resizable().scaledToFit().accessibilityLabel(title)
-                        } else if let savedImage, let image = UIImage(data: savedImage) {
-                            Image(uiImage: image).resizable().scaledToFit().accessibilityLabel(title)
-                        } else if phase.error != nil {
-                            unavailable
-                        } else { ProgressView("Loading cover…") }
-                    }
-                } else if let savedImage, let image = UIImage(data: savedImage) {
+                if let image {
                     Image(uiImage: image).resizable().scaledToFit().accessibilityLabel(title)
-                } else { unavailable }
+                } else if loading { ProgressView("Loading cover…") }
+                else { unavailable }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .padding(Spacing.sixteen)
@@ -183,11 +178,42 @@ struct BookCoverPreview: View {
             .accessibilityIdentifier("book-cover-preview")
             .navigationTitle("Cover preview")
             .navigationBarTitleDisplayMode(.inline)
-            .showBookTools()
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button("Done") { dismiss() }
+                    Button { dismiss() } label: { Image(systemName: "xmark") }
+                        .accessibilityLabel("Close cover preview")
                 }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button { sharing = true } label: {
+                        Label("Share cover", systemImage: "square.and.arrow.up")
+                    }
+                    .disabled(image == nil)
+                    .accessibilityIdentifier("share-cover")
+                }
+            }
+            .tint(DesignColor.primary)
+            .sheet(isPresented: $sharing) {
+                if let image {
+                    CoverShareSheet(image: image) { error in
+                        shareError = error.localizedDescription
+                    }
+                }
+            }
+            .alert("Couldn’t share cover", isPresented: Binding(
+                get: { shareError != nil }, set: { if !$0 { shareError = nil } }
+            )) { Button("OK", role: .cancel) {} } message: { Text(shareError ?? "") }
+            .task {
+                image = savedImage.flatMap(UIImage.init(data:))
+                defer { loading = false }
+                guard let url = LibraryCover.url(coverID) else { return }
+                do {
+                    let (data, response) = try await URLSession.shared.data(from: url)
+                    try Task.checkCancellation()
+                    if let response = response as? HTTPURLResponse,
+                       (200..<300).contains(response.statusCode), let loaded = UIImage(data: data) {
+                        image = loaded
+                    }
+                } catch { /* Retain saved artwork when offline. */ }
             }
         }
     }
@@ -197,4 +223,21 @@ struct BookCoverPreview: View {
             Text("Cover unavailable").font(Typography.headline)
         }.foregroundStyle(DesignColor.secondary)
     }
+}
+
+/// Pass the image itself so iOS offers image-compatible destinations and
+/// system actions, including Save Image and Save to Files.
+private struct CoverShareSheet: UIViewControllerRepresentable {
+    let image: UIImage
+    let onError: (Error) -> Void
+
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        let controller = UIActivityViewController(activityItems: [image], applicationActivities: nil)
+        controller.completionWithItemsHandler = { _, _, _, error in
+            if let error { onError(error) }
+        }
+        return controller
+    }
+
+    func updateUIViewController(_ controller: UIActivityViewController, context: Context) {}
 }

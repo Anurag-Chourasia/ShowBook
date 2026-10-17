@@ -12,7 +12,11 @@ private final class SubjectFixtureProtocol: URLProtocol {
     override func startLoading() {
         Self.lock.lock(); let offline = Self.offline; Self.lock.unlock()
         if offline { client?.urlProtocol(self, didFailWithError: URLError(.notConnectedToInternet)); return }
-        let body = #"{"works":[{"key":"/works/OL1W","title":"First","authors":[{"name":"Author"}],"cover_id":123},{"key":"/works/OL1W","title":"Duplicate"},{"key":"/books/OL1M","title":"Wrong resource"}]}"#
+        XCTAssertEqual(request.url?.path, "/search.json")
+        let query = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)?.queryItems ?? []
+        XCTAssertEqual(query.first { $0.name == "q" }?.value, "subject:fiction")
+        XCTAssertTrue(query.first { $0.name == "fields" }?.value?.contains("ratings_average,ratings_count") == true)
+        let body = #"{"docs":[{"key":"/works/OL1W","title":"First","author_name":["Author"],"cover_i":123,"ratings_average":4.25,"ratings_count":24},{"key":"/works/OL1W","title":"Duplicate"},{"key":"/books/OL1M","title":"Wrong resource"}]}"#
         client?.urlProtocol(self, didReceive: HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!, cacheStoragePolicy: .notAllowed)
         client?.urlProtocol(self, didLoad: Data(body.utf8))
         client?.urlProtocolDidFinishLoading(self)
@@ -35,12 +39,15 @@ final class DiscoverServiceTests: XCTestCase {
         XCTAssertEqual(result.books.first?.key, "/works/OL1W")
         XCTAssertEqual(result.books.first?.authorName, ["Author"])
         XCTAssertEqual(result.books.first?.coverI, 123)
-        XCTAssertNil(result.books.first?.availableRating)
+        XCTAssertEqual(result.books.first?.availableRating?.average, 4.25)
+        XCTAssertEqual(result.books.first?.availableRating?.count, 24)
         SubjectFixtureProtocol.setOffline(true)
         let reopened = DiscoverService(session: session, directory: directory)
         let cached = try await reopened.load(.fiction, refresh: true)
         XCTAssertTrue(cached.cached)
         XCTAssertEqual(cached.books.map(\.title), ["First"])
+        XCTAssertEqual(cached.books.first?.availableRating?.average, 4.25)
+        XCTAssertEqual(cached.books.first?.availableRating?.count, 24)
         do {
             _ = try await reopened.load(.history, refresh: true)
             XCTFail("A different category must not reuse fiction's cache")
@@ -48,10 +55,11 @@ final class DiscoverServiceTests: XCTestCase {
     }
 
     func testSubjectFieldsCanBeAbsentAndMalformedDataIsRejected() throws {
-        let response = try JSONDecoder().decode(SubjectResponse.self, from: Data(#"{"works":[{"key":"/works/OL2W","title":"Minimal"}]}"#.utf8))
-        XCTAssertNil(response.works.first?.book.authorName)
-        XCTAssertNil(response.works.first?.book.coverI)
-        XCTAssertThrowsError(try JSONDecoder().decode(SubjectResponse.self, from: Data(#"{"works":"invalid"}"#.utf8)))
+        let response = try JSONDecoder().decode(BooksResponse.self, from: Data(#"{"docs":[{"key":"/works/OL2W","title":"Minimal"}]}"#.utf8))
+        XCTAssertNil(response.docs.first?.authorName)
+        XCTAssertNil(response.docs.first?.coverI)
+        XCTAssertNil(response.docs.first?.availableRating)
+        XCTAssertThrowsError(try JSONDecoder().decode(BooksResponse.self, from: Data(#"{"docs":"invalid"}"#.utf8)))
     }
 }
 

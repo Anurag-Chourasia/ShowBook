@@ -3,24 +3,26 @@ import DesignTokensKit
 
 struct AppLaunchView: View {
     #if DEBUG
-    @State private var showingSettings = true
+    @State private var showingLaunchSettings = true
     @State private var configurationID = UUID()
     #endif
+
     var body: some View {
         #if DEBUG
         Group {
-            if showingSettings {
+            if showingLaunchSettings {
                 NavigationStack {
-                    DeveloperSettingsView {
-                        configurationID = UUID()
-                        showingSettings = false
+                    DeveloperSettingsView(buttonTitle: "Open ShowBook") {
+                        showingLaunchSettings = false
                     }
                 }
-            } else { ContentView().id(configurationID) }
+            } else {
+                ContentView().id(configurationID)
+            }
         }
-        .onReceive(NotificationCenter.default.publisher(for: .developerSettingsApplied)) { _ in
+        .background(DebugSettingsPresenter(isLaunchSettingsVisible: showingLaunchSettings) {
             configurationID = UUID()
-        }
+        })
         #else
         ContentView()
         #endif
@@ -28,11 +30,78 @@ struct AppLaunchView: View {
 }
 
 #if DEBUG
-extension Notification.Name {
-    static let developerSettingsApplied = Notification.Name("ShowBook.developerSettingsApplied")
+private extension Notification.Name {
+    static let deviceShaken = Notification.Name("ShowBook.deviceShaken")
+}
+
+// The window remains in the responder chain across navigation, keyboards,
+// and presented sheets. Do not take first responder away from text fields.
+extension UIWindow {
+    open override func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
+        super.motionEnded(motion, with: event)
+        guard motion == .motionShake else { return }
+        NotificationCenter.default.post(name: .deviceShaken, object: self)
+    }
+}
+
+private struct DebugSettingsPresenter: UIViewControllerRepresentable {
+    var isLaunchSettingsVisible: Bool
+    var onApply: () -> Void
+
+    func makeUIViewController(context: Context) -> Presenter {
+        Presenter()
+    }
+
+    func updateUIViewController(_ controller: Presenter, context: Context) {
+        controller.isLaunchSettingsVisible = isLaunchSettingsVisible
+        controller.onApply = onApply
+    }
+
+    final class Presenter: UIViewController, UIAdaptivePresentationControllerDelegate {
+        var isLaunchSettingsVisible = false
+        var onApply: () -> Void = {}
+        private weak var settingsController: UIViewController?
+
+        override func viewDidLoad() {
+            super.viewDidLoad()
+            NotificationCenter.default.addObserver(self, selector: #selector(showSettings(_:)),
+                                                   name: .deviceShaken, object: nil)
+        }
+
+        deinit { NotificationCenter.default.removeObserver(self) }
+
+        @objc private func showSettings(_ notification: Notification) {
+            guard let window = notification.object as? UIWindow,
+                  window === view.window,
+                  !isLaunchSettingsVisible, settingsController == nil,
+                  var presenter = window.rootViewController else { return }
+            // Present above the currently open sheet, preserving its navigation state.
+            while let presented = presenter.presentedViewController {
+                presenter = presented
+            }
+            guard !presenter.isBeingDismissed, !presenter.isBeingPresented else { return }
+            let settings = UIHostingController(rootView: NavigationStack {
+                DeveloperSettingsView { [weak self] in
+                    self?.settingsController?.dismiss(animated: true) {
+                        self?.settingsController = nil
+                        self?.onApply()
+                    }
+                }
+            }.appAppearance())
+            settingsController = settings
+            presenter.present(settings, animated: true)
+            settings.presentationController?.delegate = self
+        }
+
+        func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+            settingsController = nil
+            onApply()
+        }
+    }
 }
 
 struct DeveloperSettingsView: View {
+    var buttonTitle = "Apply and close"
     var onContinue: () -> Void
     @AppStorage("developer.discover") private var discover = true
     @AppStorage("developer.coverPreview") private var preview = true
@@ -47,8 +116,8 @@ struct DeveloperSettingsView: View {
     var body: some View {
         Form {
             Section {
-                Text("Developer settings are available only in Debug builds. Apply your configuration before opening the app.")
-                Button("Open ShowBook", action: onContinue)
+                Text("Configure ShowBook, then continue. Shake the device from any screen to return to these settings.")
+                Button(buttonTitle, action: onContinue)
                     .foregroundStyle(DesignColor.primary)
                     .accessibilityIdentifier("developer-open-app")
             }
@@ -103,7 +172,8 @@ struct DeveloperSettingsView: View {
         }
         .navigationTitle("Developer settings")
         .navigationBarTitleDisplayMode(.inline)
-        .showBookTools(includeSettings: false)
+        .tint(DesignColor.primary)
+        .toggleStyle(SwitchToggleStyle(tint: DesignColor.green))
     }
 }
 #endif

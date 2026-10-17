@@ -114,15 +114,20 @@ private extension String {
 
 /// Search and bookmarks share the same saved preference and accessibility fallback.
 struct BookLayoutPicker: View {
+    var selection: Binding<CatalogLayout>? = nil
     @AppStorage("bookCatalogLayout") private var storedLayout = CatalogLayout.list.rawValue
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var showGridUnavailable = false
 
     var body: some View {
-        CatalogLayoutMenu(selection: (CatalogLayout(rawValue: storedLayout) ?? .list).resolved(isAccessibilitySize: dynamicTypeSize.isAccessibilitySize),
+        CatalogLayoutMenu(selection: (selection?.wrappedValue ?? CatalogLayout(rawValue: storedLayout) ?? .list).resolved(isAccessibilitySize: dynamicTypeSize.isAccessibilitySize),
                           isAccessibilitySize: dynamicTypeSize.isAccessibilitySize,
-                          onSelect: { storedLayout = $0.rawValue },
+                          onSelect: { layout in
+                              if let selection { selection.wrappedValue = layout }
+                              else { storedLayout = layout.rawValue }
+                          },
                           onGridUnavailable: { showGridUnavailable = true })
+            .tint(DesignColor.primary)
             .accessibilityIdentifier("book-layout-menu")
             .alert("List layout", isPresented: $showGridUnavailable) {
                 Button("OK", role: .cancel) {}
