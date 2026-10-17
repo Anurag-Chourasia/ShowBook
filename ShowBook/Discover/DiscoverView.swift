@@ -39,6 +39,7 @@ struct DiscoverView: View {
                 }
             }.padding(.vertical, Spacing.sixteen)
         }
+        .tint(DesignColor.primary)
         .accessibilityIdentifier("discover-screen")
         .task(id: category) { await model.load(category) }
         .task(id: reload) { if reload > 0 { await model.load(category, refresh: true) } }
