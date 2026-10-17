@@ -14,7 +14,7 @@ struct ShowBookApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            AppLaunchView()
                 .appAppearance()
                 .environmentObject(userViewModel)
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)

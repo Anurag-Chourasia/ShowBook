@@ -34,7 +34,9 @@ struct DashboardView: View {
                             }
                             
                             if viewModel.filteredBooks.isEmpty && !viewModel.isBookLoading {
-                                searchStateBanner
+                                if viewModel.searchBook.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && AppRuntime.discoverEnabled {
+                                    DiscoverView()
+                                } else { searchStateBanner }
                             }
                             if viewModel.isBookLoading {
                                 bookLoadingIndicator
@@ -217,8 +219,8 @@ struct ShowBookDeveloperView: View {
     var body: some View {
         DeveloperProfileView(app: DeveloperAppInfo(
             name: "ShowBook",
-            version: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "—",
-            build: Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "—",
+            version: AppRuntime.version,
+            build: AppRuntime.build,
             disclaimer: "ShowBook is a book discovery application. Book metadata and covers are provided by Open Library. Availability and accuracy depend on the source records.\n\nSource: https://openlibrary.org"
         ), layout: CatalogLayout(rawValue: storedLayout) ?? .list)
         .tint(DesignColor.blue)

@@ -121,9 +121,10 @@ struct LibraryCover: View {
     let coverID: Int?
     let savedImage: Data?
     @State private var previewPresented = false
-    static func url(_ id: Int?) -> URL? {
-        guard let id, id > 0 else { return nil }
-        return URL(string: "https://covers.openlibrary.org/b/id/\(id)-L.jpg?default=false")
+    enum CoverSize: String { case medium = "M", large = "L" }
+    static func url(_ id: Int?, size: CoverSize = .large) -> URL? {
+        guard AppRuntime.stubScenario == nil, let id, id > 0 else { return nil }
+        return URL(string: "https://covers.openlibrary.org/b/id/\(id)-\(size.rawValue).jpg?default=false")
     }
     var body: some View {
         Group {
@@ -139,10 +140,12 @@ struct LibraryCover: View {
         }
         .frame(width: CatalogMetrics.coverGridSize.width, height: CatalogMetrics.coverGridSize.height)
         .contentShape(Rectangle())
-        .onLongPressGesture { previewPresented = true }
+        .onLongPressGesture { if AppRuntime.coverPreviewEnabled { previewPresented = true } }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("Book cover")
-        .accessibilityAction(named: "Preview cover") { previewPresented = true }
+        .accessibilityActions {
+            if AppRuntime.coverPreviewEnabled { Button("Preview cover") { previewPresented = true } }
+        }
         .sheet(isPresented: $previewPresented) {
             BookCoverPreview(coverID: coverID, savedImage: savedImage, title: "Book cover")
         }

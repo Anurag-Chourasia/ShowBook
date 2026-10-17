@@ -11,18 +11,12 @@ import Combine
 
 // MARK: - NetworkClass
 class NetworkClass: ObservableObject {
-    private let transport: CommonNetworking.HTTPClient
-
-    init(session: URLSession = .shared) {
-        #if DEBUG
-        transport = CommonNetworking.HTTPClient(session: session, logger: ProcessInfo.processInfo.environment["HTTP_LOGGING"] == "1" ? .console : nil)
-        #else
-        transport = CommonNetworking.HTTPClient(session: session)
-        #endif
-    }
+    private let session: URLSession?
+    init(session: URLSession? = nil) { self.session = session }
 
     // Legacy callbacks remain off-main and have no caller-owned cancellation handle.
     private func fetchData(from url: URL, completion: @escaping (Data?, URLResponse?, Error?) -> Void) {
+        let transport = AppNetworking.client(session: session)
         Task.detached { [transport] in
             do {
                 let response = try await transport.send(URLRequest(url: url))

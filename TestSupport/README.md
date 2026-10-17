@@ -57,3 +57,17 @@ The repository is private. Local builds need an authorized GitHub account with r
 Verbose HTTP request/response logging is compiled only in Debug and disabled by default.
 To inspect full redacted bodies, set `HTTP_LOGGING=1` in Xcode's scheme → Run → Arguments → Environment Variables.
 Remove or disable that variable for normal testing; no HTTP body formatting or console output occurs when logging is off. Release always uses a nil logger, even if the variable is set.
+
+## Discover and developer launch page
+
+Debug builds launch into Developer settings. Choose a configuration and tap **Open ShowBook**. Reopen it from **App options → Developer settings**. Applying settings rebuilds the app navigation so screens and services pick up the configuration.
+
+- Feature flags: Discover, cover previews and ratings. Release always enables these features.
+- HTTP logs: toggle full redacted console logs. The toggle takes precedence over `HTTP_LOGGING`; Release always passes a nil logger.
+- Data: Live uses the existing production APIs. Stub uses isolated URLSession fixtures for Open Library, country and IP endpoints; remote cover URLs are disabled. Scenarios: success, empty results, offline failure. Accounts and bookmarks still use local storage; this is not an authentication bypass.
+- A/B override: Discover A uses list, B uses grid, with the existing accessibility list fallback. This is a local test override, not a remote experiment platform.
+- Version/build: simulate display metadata in Know Your Developer. These controls do not modify Info.plist, signing, installed version or App Store metadata.
+
+Discover uses the [Open Library Subjects API](https://openlibrary.org/dev/docs/api/subjects) for fiction, mystery, science and history, loading 12 works for the selected category. JSON cache lives under `Caches/Discover-v1`; live and each stub scenario have distinct files. A fresh cache lasts 24 hours; pull-to-refresh fetches again, falling back to an existing snapshot on failure. Cached titles survive relaunch; remote artwork is not guaranteed offline.
+
+`run-networking-tests.py` tests runtime policy in both Debug and Release. `DiscoverServiceTests` covers mapping, deduplication and persistent offline fallback; `DeveloperDiscoverRenderingTests` renders the developer launch page and Discover variants.

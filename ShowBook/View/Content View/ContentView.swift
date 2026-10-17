@@ -88,6 +88,10 @@ extension View {
 
 private struct ShowBookTools: ViewModifier {
     var includeDeveloper: Bool
+    var includeSettings: Bool
+    #if DEBUG
+    @State private var settingsPresented = false
+    #endif
     @State private var developerPresented = false
     func body(content: Content) -> some View {
         content
@@ -95,6 +99,11 @@ private struct ShowBookTools: ViewModifier {
                 ToolbarItem(placement: .topBarTrailing) {
                     Menu {
                         AppearanceMenu()
+                        #if DEBUG
+                        if includeSettings {
+                            Button("Developer settings", systemImage: "wrench.and.screwdriver") { settingsPresented = true }
+                        }
+                        #endif
                         if includeDeveloper {
                             Button { developerPresented = true } label: {
                                 Label("Know Your Developer", systemImage: "person.crop.circle")
@@ -104,6 +113,16 @@ private struct ShowBookTools: ViewModifier {
                     .accessibilityIdentifier("screen-tools")
                 }
             }
+            #if DEBUG
+            .sheet(isPresented: $settingsPresented) {
+                NavigationStack {
+                    DeveloperSettingsView {
+                        settingsPresented = false
+                        NotificationCenter.default.post(name: .developerSettingsApplied, object: nil)
+                    }
+                }.interactiveDismissDisabled()
+            }
+            #endif
             .sheet(isPresented: $developerPresented) {
                 NavigationStack {
                     ShowBookDeveloperView()
@@ -118,7 +137,7 @@ private struct ShowBookTools: ViewModifier {
 }
 
 extension View {
-    func showBookTools(includeDeveloper: Bool = true) -> some View {
-        modifier(ShowBookTools(includeDeveloper: includeDeveloper))
+    func showBookTools(includeDeveloper: Bool = true, includeSettings: Bool = true) -> some View {
+        modifier(ShowBookTools(includeDeveloper: includeDeveloper, includeSettings: includeSettings))
     }
 }

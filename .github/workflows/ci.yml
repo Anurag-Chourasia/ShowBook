@@ -74,6 +74,17 @@ jobs:
         timeout-minutes: 15
         run: bash TestSupport/run-app-tests.sh "$RUNNER_TEMP/AppDerived"
 
+      - name: Build Release without developer UI
+        run: >-
+          xcodebuild -project ShowBook.xcodeproj -scheme ShowBook -configuration Release
+          -destination 'generic/platform=iOS Simulator'
+          -derivedDataPath "$RUNNER_TEMP/AppDerived"
+          -onlyUsePackageVersionsFromResolvedFile -disableAutomaticPackageResolution
+          -scmProvider system SDKROOT=iphonesimulator CODE_SIGNING_ALLOWED=NO build
+
+      - name: Verify developer tools are excluded from Release
+        run: python3 Scripts/check_release_developer_ui.py "$RUNNER_TEMP/AppDerived/Build/Products/Release-iphonesimulator/ShowBook.app/ShowBook"
+
       - name: Remove dependency credentials
         if: always()
         run: rm -rf "$RUNNER_TEMP/shared-kit-credentials"
