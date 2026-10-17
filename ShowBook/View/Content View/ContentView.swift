@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import DesignTokensKit
 
 struct ContentView: View {
     @EnvironmentObject var userViewModel: UserViewModel
@@ -37,14 +38,33 @@ enum AppAppearance: String, CaseIterable, Identifiable {
 }
 
 struct AppearanceMenu: View {
+    var iconOnly = false
     @AppStorage("appAppearance") private var appearance: AppAppearance = .system
+
     var body: some View {
+        Group {
+            if iconOnly {
+                Menu {
+                    appearancePicker.pickerStyle(.inline)
+                } label: {
+                    Image(systemName: "circle.lefthalf.filled")
+                }
+                .accessibilityLabel("Appearance")
+                .accessibilityIdentifier("appearance-menu")
+            } else {
+                appearancePicker.pickerStyle(.menu)
+            }
+        }
+        .tint(DesignColor.primary)
+        .foregroundStyle(DesignColor.primary)
+    }
+
+    private var appearancePicker: some View {
         Picker(selection: $appearance) {
             Text("System").tag(AppAppearance.system)
             Text("Light").tag(AppAppearance.light)
             Text("Dark").tag(AppAppearance.dark)
         } label: { Label("Appearance", systemImage: "circle.lefthalf.filled") }
-        .pickerStyle(.menu)
     }
 }
 
@@ -88,28 +108,48 @@ extension View {
 
 private struct ShowBookTools: ViewModifier {
     var includeDeveloper: Bool
+    var includeLayout: Bool
+    var onLogout: (() -> Void)?
+    @State private var savedPresented = false
     @State private var developerPresented = false
     func body(content: Content) -> some View {
         content
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Menu {
+                        if onLogout != nil {
+                            Button { savedPresented = true } label: {
+                                Label("Saved books", systemImage: "bookmark")
+                            }
+                            .accessibilityIdentifier("bookmarkButton")
+                        }
                         AppearanceMenu()
+                        if includeLayout { BookLayoutPicker() }
                         if includeDeveloper {
                             Button { developerPresented = true } label: {
                                 Label("Know Your Developer", systemImage: "person.crop.circle")
                             }
                         }
-                    } label: { Label("App options", systemImage: "ellipsis.circle") }
+                        if let onLogout {
+                            Section {
+                                Button(role: .destructive, action: onLogout) {
+                                    Label("Log out", systemImage: "rectangle.portrait.and.arrow.right")
+                                }
+                            }
+                        }
+                    } label: { Label("App options", systemImage: "line.3.horizontal") }
+                    .tint(DesignColor.primary)
                     .accessibilityIdentifier("screen-tools")
                 }
             }
+            .navigationDestination(isPresented: $savedPresented) { BookmarkView() }
             .sheet(isPresented: $developerPresented) {
                 NavigationStack {
                     ShowBookDeveloperView()
                         .toolbar {
                             ToolbarItem(placement: .topBarLeading) {
-                                Button("Done") { developerPresented = false }
+                                Button { developerPresented = false } label: { Image(systemName: "xmark") }
+                                    .accessibilityLabel("Close developer profile")
                             }
                         }
                 }
@@ -118,7 +158,8 @@ private struct ShowBookTools: ViewModifier {
 }
 
 extension View {
-    func showBookTools(includeDeveloper: Bool = true) -> some View {
-        modifier(ShowBookTools(includeDeveloper: includeDeveloper))
+    func showBookTools(includeDeveloper: Bool = true, includeLayout: Bool = false,
+                       onLogout: (() -> Void)? = nil) -> some View {
+        modifier(ShowBookTools(includeDeveloper: includeDeveloper, includeLayout: includeLayout, onLogout: onLogout))
     }
 }

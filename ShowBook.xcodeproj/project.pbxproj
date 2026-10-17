@@ -51,6 +51,11 @@
 		A23000000000000000000011 /* BookDetailsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A23000000000000000000001; };
 		A23000000000000000000012 /* BookDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A23000000000000000000002; };
 		A25000000000000000000003 /* DeveloperProfileKit in Frameworks */ = {isa = PBXBuildFile; productRef = A25000000000000000000002 /* DeveloperProfileKit */; };
+		A27000000000000000000010 /* AppRuntime.swift in Sources */ = {isa = PBXBuildFile; fileRef = A27000000000000000000000; };
+		A27000000000000000000011 /* DeveloperSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A27000000000000000000001; };
+		A27000000000000000000012 /* DiscoverService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A27000000000000000000002; };
+		A27000000000000000000013 /* DiscoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A27000000000000000000003; };
+		A27000000000000000000020 /* DiscoverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A27000000000000000000021; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -109,6 +114,11 @@
 		A23000000000000000000000 /* BookDetailsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowBook/BookDetails/BookDetailsService.swift; sourceTree = SOURCE_ROOT; };
 		A23000000000000000000001 /* BookDetailsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowBook/BookDetails/BookDetailsViewModel.swift; sourceTree = SOURCE_ROOT; };
 		A23000000000000000000002 /* BookDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowBook/BookDetails/BookDetailsView.swift; sourceTree = SOURCE_ROOT; };
+		A27000000000000000000000 /* AppRuntime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowBook/Developer/AppRuntime.swift; sourceTree = SOURCE_ROOT; };
+		A27000000000000000000001 /* DeveloperSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowBook/Developer/DeveloperSettingsView.swift; sourceTree = SOURCE_ROOT; };
+		A27000000000000000000002 /* DiscoverService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowBook/Discover/DiscoverService.swift; sourceTree = SOURCE_ROOT; };
+		A27000000000000000000003 /* DiscoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowBook/Discover/DiscoverView.swift; sourceTree = SOURCE_ROOT; };
+		A27000000000000000000021 /* DiscoverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowBookTests/DiscoverTests.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -234,6 +244,10 @@
 				A23000000000000000000002 /* BookDetailsView.swift */,
 				A23000000000000000000001 /* BookDetailsViewModel.swift */,
 				A23000000000000000000000 /* BookDetailsService.swift */,
+				A27000000000000000000003 /* DiscoverView.swift */,
+				A27000000000000000000002 /* DiscoverService.swift */,
+				A27000000000000000000001 /* DeveloperSettingsView.swift */,
+				A27000000000000000000000 /* AppRuntime.swift */,
 				3403E2B52C7065190063E7D0 /* NetworkClass.swift */,
 			);
 			path = Model;
@@ -319,6 +333,7 @@
 				342B8A7F2C71B98100EC41C8 /* LoginViewTests.swift */,
 				342B8A812C71C40E00EC41C8 /* SignUpViewTests.swift */,
 				342B8A872C71E50B00EC41C8 /* DashboardViewTests.swift */,
+				A27000000000000000000021 /* DiscoverTests.swift */,
 				342B8A832C71E2A300EC41C8 /* TextFieldObserverTests.swift */,
 				342B8A8B2C72570E00EC41C8 /* BookItemViewModelTests.swift */,
 				342B8A8D2C7279B300EC41C8 /* BookmarkViewModelTests.swift */,
@@ -463,6 +478,10 @@
 				A23000000000000000000012 /* BookDetailsView.swift in Sources */,
 				A23000000000000000000011 /* BookDetailsViewModel.swift in Sources */,
 				A23000000000000000000010 /* BookDetailsService.swift in Sources */,
+				A27000000000000000000013 /* DiscoverView.swift in Sources */,
+				A27000000000000000000012 /* DiscoverService.swift in Sources */,
+				A27000000000000000000011 /* DeveloperSettingsView.swift in Sources */,
+				A27000000000000000000010 /* AppRuntime.swift in Sources */,
 				3403E2BC2C7065190063E7D0 /* SignUpView.swift in Sources */,
 				3403E2E02C70C11E0063E7D0 /* SignUpViewModel.swift in Sources */,
 				3403E2BA2C7065190063E7D0 /* LoginView.swift in Sources */,
@@ -483,6 +502,7 @@
 				342B8A902C727CB800EC41C8 /* BookmarkButtonViewModelTests.swift in Sources */,
 				342B8A842C71E2A300EC41C8 /* TextFieldObserverTests.swift in Sources */,
 				342B8A882C71E50B00EC41C8 /* DashboardViewTests.swift in Sources */,
+				A27000000000000000000020 /* DiscoverTests.swift in Sources */,
 				342B8A802C71B98100EC41C8 /* LoginViewTests.swift in Sources */,
 				342B8A8C2C72570E00EC41C8 /* BookItemViewModelTests.swift in Sources */,
 				342B8A822C71C40E00EC41C8 /* SignUpViewTests.swift in Sources */,

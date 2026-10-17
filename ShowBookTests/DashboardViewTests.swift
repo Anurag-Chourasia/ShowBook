@@ -240,6 +240,9 @@ class MockNetworkClass: NetworkClass {
 @MainActor
 final class SearchNavigationRenderingTests: XCTestCase {
     func testSearchBannersAndNativeLoginNavigationRender() async throws {
+        let originalDiscover = UserDefaults.standard.object(forKey: "developer.discover")
+        UserDefaults.standard.set(false, forKey: "developer.discover")
+        defer { UserDefaults.standard.set(originalDiscover, forKey: "developer.discover") }
         let user = UserViewModel()
         let model = DashboardViewModel()
         let api = MockNetworkClass()

@@ -41,10 +41,7 @@ struct BookmarkView: View {
         }
         .navigationTitle("Saved Books")
         .navigationBarTitleDisplayMode(.inline)
-        .showBookTools()
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) { BookLayoutPicker() }
-        }
+        .showBookTools(includeLayout: true)
     }
     
     private var booksListView: some View {

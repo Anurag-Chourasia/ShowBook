@@ -21,10 +21,6 @@ struct DashboardView: View {
                 ZStack {
                     VStack(spacing: DesignMetric.p0) {
                         searchField
-                        if !viewModel.filteredBooks.isEmpty {
-                            HStack { Spacer(); BookLayoutPicker() }
-                                .padding(.horizontal, Spacing.twenty)
-                        }
                         ZStack {
                             if !viewModel.filteredBooks.isEmpty {
                                 VStack{
@@ -34,7 +30,9 @@ struct DashboardView: View {
                             }
                             
                             if viewModel.filteredBooks.isEmpty && !viewModel.isBookLoading {
-                                searchStateBanner
+                                if viewModel.searchBook.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && AppRuntime.discoverEnabled {
+                                    DiscoverView()
+                                } else { searchStateBanner }
                             }
                             if viewModel.isBookLoading {
                                 bookLoadingIndicator
@@ -43,19 +41,8 @@ struct DashboardView: View {
                         Spacer()
                     }
                     .navigationTitle("ShowBook")
-                    .showBookTools()
+                    .showBookTools(onLogout: { viewModel.logOutAlert = true })
                     .navigationBarTitleDisplayMode(.inline)
-                    .toolbar {
-                        ToolbarItemGroup(placement: .topBarTrailing) {
-                            NavigationLink(destination: BookmarkView()) {
-                                Label("Saved books", systemImage: "bookmark")
-                            }
-                            .accessibilityIdentifier("bookmarkButton")
-                            Button { viewModel.logOutAlert = true } label: {
-                                Label("Log out", systemImage: "rectangle.portrait.and.arrow.right")
-                            }
-                        }
-                    }
                     .alert(isPresented: $viewModel.showAlert) {
                         Alert(title: Text("Error"),
                               message: Text(viewModel.errorMessage),
@@ -143,16 +130,29 @@ struct DashboardView: View {
     private var sortByFilterView: some View {
         HStack {
             Menu {
-                ForEach(viewModel.sortByCategoryArray, id: \.self) { category in
-                    Button(category) { viewModel.selectedCategoryFilter = category }
+                Section {
+                    ForEach(viewModel.sortByCategoryArray, id: \.self) { category in
+                        Button { viewModel.selectedCategoryFilter = category } label: {
+                            if viewModel.selectedCategoryFilter == category {
+                                Label(category, systemImage: "checkmark")
+                            } else {
+                                Text(category)
+                            }
+                        }
+                    }
                 }
-                Button("Clear") { viewModel.selectedCategoryFilter = "" }
+                Section {
+                    Button("Clear", role: .destructive) { viewModel.selectedCategoryFilter = "" }
+                }
             } label: {
                 Label(viewModel.selectedCategoryFilter.isEmpty ? "Sort by" : viewModel.selectedCategoryFilter,
                       systemImage: "arrow.up.arrow.down")
             }
+            .tint(DesignColor.primary)
             .font(Typography.subheadline)
             Spacer()
+            BookLayoutPicker()
+                .font(Typography.subheadline)
         }
         .padding(.horizontal, Spacing.twenty)
         .padding(.bottom, Spacing.ten)
@@ -217,14 +217,13 @@ struct ShowBookDeveloperView: View {
     var body: some View {
         DeveloperProfileView(app: DeveloperAppInfo(
             name: "ShowBook",
-            version: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "—",
-            build: Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "—",
+            version: AppRuntime.version,
+            build: AppRuntime.build,
             disclaimer: "ShowBook is a book discovery application. Book metadata and covers are provided by Open Library. Availability and accuracy depend on the source records.\n\nSource: https://openlibrary.org"
         ), layout: CatalogLayout(rawValue: storedLayout) ?? .list)
         .tint(DesignColor.blue)
         .navigationTitle("Know Your Developer")
-        .showBookTools(includeDeveloper: false)
+        .showBookTools(includeDeveloper: false, includeLayout: true)
         .navigationBarTitleDisplayMode(.inline)
-        .toolbar { ToolbarItem(placement: .topBarTrailing) { BookLayoutPicker() } }
     }
 }

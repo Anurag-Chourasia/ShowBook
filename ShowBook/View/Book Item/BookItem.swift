@@ -5,17 +5,19 @@ import UIComponentsKit
 struct BookItem: View {
     let item: Book
     var layout: CatalogLayout = .list
+    var showsRatings = true
     @State private var previewPresented = false
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
-    init(item: Book, fromBookMark: Bool = false, layout: CatalogLayout = .list) {
+    init(item: Book, fromBookMark: Bool = false, layout: CatalogLayout = .list, showsRatings: Bool = true) {
         self.item = item
         self.layout = layout
+        self.showsRatings = showsRatings
     }
 
     private var imageURL: URL? {
         guard let cover = item.coverI, cover > 0 else { return nil }
-        return URL(string: "https://covers.openlibrary.org/b/id/\(cover)-M.jpg")
+        return LibraryCover.url(cover, size: .medium)
     }
     private var coverSize: CGSize { layout == .grid ? CatalogMetrics.coverGridSize : CatalogMetrics.coverListSize }
 
@@ -24,8 +26,8 @@ struct BookItem: View {
             if !dynamicTypeSize.isAccessibilitySize {
                 NavigationLink { BookDetailsView(book: item) } label: { cover }
                     .accessibilityLabel("Details for " + item.title)
-                    .accessibilityHint("Tap for details. Hold to preview the cover.")
-                    .highPriorityGesture(LongPressGesture().onEnded { _ in previewPresented = true })
+                    .accessibilityHint(AppRuntime.coverPreviewEnabled ? "Tap for details. Hold to preview the cover." : "Opens book details")
+                    .highPriorityGesture(LongPressGesture().onEnded { _ in if AppRuntime.coverPreviewEnabled { previewPresented = true } })
             }
         } details: {
             VStack(alignment: .leading, spacing: Spacing.eight) {
@@ -39,7 +41,7 @@ struct BookItem: View {
                     .font(Typography.footnote)
                     .foregroundStyle(DesignColor.secondary)
                     .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : CatalogMetrics.listTitleLines)
-                if let rating = item.availableRating {
+                if showsRatings && AppRuntime.ratingsEnabled, let rating = item.availableRating {
                 if !dynamicTypeSize.isAccessibilitySize {
                 HStack(spacing: Spacing.zero) {
                     ForEach(0..<CatalogMetrics.maximumRating, id: \.self) { index in
@@ -54,7 +56,7 @@ struct BookItem: View {
                     .font(Typography.caption)
                     .foregroundStyle(DesignColor.secondary)
                     .fixedSize(horizontal: false, vertical: true)
-                } else {
+                } else if showsRatings && AppRuntime.ratingsEnabled {
                     Text("Not rated")
                         .font(Typography.caption)
                         .foregroundStyle(DesignColor.secondary)
@@ -73,7 +75,9 @@ struct BookItem: View {
             }
         }
         .accessibilityIdentifier("book-tile-\(layout.rawValue)")
-        .accessibilityAction(named: "Preview cover") { previewPresented = true }
+        .accessibilityActions {
+            if AppRuntime.coverPreviewEnabled { Button("Preview cover") { previewPresented = true } }
+        }
         .sheet(isPresented: $previewPresented) {
             BookCoverPreview(coverID: item.coverI, savedImage: item.image, title: item.title)
         }
@@ -110,15 +114,20 @@ private extension String {
 
 /// Search and bookmarks share the same saved preference and accessibility fallback.
 struct BookLayoutPicker: View {
+    var selection: Binding<CatalogLayout>? = nil
     @AppStorage("bookCatalogLayout") private var storedLayout = CatalogLayout.list.rawValue
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var showGridUnavailable = false
 
     var body: some View {
-        CatalogLayoutMenu(selection: (CatalogLayout(rawValue: storedLayout) ?? .list).resolved(isAccessibilitySize: dynamicTypeSize.isAccessibilitySize),
+        CatalogLayoutMenu(selection: (selection?.wrappedValue ?? CatalogLayout(rawValue: storedLayout) ?? .list).resolved(isAccessibilitySize: dynamicTypeSize.isAccessibilitySize),
                           isAccessibilitySize: dynamicTypeSize.isAccessibilitySize,
-                          onSelect: { storedLayout = $0.rawValue },
+                          onSelect: { layout in
+                              if let selection { selection.wrappedValue = layout }
+                              else { storedLayout = layout.rawValue }
+                          },
                           onGridUnavailable: { showGridUnavailable = true })
+            .tint(DesignColor.primary)
             .accessibilityIdentifier("book-layout-menu")
             .alert("List layout", isPresented: $showGridUnavailable) {
                 Button("OK", role: .cancel) {}
@@ -128,11 +137,13 @@ struct BookLayoutPicker: View {
 
 struct BookCollection: View {
     let books: [Book]
+    var layoutOverride: CatalogLayout? = nil
+    var showsRatings = true
     var onLastAppear: () -> Void = {}
     @AppStorage("bookCatalogLayout") private var storedLayout = CatalogLayout.list.rawValue
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     private var layout: CatalogLayout {
-        (CatalogLayout(rawValue: storedLayout) ?? .list).resolved(isAccessibilitySize: dynamicTypeSize.isAccessibilitySize)
+        (layoutOverride ?? CatalogLayout(rawValue: storedLayout) ?? .list).resolved(isAccessibilitySize: dynamicTypeSize.isAccessibilitySize)
     }
 
     var body: some View {
@@ -150,7 +161,7 @@ struct BookCollection: View {
 
     private var tiles: some View {
         ForEach(books) { book in
-            BookItem(item: book, layout: layout)
+            BookItem(item: book, layout: layout, showsRatings: showsRatings)
                 .onAppear { if book.id == books.last?.id { onLastAppear() } }
         }
     }
