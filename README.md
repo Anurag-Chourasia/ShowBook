@@ -86,7 +86,7 @@ Run commands from this repository root.
 
 - **Deployment target:** iOS 17.0; Swift 5 language mode.
 - **Toolchain:** recent local validation used Xcode 27.1. The checked-in CI workflow explicitly pins Xcode 27.0; these are separate environments, not an interchangeable version guarantee.
-- **Dependencies:** Swift Package Manager, including private repositories. Configure an authorized GitHub account with read access before resolving packages. CI uses repository-specific read-only deploy keys; `configure-private-dependencies.sh` is a CI helper, not a local credential installer.
+- **Dependencies:** Swift Package Manager, all six shared repositories are private. Configure an authorized GitHub account with read access before resolving packages. CI uses repository-specific read-only deploy keys; `configure-private-dependencies.sh` is a CI helper, not a local credential installer.
 
 ```sh
 xcodebuild -version

@@ -71,3 +71,24 @@ Debug builds launch into Developer settings. Choose a configuration and tap **Op
 Discover uses Open Library category search (`/search.json?q=subject:<category>`) for fiction, mystery, science and history, requesting up to 12 works plus rating averages/counts for the selected category. JSON cache lives under `Caches/Discover-v2`; live and each stub scenario have distinct files. A fresh cache lasts 24 hours; pull-to-refresh fetches again, falling back to an existing snapshot on failure. Cached titles survive relaunch; remote artwork is not guaranteed offline.
 
 `run-networking-tests.py` tests runtime policy in both Debug and Release. `DiscoverServiceTests` covers mapping, deduplication and persistent offline fallback; `DeveloperDiscoverRenderingTests` renders the developer launch page and Discover variants.
+
+
+## Private package access in CI
+
+All six shared package repositories are private. The trusted CI workflow supplies
+repository-specific read-only deploy keys through these Actions secrets:
+
+- `COMMONNETWORKING_DEPLOY_KEY`
+- `DESIGNTOKENSKIT_DEPLOY_KEY`
+- `DEVELOPERPROFILEKIT_DEPLOY_KEY`
+- `FOUNDATIONKIT_DEPLOY_KEY`
+- `LOCALIZATIONKIT_DEPLOY_KEY`
+- `UICOMPONENTSKIT_DEPLOY_KEY`
+
+`Scripts/configure-private-dependencies.sh` writes temporary restricted-permission
+key files and isolated Git/SSH configuration. Each HTTPS package URL is rewritten
+to its own SSH host alias. Host keys are verified against the checked-in known-hosts
+file, interactive authentication is disabled, and missing secrets fail immediately.
+The workflow removes temporary credentials in its always-run cleanup step. New keys
+for CommonNetworking, DesignTokensKit, and UIComponentsKit are unique per consuming
+app and grant no push access. Local Xcode builds still require an authorized account.
