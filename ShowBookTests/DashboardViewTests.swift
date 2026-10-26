@@ -247,12 +247,12 @@ final class SearchNavigationRenderingTests: XCTestCase {
         let model = DashboardViewModel()
         let api = MockNetworkClass()
         model.api = api
-        try await capture(DashboardView().environmentObject(model).environmentObject(user), name: "search-start")
+        try await capture(DashboardView(viewModel: model).environmentObject(user), name: "search-start")
         model.searchBook = "No matching book"
         api.result = .success([])
         model.performSearch()
         await Task.yield()
-        try await capture(DashboardView().environmentObject(model).environmentObject(user)
+        try await capture(DashboardView(viewModel: model).environmentObject(user)
             .environment(\.dynamicTypeSize, .accessibility3), name: "search-empty-accessibility")
         try await capture(NavigationStack(path: .constant(["login"])) {
             Text("Welcome").navigationTitle("Welcome")

@@ -52,7 +52,7 @@ flowchart TD
 
 | Area | Responsibility / starting point |
 |---|---|
-| App composition | [ShowBookApp](ShowBook/View/ShowBookApp.swift) provides the user model and managed-object context; [ContentView](ShowBook/View/Content%20View/ContentView.swift) selects authenticated navigation and supplies screen tools |
+| App composition | [ShowBookApp](ShowBook/View/ShowBookApp.swift) provides the user model and managed-object context; [ContentView](ShowBook/View/Content%20View/ContentView.swift) selects authenticated navigation and supplies screen tools; DashboardView owns search state for the lifetime of the authenticated screen |
 | Search | [DashboardViewModel](ShowBook/ViewModel/DashBoardViewModel.swift) owns query/result/page state; [NetworkClass](ShowBook/Model/NetworkClass.swift) preserves callback transport behavior |
 | Discover | [DiscoverView](ShowBook/Discover/DiscoverView.swift) owns category/layout/sort choices; [DiscoverService](ShowBook/Discover/DiscoverService.swift) includes its view model and snapshot policy |
 | Details | [BookDetailsViewModel](ShowBook/BookDetails/BookDetailsViewModel.swift) orchestrates work and edition loading through `BookDetailsServing` |
@@ -159,12 +159,16 @@ Proposed enhancements, not completed features. Extend existing implementations w
 
 | Enhance engineering skills | Enhance user experience |
 |---|---|
+| **UI testing:** automate signup, login, search, logout, and account-switching journeys | Verify that each new session starts on Discover without another account's search results. |
+| **Snapshot testing:** add reference-image comparisons across screen states, appearances, and text sizes | Catch visual regressions in Discover, search, details, and saved books. |
+| **Stub-data submodules:** extract reusable fixtures into dedicated Git submodules | Consistent, reproducible previews and test scenarios across features. |
+| **Tab bar navigation:** Discover, About Developer, Search, Saved/Bookmarks, and User Profile | Give each main destination a dedicated tab. |
 | **Offline-first library:** local persistence, cache expiry, background refresh, and data migrations | Open saved books without internet and clearly identify outdated information. |
 | **Reliable search pipeline:** strengthen cancellation, request deduplication, pagination, and stale-response protection | Faster search, recent searches, and fewer loading interruptions. |
 | **Reading-progress model:** validated state transitions and persistent progress | Want to Read, Reading, Finished, and a Continue Reading section. |
 | **Cross-device sync:** conflict resolution, retry handling, and deletion tracking | Keep reading lists and progress consistent across devices. |
 | **Resilient image loading:** memory/disk caches, request coalescing, and cancellation | Faster covers, fewer blank images, and lower data usage. |
-| **Accessibility validation:** automated checks plus VoiceOver and Dynamic Type testing | Comfortable browsing with large text and assistive technologies. |
+| **Accessibility support:** expand labels, focus order, contrast, and Dynamic Type support, with automated checks and VoiceOver testing | Comfortable browsing with large text and assistive technologies. |
 | **Performance measurement:** launch benchmarks, scrolling analysis, and memory profiling | Smooth browsing as the saved library grows. |
 
 First priority: the offline-first reading library. Preserve search, filters, layout,

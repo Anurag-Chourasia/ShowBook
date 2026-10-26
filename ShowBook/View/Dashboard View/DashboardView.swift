@@ -13,9 +13,13 @@ import DeveloperProfileKit
 
 struct DashboardView: View {
     @Environment(\.managedObjectContext) private var viewContext
-    @EnvironmentObject var viewModel: DashboardViewModel
+    @StateObject private var viewModel: DashboardViewModel
     @EnvironmentObject var userViewModel: UserViewModel
     
+    init(viewModel: @autoclosure @escaping () -> DashboardViewModel = DashboardViewModel()) {
+        _viewModel = StateObject(wrappedValue: viewModel())
+    }
+
     var body: some View {
         NavigationStack {
                 ZStack {
@@ -207,7 +211,6 @@ struct DashboardView_Previews: PreviewProvider {
     static var previews: some View {
         DashboardView()
             .environmentObject(UserViewModel())
-            .environmentObject(DashboardViewModel())
     }
 }
 
