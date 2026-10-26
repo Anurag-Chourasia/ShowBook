@@ -176,3 +176,7 @@ and scroll position when returning from book details wherever that state current
 [Anurag Chourasia](https://github.com/Anurag-Chourasia) · [LinkedIn](https://www.linkedin.com/in/anurag-chourasia-b66710178/)
 
 Book metadata/covers come from Open Library; country/IP services support signup defaults. External availability and metadata completeness are outside the app's control. The application does not supply book text.
+
+## SwiftLint
+
+Run `bash Scripts/lint.sh` with the version pinned in `.swiftlint-version`. CI enforces the shared rule set before build/test. See [SwiftLint policy](Docs/SwiftLint.md) for installation, rules, generated-code exclusions, and the existing-violation baseline.

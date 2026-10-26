@@ -1,0 +1,45 @@
+# Explicit shared policy: rule changes must be reviewed in both apps.
+included:
+  - ShowBook
+  - ShowBookTests
+  - ShowBookUITests
+  - ShowBookSnapshotTests
+  - TestSupport
+excluded:
+  - Submodules
+  - Pods
+  - Carthage
+  - .build
+  - vendor
+  - ShowBook/Resources/Localization/Localizable.generated.swift
+  - ShowBook/Resources/Localization/VoiceOver.generated.swift
+only_rules:
+  - force_cast
+  - force_try
+  - force_unwrapping
+  - duplicate_imports
+  - duplicate_conditions
+  - duplicate_enum_cases
+  - unused_closure_parameter
+  - unused_optional_binding
+  - unused_setter_value
+  - empty_count
+  - fatal_error_message
+  - syntactic_sugar
+  - colon
+  - comma
+  - opening_brace
+  - closing_brace
+  - return_arrow_whitespace
+  - statement_position
+  - trailing_comma
+  - trailing_newline
+  - trailing_semicolon
+  - trailing_whitespace
+  - vertical_whitespace
+  - void_return
+
+# Existing debt only. Never regenerate this file as a CI step.
+baseline: .swiftlint-baseline.json
+strict: true
+reporter: xcode
