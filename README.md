@@ -170,6 +170,16 @@ Proposed enhancements, not completed features. Extend existing implementations w
 | **Resilient image loading:** memory/disk caches, request coalescing, and cancellation | Faster covers, fewer blank images, and lower data usage. |
 | **Accessibility support:** expand labels, focus order, contrast, and Dynamic Type support, with automated checks and VoiceOver testing | Comfortable browsing with large text and assistive technologies. |
 | **Performance measurement:** launch benchmarks, scrolling analysis, and memory profiling | Smooth browsing as the saved library grows. |
+| **Persistence recovery UX:** handle unrecoverable store-load failures with fallback modes or user-directed store rebuilds | Avoid fatal crashes on corrupt database states, offering recovery or temporary in-memory sessions. |
+| **Structured concurrency & Swift 6:** migrate legacy callback-based search networking to `async`/`await` and enforce strict concurrency checking | Eliminates race conditions and simplifies thread synchronization across services. |
+| **ATS hardening:** narrow App Transport Security configuration to strictly validated HTTPS domain exceptions | Enforce encrypted transport across all book metadata and cover image requests. |
+| **Localization integration:** adopt `LocalizationKit` and modern String Catalogs (`.xcstrings`) across all views | Multi-language support and locale-aware book formatting. |
+| **Barcode & ISBN scanning:** integrate `VisionKit` / `DataScannerViewController` for optical barcode recognition | Instant camera scanning of physical book barcodes to discover editions and bookmark titles. |
+| **Widgets & Live Activities:** implement `WidgetKit` timelines and `ActivityKit` reading session attributes | Glanceable Lock/Home Screen widgets for reading streaks and dynamic session timers in Dynamic Island. |
+| **App Intents & Spotlight:** register Siri Shortcuts and index saved bookmarks with CoreSpotlight | Hands-free voice commands, system Spotlight discovery, and quick action flows. |
+| **Data portability:** build JSON and CSV schema serialization/deserialization with migration versioning | Export and import saved libraries, personal reading logs, and local accounts freely. |
+| **Personal notes & ratings:** expand Core Data model with relationship entities for user annotations and quotes | Save personal thoughts, quotes, page progress notes, and custom star reviews. |
+| **Book share cards:** render off-screen SwiftUI views to images with `ImageRenderer` | Generate attractive, shareable visual summary cards of books and favorite quotes for social sharing. |
 
 First priority: the offline-first reading library. Preserve search, filters, layout,
 and scroll position when returning from book details wherever that state currently resets.
