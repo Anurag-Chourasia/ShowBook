@@ -45,17 +45,17 @@
 		4AAED97CED59ADF39CD524D6 /* CommonNetworking in Frameworks */ = {isa = PBXBuildFile; productRef = 95732E385786F6E1232BBF15 /* CommonNetworking */; };
 		6A0EB3CEE74C24CBDA6E6A50 /* LocalizationKit in Frameworks */ = {isa = PBXBuildFile; productRef = C39F6585DE5D8CA74DD4BA50 /* LocalizationKit */; };
 		6C8873A6A96AECA6153C5AA7 /* FoundationKit in Frameworks */ = {isa = PBXBuildFile; productRef = 945F817B0BE1541EEA799DBF /* FoundationKit */; };
+		A23000000000000000000010 /* ShowBook/BookDetails/BookDetailsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A23000000000000000000000 /* ShowBook/BookDetails/BookDetailsService.swift */; };
+		A23000000000000000000011 /* ShowBook/BookDetails/BookDetailsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A23000000000000000000001 /* ShowBook/BookDetails/BookDetailsViewModel.swift */; };
+		A23000000000000000000012 /* ShowBook/BookDetails/BookDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A23000000000000000000002 /* ShowBook/BookDetails/BookDetailsView.swift */; };
+		A25000000000000000000003 /* DeveloperProfileKit in Frameworks */ = {isa = PBXBuildFile; productRef = A25000000000000000000002 /* DeveloperProfileKit */; };
+		A27000000000000000000010 /* ShowBook/Developer/AppRuntime.swift in Sources */ = {isa = PBXBuildFile; fileRef = A27000000000000000000000 /* ShowBook/Developer/AppRuntime.swift */; };
+		A27000000000000000000011 /* ShowBook/Developer/DeveloperSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A27000000000000000000001 /* ShowBook/Developer/DeveloperSettingsView.swift */; };
+		A27000000000000000000012 /* ShowBook/Discover/DiscoverService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A27000000000000000000002 /* ShowBook/Discover/DiscoverService.swift */; };
+		A27000000000000000000013 /* ShowBook/Discover/DiscoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A27000000000000000000003 /* ShowBook/Discover/DiscoverView.swift */; };
+		A27000000000000000000020 /* ShowBookTests/DiscoverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A27000000000000000000021 /* ShowBookTests/DiscoverTests.swift */; };
 		B35B2184E6B1F7F6457163DC /* DesignTokensKit in Frameworks */ = {isa = PBXBuildFile; productRef = 6FECFBEAEF2B8BF9370CC0C1 /* DesignTokensKit */; };
 		B589ADFBBB0E3489C7804265 /* UIComponentsKit in Frameworks */ = {isa = PBXBuildFile; productRef = 9E2E1528E27128C836A6B1F3 /* UIComponentsKit */; };
-		A23000000000000000000010 /* BookDetailsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A23000000000000000000000; };
-		A23000000000000000000011 /* BookDetailsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A23000000000000000000001; };
-		A23000000000000000000012 /* BookDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A23000000000000000000002; };
-		A25000000000000000000003 /* DeveloperProfileKit in Frameworks */ = {isa = PBXBuildFile; productRef = A25000000000000000000002 /* DeveloperProfileKit */; };
-		A27000000000000000000010 /* AppRuntime.swift in Sources */ = {isa = PBXBuildFile; fileRef = A27000000000000000000000; };
-		A27000000000000000000011 /* DeveloperSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A27000000000000000000001; };
-		A27000000000000000000012 /* DiscoverService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A27000000000000000000002; };
-		A27000000000000000000013 /* DiscoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A27000000000000000000003; };
-		A27000000000000000000020 /* DiscoverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A27000000000000000000021; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -108,17 +108,17 @@
 		342B8A8D2C7279B300EC41C8 /* BookmarkViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkViewModelTests.swift; sourceTree = "<group>"; };
 		342B8A8F2C727CB800EC41C8 /* BookmarkButtonViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkButtonViewModelTests.swift; sourceTree = "<group>"; };
 		3493640D2C7111C8008A99F8 /* ShowBookTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ShowBookTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A23000000000000000000000 /* ShowBook/BookDetails/BookDetailsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowBook/BookDetails/BookDetailsService.swift; sourceTree = SOURCE_ROOT; };
+		A23000000000000000000001 /* ShowBook/BookDetails/BookDetailsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowBook/BookDetails/BookDetailsViewModel.swift; sourceTree = SOURCE_ROOT; };
+		A23000000000000000000002 /* ShowBook/BookDetails/BookDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowBook/BookDetails/BookDetailsView.swift; sourceTree = SOURCE_ROOT; };
+		A27000000000000000000000 /* ShowBook/Developer/AppRuntime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowBook/Developer/AppRuntime.swift; sourceTree = SOURCE_ROOT; };
+		A27000000000000000000001 /* ShowBook/Developer/DeveloperSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowBook/Developer/DeveloperSettingsView.swift; sourceTree = SOURCE_ROOT; };
+		A27000000000000000000002 /* ShowBook/Discover/DiscoverService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowBook/Discover/DiscoverService.swift; sourceTree = SOURCE_ROOT; };
+		A27000000000000000000003 /* ShowBook/Discover/DiscoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowBook/Discover/DiscoverView.swift; sourceTree = SOURCE_ROOT; };
+		A27000000000000000000021 /* ShowBookTests/DiscoverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowBookTests/DiscoverTests.swift; sourceTree = SOURCE_ROOT; };
 		C8122A766F8C4BE99DF91001 /* ShowBookV2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ShowBookV2.xcdatamodel; sourceTree = "<group>"; };
 		C8122A766F8C4BE99DF91002 /* ShowBookV3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ShowBookV3.xcdatamodel; sourceTree = "<group>"; };
 		C8122A766F8C4BE99DF91003 /* ShowBookV4.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ShowBookV4.xcdatamodel; sourceTree = "<group>"; };
-		A23000000000000000000000 /* BookDetailsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowBook/BookDetails/BookDetailsService.swift; sourceTree = SOURCE_ROOT; };
-		A23000000000000000000001 /* BookDetailsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowBook/BookDetails/BookDetailsViewModel.swift; sourceTree = SOURCE_ROOT; };
-		A23000000000000000000002 /* BookDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowBook/BookDetails/BookDetailsView.swift; sourceTree = SOURCE_ROOT; };
-		A27000000000000000000000 /* AppRuntime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowBook/Developer/AppRuntime.swift; sourceTree = SOURCE_ROOT; };
-		A27000000000000000000001 /* DeveloperSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowBook/Developer/DeveloperSettingsView.swift; sourceTree = SOURCE_ROOT; };
-		A27000000000000000000002 /* DiscoverService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowBook/Discover/DiscoverService.swift; sourceTree = SOURCE_ROOT; };
-		A27000000000000000000003 /* DiscoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowBook/Discover/DiscoverView.swift; sourceTree = SOURCE_ROOT; };
-		A27000000000000000000021 /* DiscoverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowBookTests/DiscoverTests.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -241,13 +241,13 @@
 			isa = PBXGroup;
 			children = (
 				3403E2B42C7065190063E7D0 /* Models.swift */,
-				A23000000000000000000002 /* BookDetailsView.swift */,
-				A23000000000000000000001 /* BookDetailsViewModel.swift */,
-				A23000000000000000000000 /* BookDetailsService.swift */,
-				A27000000000000000000003 /* DiscoverView.swift */,
-				A27000000000000000000002 /* DiscoverService.swift */,
-				A27000000000000000000001 /* DeveloperSettingsView.swift */,
-				A27000000000000000000000 /* AppRuntime.swift */,
+				A23000000000000000000002 /* ShowBook/BookDetails/BookDetailsView.swift */,
+				A23000000000000000000001 /* ShowBook/BookDetails/BookDetailsViewModel.swift */,
+				A23000000000000000000000 /* ShowBook/BookDetails/BookDetailsService.swift */,
+				A27000000000000000000003 /* ShowBook/Discover/DiscoverView.swift */,
+				A27000000000000000000002 /* ShowBook/Discover/DiscoverService.swift */,
+				A27000000000000000000001 /* ShowBook/Developer/DeveloperSettingsView.swift */,
+				A27000000000000000000000 /* ShowBook/Developer/AppRuntime.swift */,
 				3403E2B52C7065190063E7D0 /* NetworkClass.swift */,
 			);
 			path = Model;
@@ -333,7 +333,7 @@
 				342B8A7F2C71B98100EC41C8 /* LoginViewTests.swift */,
 				342B8A812C71C40E00EC41C8 /* SignUpViewTests.swift */,
 				342B8A872C71E50B00EC41C8 /* DashboardViewTests.swift */,
-				A27000000000000000000021 /* DiscoverTests.swift */,
+				A27000000000000000000021 /* ShowBookTests/DiscoverTests.swift */,
 				342B8A832C71E2A300EC41C8 /* TextFieldObserverTests.swift */,
 				342B8A8B2C72570E00EC41C8 /* BookItemViewModelTests.swift */,
 				342B8A8D2C7279B300EC41C8 /* BookmarkViewModelTests.swift */,
@@ -475,13 +475,13 @@
 				3403E2B92C7065190063E7D0 /* EmailTextFieldView.swift in Sources */,
 				3403E2ED2C70EA0F0063E7D0 /* BookmarkButtonViewModel.swift in Sources */,
 				3403E2C12C7065190063E7D0 /* Models.swift in Sources */,
-				A23000000000000000000012 /* BookDetailsView.swift in Sources */,
-				A23000000000000000000011 /* BookDetailsViewModel.swift in Sources */,
-				A23000000000000000000010 /* BookDetailsService.swift in Sources */,
-				A27000000000000000000013 /* DiscoverView.swift in Sources */,
-				A27000000000000000000012 /* DiscoverService.swift in Sources */,
-				A27000000000000000000011 /* DeveloperSettingsView.swift in Sources */,
-				A27000000000000000000010 /* AppRuntime.swift in Sources */,
+				A23000000000000000000012 /* ShowBook/BookDetails/BookDetailsView.swift in Sources */,
+				A23000000000000000000011 /* ShowBook/BookDetails/BookDetailsViewModel.swift in Sources */,
+				A23000000000000000000010 /* ShowBook/BookDetails/BookDetailsService.swift in Sources */,
+				A27000000000000000000013 /* ShowBook/Discover/DiscoverView.swift in Sources */,
+				A27000000000000000000012 /* ShowBook/Discover/DiscoverService.swift in Sources */,
+				A27000000000000000000011 /* ShowBook/Developer/DeveloperSettingsView.swift in Sources */,
+				A27000000000000000000010 /* ShowBook/Developer/AppRuntime.swift in Sources */,
 				3403E2BC2C7065190063E7D0 /* SignUpView.swift in Sources */,
 				3403E2E02C70C11E0063E7D0 /* SignUpViewModel.swift in Sources */,
 				3403E2BA2C7065190063E7D0 /* LoginView.swift in Sources */,
@@ -502,7 +502,7 @@
 				342B8A902C727CB800EC41C8 /* BookmarkButtonViewModelTests.swift in Sources */,
 				342B8A842C71E2A300EC41C8 /* TextFieldObserverTests.swift in Sources */,
 				342B8A882C71E50B00EC41C8 /* DashboardViewTests.swift in Sources */,
-				A27000000000000000000020 /* DiscoverTests.swift in Sources */,
+				A27000000000000000000020 /* ShowBookTests/DiscoverTests.swift in Sources */,
 				342B8A802C71B98100EC41C8 /* LoginViewTests.swift in Sources */,
 				342B8A8C2C72570E00EC41C8 /* BookItemViewModelTests.swift in Sources */,
 				342B8A822C71C40E00EC41C8 /* SignUpViewTests.swift in Sources */,
@@ -656,11 +656,10 @@
 				DEVELOPMENT_ASSET_PATHS = "\"ShowBook/Preview Content\"";
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
-				/* V1 is preserved for store migration. Current-model inverses are enforced by PersistenceRelationshipTests. */
-				MOMC_NO_INVERSE_RELATIONSHIP_WARNINGS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ShowBook/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Show Book";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save book covers you choose to your photo library.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -677,6 +676,7 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 14.4;
 				MARKETING_VERSION = 1.0;
+				MOMC_NO_INVERSE_RELATIONSHIP_WARNINGS = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.anurag.demo.ShowBook;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
@@ -700,11 +700,10 @@
 				DEVELOPMENT_ASSET_PATHS = "\"ShowBook/Preview Content\"";
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
-				/* V1 is preserved for store migration. Current-model inverses are enforced by PersistenceRelationshipTests. */
-				MOMC_NO_INVERSE_RELATIONSHIP_WARNINGS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ShowBook/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Show Book";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save book covers you choose to your photo library.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -721,6 +720,7 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 14.4;
 				MARKETING_VERSION = 1.0;
+				MOMC_NO_INVERSE_RELATIONSHIP_WARNINGS = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.anurag.demo.ShowBook;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
@@ -826,6 +826,14 @@
 				version = 1.2.0;
 			};
 		};
+		A25000000000000000000001 /* XCRemoteSwiftPackageReference "DeveloperProfileKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Anurag-Chourasia/DeveloperProfileKit.git";
+			requirement = {
+				kind = exactVersion;
+				version = 1.0.0;
+			};
+		};
 		AA9FA121FCA88E0B247E2FFB /* XCRemoteSwiftPackageReference "FoundationKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Anurag-Chourasia/FoundationKit.git";
@@ -850,11 +858,6 @@
 				version = 0.1.1;
 			};
 		};
-		A25000000000000000000001 /* XCRemoteSwiftPackageReference "DeveloperProfileKit" */ = {
-            isa = XCRemoteSwiftPackageReference;
-            repositoryURL = "https://github.com/Anurag-Chourasia/DeveloperProfileKit.git";
-            requirement = { kind = exactVersion; version = 1.0.0; };
-        };
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -878,16 +881,16 @@
 			package = 6A3E98F756100CE40BD38FE1 /* XCRemoteSwiftPackageReference "UIComponentsKit" */;
 			productName = UIComponentsKit;
 		};
+		A25000000000000000000002 /* DeveloperProfileKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A25000000000000000000001 /* XCRemoteSwiftPackageReference "DeveloperProfileKit" */;
+			productName = DeveloperProfileKit;
+		};
 		C39F6585DE5D8CA74DD4BA50 /* LocalizationKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = C8FC995D988090DF0D402585 /* XCRemoteSwiftPackageReference "LocalizationKit" */;
 			productName = LocalizationKit;
 		};
-		A25000000000000000000002 /* DeveloperProfileKit */ = {
-            isa = XCSwiftPackageProductDependency;
-            package = A25000000000000000000001 /* XCRemoteSwiftPackageReference "DeveloperProfileKit" */;
-            productName = DeveloperProfileKit;
-        };
 /* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
