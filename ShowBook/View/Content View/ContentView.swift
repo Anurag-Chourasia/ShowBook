@@ -10,13 +10,11 @@ import DesignTokensKit
 
 struct ContentView: View {
     @EnvironmentObject var userViewModel: UserViewModel
-    @StateObject private var dashboard = DashboardViewModel()
     var body: some View {
             if userViewModel.isLoggedIn {
                 DashboardView()
                     .tag(1)
                     .environmentObject(userViewModel)
-                    .environmentObject(dashboard)
             } else {
                 LandingView()
                     .tag(2)
