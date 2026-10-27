@@ -1,0 +1,18 @@
+{
+  "numFound": 1,
+  "start": 0,
+  "numFoundExact": true,
+  "num_found": 1,
+  "docs": [
+    {
+      "key": "/works/OL45804W",
+      "title": "The Hobbit",
+      "author_name": [
+        "J.R.R. Tolkien"
+      ],
+      "cover_i": 14627509,
+      "ratings_average": 4.65,
+      "ratings_count": 850
+    }
+  ]
+}

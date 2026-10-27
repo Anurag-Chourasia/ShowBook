@@ -1,0 +1,16 @@
+{
+  "status": "success",
+  "country": "",
+  "countryCode": "",
+  "region": "",
+  "regionName": "",
+  "city": "",
+  "zip": "",
+  "lat": 0,
+  "lon": 0,
+  "timezone": "",
+  "isp": "",
+  "org": "",
+  "as": "",
+  "query": "127.0.0.1"
+}

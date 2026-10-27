@@ -1,0 +1,9 @@
+{
+  "numFound": 0,
+  "start": 0,
+  "numFoundExact": true,
+  "num_found": 0,
+  "q": "subject:nonexistent_subject_xyz",
+  "offset": 0,
+  "docs": []
+}
