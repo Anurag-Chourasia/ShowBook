@@ -1,0 +1,6 @@
+{
+  "error": "notfound",
+  "key": "/books/OL0M",
+  "message": "Book edition not found",
+  "code": 404
+}

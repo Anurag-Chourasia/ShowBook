@@ -1,0 +1,61 @@
+{
+  "numFound": 1690575,
+  "start": 0,
+  "numFoundExact": true,
+  "num_found": 1690575,
+  "documentation_url": "https://openlibrary.org/dev/docs/api/search",
+  "q": "subject:fiction",
+  "offset": null,
+  "docs": [
+    {
+      "author_name": [
+        "Jenny Han"
+      ],
+      "cover_i": 7719210,
+      "key": "/works/OL17508740W",
+      "title": "The Summer I Turned Pretty Trilogy",
+      "ratings_average": 4.2386365,
+      "ratings_count": 88
+    },
+    {
+      "author_name": [
+        "Alex Michaelides"
+      ],
+      "cover_i": 9407338,
+      "key": "/works/OL19096402W",
+      "title": "The Silent Patient",
+      "ratings_average": 4.0516434,
+      "ratings_count": 213
+    },
+    {
+      "author_name": [
+        "Tahereh Mafi"
+      ],
+      "cover_i": 6974992,
+      "key": "/works/OL16014245W",
+      "title": "Shatter Me",
+      "ratings_average": 3.9554455,
+      "ratings_count": 202
+    },
+    {
+      "author_name": [
+        "Mary Shelley"
+      ],
+      "cover_i": 12356249,
+      "key": "/works/OL450063W",
+      "title": "Frankenstein; or, The Modern Prometheus",
+      "ratings_average": 3.9649122,
+      "ratings_count": 228
+    },
+    {
+      "author_name": [
+        "Oscar Wilde"
+      ],
+      "cover_i": 14314858,
+      "key": "/works/OL8193416W",
+      "title": "The Picture of Dorian Gray",
+      "ratings_average": 4.1654134,
+      "ratings_count": 133
+    }
+  ]
+}

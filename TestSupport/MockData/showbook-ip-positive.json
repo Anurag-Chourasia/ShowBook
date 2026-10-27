@@ -1,0 +1,16 @@
+{
+  "status": "success",
+  "country": "India",
+  "countryCode": "IN",
+  "region": "MH",
+  "regionName": "Maharashtra",
+  "city": "Mumbai",
+  "zip": "400017",
+  "lat": 19.0748,
+  "lon": 72.8856,
+  "timezone": "Asia/Kolkata",
+  "isp": "Akamai Technologies, Inc.",
+  "org": "iCloud Private Relay",
+  "as": "AS36183 Akamai Technologies, Inc.",
+  "query": "172.225.186.28"
+}

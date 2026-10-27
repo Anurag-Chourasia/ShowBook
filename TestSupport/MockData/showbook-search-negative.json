@@ -1,0 +1,5 @@
+{
+  "error": "bad_request",
+  "message": "Invalid query parameters syntax error",
+  "code": 400
+}
