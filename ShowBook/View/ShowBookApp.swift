@@ -32,7 +32,6 @@ struct ShowBookApp: App {
     }
 }
 
-
 /// Bind bookmark identity before mounting any data-reading dashboard views.
 private struct CloudBookRoot: View {
     let user: AuthUser
@@ -41,8 +40,7 @@ private struct CloudBookRoot: View {
     @State private var ready = false
     var body: some View {
         Group {
-            if ready { ContentView() }
-            else { ProgressView("Opening library") }
+            if ready { ContentView() } else { ProgressView("Opening library") }
         }
         .task {
             // Preserve existing per-email bookmarks. Providers without an email get a
@@ -61,8 +59,7 @@ private struct LocalBookRoot: View {
     @State private var ready = false
     var body: some View {
         Group {
-            if ready { ContentView() }
-            else { ProgressView("Opening library") }
+            if ready { ContentView() } else { ProgressView("Opening library") }
         }
         .task {
             if userViewModel.cloudSignOut != nil { userViewModel.clearCloudAccount() }

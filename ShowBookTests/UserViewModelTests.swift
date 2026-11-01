@@ -140,8 +140,7 @@ final class AuthenticationFlagTests: XCTestCase {
         let key = "developer.authentication"
         let original = defaults.object(forKey: key)
         defer {
-            if let original { defaults.set(original, forKey: key) }
-            else { defaults.removeObject(forKey: key) }
+            if let original { defaults.set(original, forKey: key) } else { defaults.removeObject(forKey: key) }
         }
         defaults.removeObject(forKey: key)
         XCTAssertFalse(AppRuntime.authenticationEnabled)

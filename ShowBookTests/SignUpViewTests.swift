@@ -79,16 +79,17 @@ final class SignUpViewModelTests: XCTestCase {
 
         signUpViewModel.email = "test@example.com".lowercased()
         signUpViewModel.password = "ValidPassword123@"
+        userViewModel.$isLoggedIn
+            .filter { $0 }
+            .first()
+            .sink { _ in expectation.fulfill() }
+            .store(in: &cancellables)
         signUpViewModel.handleSignUp(userViewModel: userViewModel)
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            XCTAssertFalse(self.signUpViewModel.isLoading)
-            XCTAssertTrue(self.userViewModel.isLoggedIn)
-            XCTAssertFalse(self.signUpViewModel.showAlert)
-            expectation.fulfill()
-        }
-        
-        wait(for: [expectation], timeout: 2)
+
+        wait(for: [expectation], timeout: 10)
+        XCTAssertFalse(signUpViewModel.isLoading)
+        XCTAssertTrue(userViewModel.isLoggedIn)
+        XCTAssertFalse(signUpViewModel.showAlert)
     }
 
     func testSignUpWithInvalidEmail() {
