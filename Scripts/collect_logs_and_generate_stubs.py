@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Collect ShowBook live & scenario network logs and generate AppStubData mock fixtures
-for Empty, Negative, and Positive scenarios across all Open Library, First.org, and IP-API endpoints.
+for Empty, Negative, and Positive scenarios across all Open Library and First.org endpoints.
 """
 
 import json
@@ -214,17 +214,6 @@ countries_pos_live = fetch_live_or_fallback(
     }
 )
 
-# 1g. IP Positive
-ip_pos_live = fetch_live_or_fallback(
-    "IP Positive",
-    "http://ip-api.com/json",
-    fallback_data={
-        "status": "success", "country": "India", "countryCode": "IN",
-        "region": "MH", "regionName": "Maharashtra", "city": "Mumbai",
-        "zip": "400001", "lat": 18.9220, "lon": 72.8347, "timezone": "Asia/Kolkata",
-        "isp": "Jio", "org": "Reliance Jio", "as": "AS55836", "query": "127.0.0.1"
-    }
-)
 
 
 # ==========================================
@@ -280,22 +269,6 @@ countries_empty = {
     "data": {}
 }
 
-ip_empty = {
-    "status": "success",
-    "country": "",
-    "countryCode": "",
-    "region": "",
-    "regionName": "",
-    "city": "",
-    "zip": "",
-    "lat": 0,
-    "lon": 0,
-    "timezone": "",
-    "isp": "",
-    "org": "",
-    "as": "",
-    "query": "127.0.0.1"
-}
 
 # Record Empty scenario logs
 for name, url, payload in [
@@ -305,7 +278,6 @@ for name, url, payload in [
     ("Editions (Empty)", "https://openlibrary.org/works/OL45804W/editions.json?limit=20&offset=0", editions_empty),
     ("Edition (Empty)", "https://openlibrary.org/books/OL1M.json", edition_empty),
     ("Countries (Empty)", "https://api.first.org/data/v1/countries", countries_empty),
-    ("IP (Empty)", "http://ip-api.com/json", ip_empty),
 ]:
     record_http_log("GET", url, 200, 15.0, {"User-Agent": USER_AGENT}, {"Content-Type": "application/json"}, json.dumps(payload, indent=2))
 
@@ -352,11 +324,6 @@ countries_negative = {
     "error": "Internal Server Error"
 }
 
-ip_negative = {
-    "status": "fail",
-    "message": "invalid query",
-    "query": "invalid_ip"
-}
 
 # Record Negative scenario logs
 for name, url, code, payload in [
@@ -366,7 +333,6 @@ for name, url, code, payload in [
     ("Editions (Negative 404)", "https://openlibrary.org/works/OL0000000W/editions.json", 404, editions_negative),
     ("Edition (Negative 404)", "https://openlibrary.org/books/OL0M.json", 404, edition_negative),
     ("Countries (Negative 500)", "https://api.first.org/data/v1/countries", 500, countries_negative),
-    ("IP (Negative Fail)", "http://ip-api.com/json/invalid_ip", 200, ip_negative),
 ]:
     record_http_log("GET", url, code, 45.0, {"User-Agent": USER_AGENT}, {"Content-Type": "application/json"}, json.dumps(payload, indent=2), is_error=True, error_msg=f"HTTP {code}")
 
@@ -383,7 +349,6 @@ fixtures_map = {
     "showbook-editions-positive": editions_pos_live,
     "showbook-edition-positive": edition_pos_live,
     "showbook-countries-positive": countries_pos_live,
-    "showbook-ip-positive": ip_pos_live,
 
     # Empty
     "showbook-search-empty": search_empty,
@@ -392,7 +357,6 @@ fixtures_map = {
     "showbook-editions-empty": editions_empty,
     "showbook-edition-empty": edition_empty,
     "showbook-countries-empty": countries_empty,
-    "showbook-ip-empty": ip_empty,
 
     # Negative
     "showbook-search-negative": search_negative,
@@ -401,7 +365,6 @@ fixtures_map = {
     "showbook-editions-negative": editions_negative,
     "showbook-edition-negative": edition_negative,
     "showbook-countries-negative": countries_negative,
-    "showbook-ip-negative": ip_negative,
 }
 
 for name, data in fixtures_map.items():

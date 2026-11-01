@@ -20,7 +20,11 @@ class SignUpViewModel: ObservableObject {
     
     private let api: NetworkClass
 
-    init(api: NetworkClass = NetworkClass()) { self.api = api }
+    private let regionCode: String?
+    init(api: NetworkClass = NetworkClass(), regionCode: String? = Locale.current.region?.identifier) {
+        self.api = api
+        self.regionCode = regionCode
+    }
     var persistenceController = PersistenceController.shared
     private var cancellables = Set<AnyCancellable>()
     
@@ -88,11 +92,11 @@ class SignUpViewModel: ObservableObject {
                 self.isLoading = false
             }
         } else {
-            fetchCountriesAndIPDetails()
+            loadCountries()
         }
     }
     
-    private func fetchCountriesAndIPDetails() {
+    private func loadCountries() {
         api.fetchCountries { [weak self] fetchedCountries, error in
             DispatchQueue.main.async {
                 guard let self else { return }
@@ -111,25 +115,10 @@ class SignUpViewModel: ObservableObject {
                     return
                 }
                 self.persistenceController.saveCountryModel(fetchedCountries)
-                self.persistenceController.saveDefaultCountryName(selectedCountryName: firstCountry)
-                self.api.fetchIPDetails { [weak self] response, error in
-                    DispatchQueue.main.async {
-                        guard let self else { return }
-                        defer { self.isLoading = false }
-                        if let error {
-                            self.errorMessage = "Error fetching IP details: \(error.localizedDescription)"
-                            self.showAlert = true
-                        } else if let response {
-                            self.selectedCountryIndex = self.countries.firstIndex(of: response.country) ?? 0
-                            if self.countries.indices.contains(self.selectedCountryIndex) {
-                                self.persistenceController.saveDefaultCountryName(selectedCountryName: self.countries[self.selectedCountryIndex])
-                            }
-                        } else {
-                            self.errorMessage = "Unexpected error"
-                            self.showAlert = true
-                        }
-                    }
-                }
+                let preferredCountry = self.regionCode.flatMap { fetchedCountries.data[$0]?.country } ?? firstCountry
+                self.selectedCountryIndex = self.countries.firstIndex(of: preferredCountry) ?? 0
+                self.persistenceController.saveDefaultCountryName(selectedCountryName: preferredCountry)
+                self.isLoading = false
             }
         }
     }
