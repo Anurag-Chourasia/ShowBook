@@ -322,4 +322,27 @@ final class SearchNavigationRenderingTests: XCTestCase {
         attachment.lifetime = .keepAlways
         add(attachment)
     }
+
+    func testBookCatalogCacheSavesAndLoadsOffline() {
+        let cache = BookCatalogCache.shared
+        cache.clear()
+        defer { cache.clear() }
+
+        let book = Book(
+            title: "Offline Book",
+            ratingsAverage: 4.5,
+            ratingsCount: 100,
+            authorName: ["Author"],
+            coverI: 12345,
+            image: nil,
+            key: "/works/OL123W"
+        )
+        cache.save(books: [book], for: "offline test", offset: 0)
+
+        let loaded = cache.load(for: "offline test", offset: 0)
+        XCTAssertNotNil(loaded, "Cached book catalog must be loaded from disk")
+        XCTAssertEqual(loaded?.count, 1)
+        XCTAssertEqual(loaded?.first?.title, "Offline Book")
+        XCTAssertEqual(loaded?.first?.key, "/works/OL123W")
+    }
 }
