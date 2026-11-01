@@ -119,4 +119,39 @@ final class UserViewModelTests: XCTestCase {
     }
 
     
+    func testCloudAccountBindsBookmarksAndDelegatesLogoutUntilConfirmed() {
+        var requestedSignOut = false
+        viewModel.activateCloudAccount(email: "Cloud@Example.com") { requestedSignOut = true }
+        XCTAssertTrue(viewModel.isLoggedIn)
+        XCTAssertEqual(UserDefaults.standard.string(forKey: "LoggedInUserEmail"), "cloud@example.com")
+        viewModel.logout()
+        XCTAssertTrue(requestedSignOut)
+        XCTAssertTrue(viewModel.isLoggedIn, "A failed cloud sign-out must preserve the session")
+        viewModel.clearCloudAccount()
+        XCTAssertFalse(viewModel.isLoggedIn)
+        XCTAssertNil(UserDefaults.standard.string(forKey: "LoggedInUserEmail"))
+    }
+}
+
+@MainActor
+final class AuthenticationFlagTests: XCTestCase {
+    func testAuthenticationIsOptInAndDeveloperPreferenceIsDebugOnly() {
+        let defaults = UserDefaults.standard
+        let key = "developer.authentication"
+        let original = defaults.object(forKey: key)
+        defer {
+            if let original { defaults.set(original, forKey: key) }
+            else { defaults.removeObject(forKey: key) }
+        }
+        defaults.removeObject(forKey: key)
+        XCTAssertFalse(AppRuntime.authenticationEnabled)
+        defaults.set(true, forKey: key)
+        #if DEBUG
+        XCTAssertTrue(AppRuntime.authenticationEnabled)
+        #else
+        XCTAssertFalse(AppRuntime.authenticationEnabled)
+        #endif
+        defaults.set(false, forKey: key)
+        XCTAssertFalse(AppRuntime.authenticationEnabled)
+    }
 }

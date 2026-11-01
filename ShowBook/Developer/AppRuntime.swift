@@ -3,6 +3,15 @@ import CommonNetworking
 
 /// Release behaviour is independent of any developer preferences left on a device.
 enum AppRuntime {
+    /// Debug opt-in; production rollout never reads developer preferences.
+    static var authenticationEnabled: Bool {
+        #if DEBUG
+        return UserDefaults.standard.bool(forKey: "developer.authentication")
+        #else
+        return Bundle.main.object(forInfoDictionaryKey: "AUTHKIT_ENABLED") as? Bool ?? false
+        #endif
+    }
+
     static let actualVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "—"
     static let actualBuild = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "—"
     static var discoverEnabled: Bool { flag("discover") }
