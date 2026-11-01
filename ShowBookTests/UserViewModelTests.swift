@@ -6,6 +6,7 @@
 //
 
 import XCTest
+import UIKit
 @testable import ShowBook
 import CoreData
 
@@ -135,6 +136,20 @@ final class UserViewModelTests: XCTestCase {
 
 @MainActor
 final class AuthenticationFlagTests: XCTestCase {
+
+    func testBrandColorsStayOpaqueInBothAppearances() throws {
+        let names = ["BrandBackground", "BrandSurface", "BrandAction",
+                     "AuthBackground", "AuthForeground", "AuthAction", "AuthOnAction"]
+        for style in [UIUserInterfaceStyle.light, .dark] {
+            let traits = UITraitCollection(userInterfaceStyle: style)
+            for name in names {
+                let color = try XCTUnwrap(UIColor(named: name, in: .main, compatibleWith: traits))
+                XCTAssertEqual(color.resolvedColor(with: traits).cgColor.alpha, 1, accuracy: 0.001,
+                               "\(name) must remain opaque")
+            }
+        }
+    }
+
     func testAuthenticationIsOptInAndDeveloperPreferenceIsDebugOnly() {
         let defaults = UserDefaults.standard
         let key = "developer.authentication"
