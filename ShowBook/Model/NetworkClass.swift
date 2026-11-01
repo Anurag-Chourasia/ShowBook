@@ -66,35 +66,6 @@ class NetworkClass: ObservableObject {
 
     }
     
-    func fetchIPDetails(completion: @escaping (IPApiResponseModel?, Error?) -> Void) {
-        guard let url = URL(string: "http://ip-api.com/json") else {
-            completion(nil, NSError(domain: "URLCreationError", code: 0, userInfo: [NSLocalizedDescriptionKey : "Invalid URL"]))
-            return
-        }
-        
-        fetchData(from: url) { data, response, error in
-            if let error = error {
-                completion(nil, error)
-                return
-            }
-            
-            guard let data = data else {
-                completion(nil, NSError(domain: "DataError", code: 0, userInfo: [NSLocalizedDescriptionKey : "No data received"]))
-                return
-            }
-            
-            do {
-                let decoder = JSONDecoder()
-                let response = try decoder.decode(IPApiResponseModel.self, from: data)
-                completion(response, nil)
-            } catch {
-                completion(nil, error)
-            }
-        }
-        
-
-    }
-
     func fetchBooks(title: String, offset: Int, completion: @escaping (Result<[Book], Error>) -> Void) {
         var components = URLComponents(string: "https://openlibrary.org/search.json")!
         components.queryItems = [
