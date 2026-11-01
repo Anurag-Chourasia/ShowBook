@@ -43,23 +43,22 @@ final class SignUpViewModelTests: XCTestCase {
         super.tearDown()
     }
 
-    func testIPFailureStopsLoadingAndKeepsCountriesAvailable() {
-        checkCountryLoading(empty: false, missingIP: false)
+    func testLocaleRegionSelectsMatchingCountry() {
+        checkCountryLoading(empty: false, region: "IN", expected: "India")
     }
 
-    func testMissingIPResponseStopsLoading() {
-        checkCountryLoading(empty: false, missingIP: true)
+    func testUnknownRegionSelectsFirstCountry() {
+        checkCountryLoading(empty: false, region: "ZZ", expected: "Canada")
     }
 
     func testEmptyCountryResponseDoesNotIndexIntoEmptyList() {
-        checkCountryLoading(empty: true, missingIP: false)
+        checkCountryLoading(empty: true, region: nil, expected: nil)
     }
 
-    private func checkCountryLoading(empty: Bool, missingIP: Bool) {
+    private func checkCountryLoading(empty: Bool, region: String?, expected: String?) {
         let api = CountryLoadingNetwork()
         api.empty = empty
-        api.missingIP = missingIP
-        signUpViewModel = SignUpViewModel(api: api)
+        signUpViewModel = SignUpViewModel(api: api, regionCode: region)
         signUpViewModel.setUpPersistenceController(controller: mockPersistenceController)
         let finished = expectation(description: "country loading finishes")
         signUpViewModel.$isLoading.dropFirst().filter { !$0 }.sink { _ in
@@ -67,12 +66,11 @@ final class SignUpViewModelTests: XCTestCase {
         }.store(in: &cancellables)
         signUpViewModel.loadData()
         wait(for: [finished], timeout: 2)
-        XCTAssertTrue(signUpViewModel.showAlert)
+        XCTAssertEqual(signUpViewModel.showAlert, empty)
         XCTAssertFalse(signUpViewModel.isLoading)
-        XCTAssertEqual(signUpViewModel.countries, empty ? [] : ["India"])
-        XCTAssertEqual(api.ipRequests, empty ? 0 : 1)
+        XCTAssertEqual(signUpViewModel.countries, empty ? [] : ["Canada", "India"])
         if !empty {
-            XCTAssertEqual(mockPersistenceController.fetchSelectedCountryName(), "India")
+            XCTAssertEqual(mockPersistenceController.fetchSelectedCountryName(), expected)
         }
     }
 
@@ -81,16 +79,17 @@ final class SignUpViewModelTests: XCTestCase {
 
         signUpViewModel.email = "test@example.com".lowercased()
         signUpViewModel.password = "ValidPassword123@"
+        userViewModel.$isLoggedIn
+            .filter { $0 }
+            .first()
+            .sink { _ in expectation.fulfill() }
+            .store(in: &cancellables)
         signUpViewModel.handleSignUp(userViewModel: userViewModel)
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            XCTAssertFalse(self.signUpViewModel.isLoading)
-            XCTAssertTrue(self.userViewModel.isLoggedIn)
-            XCTAssertFalse(self.signUpViewModel.showAlert)
-            expectation.fulfill()
-        }
-        
-        wait(for: [expectation], timeout: 2)
+
+        wait(for: [expectation], timeout: 10)
+        XCTAssertFalse(signUpViewModel.isLoading)
+        XCTAssertTrue(userViewModel.isLoggedIn)
+        XCTAssertFalse(signUpViewModel.showAlert)
     }
 
     func testSignUpWithInvalidEmail() {
@@ -264,25 +263,6 @@ final class SignUpViewModelTests: XCTestCase {
             completion(mockCountries, nil)
         }
 
-        override func fetchIPDetails(completion: @escaping (IPApiResponseModel?, Error?) -> Void) {
-                 let mockIPDetails = IPApiResponseModel(
-                    status: "success",
-                    country: "India",
-                    countryCode: "IN",
-                    region: "WB",
-                    regionName: "West Bengal",
-                    city: "Kolkata",
-                    zip: "700034",
-                    lat: 22.518,
-                    lon: 88.3832,
-                    timezone: "Asia/Kolkata",
-                    isp: "Reliance Jio Infocomm Limited",
-                    org: "Reliance Jio Infocomm Limited",
-                    asDescription: "AS55836 Reliance Jio Infocomm Limited",
-                    query: "49.37.42.255"
-                )
-                completion(mockIPDetails, nil)
-            }
     }
     
     func createInMemoryPersistentContainer() -> NSPersistentContainer {
@@ -306,14 +286,8 @@ final class SignUpViewModelTests: XCTestCase {
 
 private final class CountryLoadingNetwork: NetworkClass {
     var empty = false
-    var missingIP = false
-    var ipRequests = 0
     override func fetchCountries(completion: @escaping (CountryModel?, Error?) -> Void) {
-        completion(CountryModel(status: "OK", statusCode: 200, version: "1", access: "public", total: empty ? 0 : 1, offset: 0, limit: 100,
-                                data: empty ? [:] : ["IN": Datum(country: "India", region: .asia)]), nil)
-    }
-    override func fetchIPDetails(completion: @escaping (IPApiResponseModel?, Error?) -> Void) {
-        ipRequests += 1
-        completion(nil, missingIP ? nil : URLError(.notConnectedToInternet))
+        completion(CountryModel(status: "OK", statusCode: 200, version: "1", access: "public", total: empty ? 0 : 2, offset: 0, limit: 100,
+                                data: empty ? [:] : ["CA": Datum(country: "Canada", region: Region(rawValue: "North America")), "IN": Datum(country: "India", region: .asia)]), nil)
     }
 }

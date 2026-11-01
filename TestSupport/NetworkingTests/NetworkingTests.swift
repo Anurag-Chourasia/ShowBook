@@ -11,6 +11,7 @@ private class FixtureProtocol: URLProtocol {
     override class func canInit(with request: URLRequest) -> Bool { true }
     override class func canonicalRequest(for request: URLRequest) -> URLRequest { request }
     override func startLoading() {
+        XCTAssertEqual(request.url?.scheme, "https")
         XCTAssertEqual(request.httpMethod, "GET")
         XCTAssertNil(request.httpBody)
         XCTAssertNil(request.value(forHTTPHeaderField: "Authorization"))
@@ -19,7 +20,6 @@ private class FixtureProtocol: URLProtocol {
         let file: String
         switch request.url!.path {
         case "/data/v1/countries": file = "countries"
-        case "/json": file = "ip"
         case "/search.json":
             file = "books"
             XCTAssertEqual(URLComponents(url: request.url!, resolvingAgainstBaseURL: false)?.queryItems,
@@ -58,7 +58,6 @@ final class NetworkingTests: XCTestCase {
         defer { session.invalidateAndCancel() }
         let api = NetworkClass(session: session)
         let countries = expectation(description: "countries once"); countries.assertForOverFulfill = true
-        let ip = expectation(description: "IP once"); ip.assertForOverFulfill = true
         let books = expectation(description: "books once"); books.assertForOverFulfill = true
         api.fetchCountries { value, error in
             XCTAssertFalse(Thread.isMainThread)
@@ -67,14 +66,6 @@ final class NetworkingTests: XCTestCase {
             else if let transportError { XCTAssertEqual((error as? URLError)?.code, transportError) }
             else { XCTAssertTrue(error is DecodingError) }
             countries.fulfill()
-        }
-        api.fetchIPDetails { value, error in
-            XCTAssertFalse(Thread.isMainThread)
-            XCTAssertEqual(value != nil, success)
-            if success { XCTAssertNil(error); XCTAssertEqual(value?.country, "India") }
-            else if let transportError { XCTAssertEqual((error as? URLError)?.code, transportError) }
-            else { XCTAssertTrue(error is DecodingError) }
-            ip.fulfill()
         }
         api.fetchBooks(title: fixture.title, offset: 20) { result in
             XCTAssertFalse(Thread.isMainThread)
@@ -87,7 +78,7 @@ final class NetworkingTests: XCTestCase {
             }
             books.fulfill()
         }
-        await fulfillment(of: [countries, ip, books], timeout: 5)
+        await fulfillment(of: [countries, books], timeout: 5)
         XCTAssertEqual(api.fetchBooksCalledCount, 1)
     }
     func testRatingAvailabilityHandlesMissingAndLegacyValues() throws {

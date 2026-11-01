@@ -48,41 +48,6 @@ struct Region: RawRepresentable, Codable, Hashable {
     static let centralAmerica = Region(rawValue: "Central America")
 }
 
-// MARK: - IPApiResponse
-struct IPApiResponseModel: Codable {
-    let status: String
-    let country: String
-    let countryCode: String
-    let region: String
-    let regionName: String
-    let city: String
-    let zip: String
-    let lat: Double
-    let lon: Double
-    let timezone: String
-    let isp: String
-    let org: String
-    let asDescription: String
-    let query: String
-    
-    enum CodingKeys: String, CodingKey {
-        case status
-        case country
-        case countryCode
-        case region
-        case regionName
-        case city
-        case zip
-        case lat
-        case lon
-        case timezone
-        case isp
-        case org
-        case asDescription = "as"
-        case query
-    }
-}
-
 struct Book: Identifiable, Codable, Equatable, Hashable {
     let id = UUID()
     let title: String

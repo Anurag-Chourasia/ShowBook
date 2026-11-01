@@ -10,6 +10,7 @@ import Combine
 
 class UserViewModel: ObservableObject {
     @Published var isLoggedIn: Bool = false
+    var cloudSignOut: (() -> Void)?
     var persistenceController = PersistenceController.shared
     
     init() {
@@ -36,7 +37,20 @@ class UserViewModel: ObservableObject {
         return false
     }
     
+    func activateCloudAccount(email: String, signOut: @escaping () -> Void) {
+        cloudSignOut = signOut
+        UserDefaults.standard.set(email.lowercased(), forKey: "LoggedInUserEmail")
+        isLoggedIn = true
+    }
+
+    func clearCloudAccount() {
+        cloudSignOut = nil
+        UserDefaults.standard.removeObject(forKey: "LoggedInUserEmail")
+        isLoggedIn = false
+    }
+
     func logout() {
+        if let cloudSignOut { cloudSignOut(); return }
         UserDefaults.standard.removeObject(forKey: "LoggedInUserEmail")
         isLoggedIn = false
     }

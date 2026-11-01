@@ -6,6 +6,7 @@
 //
 
 import XCTest
+import UIKit
 @testable import ShowBook
 import CoreData
 
@@ -119,4 +120,52 @@ final class UserViewModelTests: XCTestCase {
     }
 
     
+    func testCloudAccountBindsBookmarksAndDelegatesLogoutUntilConfirmed() {
+        var requestedSignOut = false
+        viewModel.activateCloudAccount(email: "Cloud@Example.com") { requestedSignOut = true }
+        XCTAssertTrue(viewModel.isLoggedIn)
+        XCTAssertEqual(UserDefaults.standard.string(forKey: "LoggedInUserEmail"), "cloud@example.com")
+        viewModel.logout()
+        XCTAssertTrue(requestedSignOut)
+        XCTAssertTrue(viewModel.isLoggedIn, "A failed cloud sign-out must preserve the session")
+        viewModel.clearCloudAccount()
+        XCTAssertFalse(viewModel.isLoggedIn)
+        XCTAssertNil(UserDefaults.standard.string(forKey: "LoggedInUserEmail"))
+    }
+}
+
+@MainActor
+final class AuthenticationFlagTests: XCTestCase {
+
+    func testBrandColorsStayOpaqueInBothAppearances() throws {
+        let names = ["BrandBackground", "BrandSurface", "BrandAction",
+                     "AuthBackground", "AuthForeground", "AuthAction", "AuthOnAction"]
+        for style in [UIUserInterfaceStyle.light, .dark] {
+            let traits = UITraitCollection(userInterfaceStyle: style)
+            for name in names {
+                let color = try XCTUnwrap(UIColor(named: name, in: .main, compatibleWith: traits))
+                XCTAssertEqual(color.resolvedColor(with: traits).cgColor.alpha, 1, accuracy: 0.001,
+                               "\(name) must remain opaque")
+            }
+        }
+    }
+
+    func testAuthenticationIsOptInAndDeveloperPreferenceIsDebugOnly() {
+        let defaults = UserDefaults.standard
+        let key = "developer.authentication"
+        let original = defaults.object(forKey: key)
+        defer {
+            if let original { defaults.set(original, forKey: key) } else { defaults.removeObject(forKey: key) }
+        }
+        defaults.removeObject(forKey: key)
+        XCTAssertFalse(AppRuntime.authenticationEnabled)
+        defaults.set(true, forKey: key)
+        #if DEBUG
+        XCTAssertTrue(AppRuntime.authenticationEnabled)
+        #else
+        XCTAssertFalse(AppRuntime.authenticationEnabled)
+        #endif
+        defaults.set(false, forKey: key)
+        XCTAssertFalse(AppRuntime.authenticationEnabled)
+    }
 }

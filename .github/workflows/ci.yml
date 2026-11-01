@@ -22,7 +22,7 @@ jobs:
     env:
       DEVELOPER_DIR: /Applications/Xcode_27.0.0.app/Contents/Developer
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
       - name: Install pinned SwiftLint
@@ -41,7 +41,7 @@ jobs:
     env:
       DEVELOPER_DIR: /Applications/Xcode_27.0.0.app/Contents/Developer
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
 
@@ -59,6 +59,7 @@ jobs:
 
       - name: Configure read-only private dependency access
         env:
+          AUTHKIT_DEPLOY_KEY: ${{ secrets.AUTHKIT_DEPLOY_KEY }}
           DEVELOPERPROFILEKIT_DEPLOY_KEY: ${{ secrets.DEVELOPERPROFILEKIT_DEPLOY_KEY }}
           FOUNDATIONKIT_DEPLOY_KEY: ${{ secrets.FOUNDATIONKIT_DEPLOY_KEY }}
           LOCALIZATIONKIT_DEPLOY_KEY: ${{ secrets.LOCALIZATIONKIT_DEPLOY_KEY }}
@@ -108,4 +109,7 @@ jobs:
 
       - name: Remove dependency credentials
         if: always()
-        run: rm -rf "$RUNNER_TEMP/shared-kit-credentials"
+        run: |
+          rm -rf "$RUNNER_TEMP/shared-kit-credentials"
+          echo "GIT_CONFIG_GLOBAL=/dev/null" >> "$GITHUB_ENV"
+          echo "GIT_SSH_COMMAND=ssh" >> "$GITHUB_ENV"

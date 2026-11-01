@@ -1,7 +1,12 @@
 import SwiftUI
 import DesignTokensKit
 
-struct AppLaunchView: View {
+struct AppLaunchView<Content: View>: View {
+    let content: (Bool) -> Content
+    @State private var authenticationEnabled = AppRuntime.authenticationEnabled
+
+    init(@ViewBuilder content: @escaping (Bool) -> Content) { self.content = content }
+
     #if DEBUG
     @State private var showingLaunchSettings = true
     @State private var configurationID = UUID()
@@ -13,18 +18,20 @@ struct AppLaunchView: View {
             if showingLaunchSettings {
                 NavigationStack {
                     DeveloperSettingsView(buttonTitle: "Open ShowBook") {
+                        authenticationEnabled = AppRuntime.authenticationEnabled
                         showingLaunchSettings = false
                     }
                 }
             } else {
-                ContentView().id(configurationID)
+                content(authenticationEnabled).id(configurationID)
             }
         }
         .background(DebugSettingsPresenter(isLaunchSettingsVisible: showingLaunchSettings) {
+            authenticationEnabled = AppRuntime.authenticationEnabled
             configurationID = UUID()
         })
         #else
-        ContentView()
+        content(authenticationEnabled)
         #endif
     }
 }
@@ -103,6 +110,7 @@ private struct DebugSettingsPresenter: UIViewControllerRepresentable {
 struct DeveloperSettingsView: View {
     var buttonTitle = "Apply and close"
     var onContinue: () -> Void
+    @AppStorage("developer.authentication") private var authentication = false
     @AppStorage("developer.discover") private var discover = true
     @AppStorage("developer.coverPreview") private var preview = true
     @AppStorage("developer.ratings") private var ratings = true
@@ -122,6 +130,10 @@ struct DeveloperSettingsView: View {
                     .accessibilityIdentifier("developer-open-app")
             }
             Section("Feature flags") {
+                Toggle("Authentication · AuthKit", isOn: $authentication)
+                    .accessibilityIdentifier("developer-authentication")
+                Text("New feature, off by default. Enable to use cloud sign-in. Apply settings to activate changes; disabling it preserves the saved cloud session.")
+
                 Toggle("Discover", isOn: $discover)
                 Toggle("Cover preview", isOn: $preview)
                 Toggle("Ratings", isOn: $ratings)
@@ -163,7 +175,7 @@ struct DeveloperSettingsView: View {
             Section("Appearance") { AppearanceMenu() }
             Section {
                 Button("Reset developer settings") {
-                    discover = true; preview = true; ratings = true; logs = false
+                    authentication = false; discover = true; preview = true; ratings = true; logs = false
                     source = "live"; scenario = "success"; variant = "A"
                     version = ""; build = ""
                 }

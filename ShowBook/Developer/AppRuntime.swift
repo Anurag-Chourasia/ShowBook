@@ -3,6 +3,15 @@ import CommonNetworking
 
 /// Release behaviour is independent of any developer preferences left on a device.
 enum AppRuntime {
+    /// Debug opt-in; production rollout never reads developer preferences.
+    static var authenticationEnabled: Bool {
+        #if DEBUG
+        return UserDefaults.standard.bool(forKey: "developer.authentication")
+        #else
+        return Bundle.main.object(forInfoDictionaryKey: "AUTHKIT_ENABLED") as? Bool ?? false
+        #endif
+    }
+
     static let actualVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "—"
     static let actualBuild = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "—"
     static var discoverEnabled: Bool { flag("discover") }
@@ -122,9 +131,6 @@ class DeveloperStubProtocol: URLProtocol {
         }
         if url.host == "api.first.org" {
             return #"{"status":"OK","status-code":200,"version":"1.0","access":"public","total":1,"offset":0,"limit":1,"data":{"IN":{"country":"India","region":"Asia"}}}"#
-        }
-        if url.host == "ip-api.com" {
-            return #"{"status":"success","country":"India","countryCode":"IN","region":"TG","regionName":"Telangana","city":"Demo city","zip":"","lat":0,"lon":0,"timezone":"Asia/Kolkata","isp":"Stub","org":"Stub","as":"Stub","query":"127.0.0.1"}"#
         }
         return nil
     }
