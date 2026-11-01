@@ -84,32 +84,19 @@ class NetworkClass: ObservableObject {
         
         fetchData(from: url) { data, response, error in
             if let error = error {
-                if let cached = BookCatalogCache.shared.load(for: title, offset: offset), !cached.isEmpty {
-                    completion(.success(cached))
-                    return
-                }
                 completion(.failure(error))
                 return
             }
             
             guard let data = data else {
-                if let cached = BookCatalogCache.shared.load(for: title, offset: offset), !cached.isEmpty {
-                    completion(.success(cached))
-                    return
-                }
                 completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "No data received"])))
                 return
             }
             
             do {
                 let booksResponse = try JSONDecoder().decode(BooksResponse.self, from: data)
-                BookCatalogCache.shared.save(books: booksResponse.docs, for: title, offset: offset)
                 completion(.success(booksResponse.docs))
             } catch {
-                if let cached = BookCatalogCache.shared.load(for: title, offset: offset), !cached.isEmpty {
-                    completion(.success(cached))
-                    return
-                }
                 completion(.failure(error))
             }
         }

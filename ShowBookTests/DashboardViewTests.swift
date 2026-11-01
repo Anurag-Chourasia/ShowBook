@@ -221,6 +221,35 @@ final class DashboardViewModelTests: XCTestCase {
         XCTAssertTrue(viewModel.isBookLoading)
         XCTAssertEqual(viewModel.offset, 0)
     }
+
+    func testDashboardViewModelFallsBackToOfflineCacheOnNetworkFailure() {
+        let cache = BookCatalogCache.shared
+        cache.clear()
+        defer { cache.clear() }
+
+        let cachedBook = Book(
+            title: "Cached Book Title",
+            ratingsAverage: 4.8,
+            ratingsCount: 50,
+            authorName: ["Cached Author"],
+            coverI: 9999,
+            image: nil,
+            key: "/works/OL9999W"
+        )
+        cache.save(books: [cachedBook], for: "offline fallback", offset: 0)
+
+        let exp = expectation(description: "ViewModel completes fetch with cache fallback")
+        mockApi.result = .failure(URLError(.notConnectedToInternet))
+
+        viewModel.fetchBooks(title: "offline fallback", offset: 0) {
+            XCTAssertEqual(self.viewModel.books.count, 1)
+            XCTAssertEqual(self.viewModel.books.first?.title, "Cached Book Title")
+            XCTAssertFalse(self.viewModel.showAlert)
+            exp.fulfill()
+        }
+
+        waitForExpectations(timeout: 2)
+    }
 }
 
 class MockNetworkClass: NetworkClass {
