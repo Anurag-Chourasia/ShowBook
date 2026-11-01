@@ -1,0 +1,5 @@
+{
+  "error": "service_unavailable",
+  "message": "Open Library subject discover search service currently unavailable",
+  "code": 503
+}

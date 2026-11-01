@@ -1,0 +1,586 @@
+========== HTTP REQUEST ==========
+Request ID: 1E485243-1538-4C6D-820F-0F7E8E7D6EB9
+Method: GET
+URL: https://openlibrary.org/search.json?title=The+Hobbit&limit=5&offset=0&fields=key,title,author_name,cover_i,ratings_average,ratings_count
+Headers:
+  User-Agent: ShowBook (anuragchourasia1999@gmail.com)
+Request Body:
+<no request body>
+=================================
+
+========== HTTP ERROR ============
+Request ID: 1E485243-1538-4C6D-820F-0F7E8E7D6EB9
+Method: GET
+URL: https://openlibrary.org/search.json?title=The+Hobbit&limit=5&offset=0&fields=key,title,author_name,cover_i,ratings_average,ratings_count
+Duration: 8026.68 ms
+Error: Transport error: <urlopen error timed out>
+Response Body:
+{'numFound': 1, 'start': 0, 'numFoundExact': True, 'num_found': 1, 'docs': [{'key': '/works/OL45804W', 'title': 'The Hobbit', 'author_name': ['J.R.R. Tolkien'], 'cover_i': 14627509, 'ratings_average': 4.65, 'ratings_count': 850}]}
+==================================
+
+========== HTTP REQUEST ==========
+Request ID: F7BC420B-29FB-4CD1-832A-4CD1A0F5624F
+Method: GET
+URL: https://openlibrary.org/search.json?q=subject:fiction&limit=5&fields=key,title,author_name,cover_i,ratings_average,ratings_count
+Headers:
+  User-Agent: ShowBook (anuragchourasia1999@gmail.com)
+Request Body:
+<no request body>
+=================================
+
+========== HTTP RESPONSE =========
+Request ID: F7BC420B-29FB-4CD1-832A-4CD1A0F5624F
+Method: GET
+URL: https://openlibrary.org/search.json?q=subject:fiction&limit=5&fields=key,title,author_name,cover_i,ratings_average,ratings_count
+Final URL: https://openlibrary.org/search.json?q=subject:fiction&limit=5&fields=key,title,author_name,cover_i,ratings_average,ratings_count
+Status: 200
+Duration: 4789.19 ms
+Headers:
+  Server: nginx/1.30.6
+  Date: Mon, 26 Oct 2026 18:33:16 GMT
+  Content-Type: application/json
+  Content-Length: 992
+  Connection: close
+  vary: Origin
+  x-served-by: FastAPI
+  server-timing: total;dur=2429.6, solr;dur=1993.7;desc="1 call"
+  Referrer-Policy: no-referrer-when-downgrade
+Response Body:
+{"numFound":1690575,"start":0,"numFoundExact":true,"num_found":1690575,"documentation_url":"https://openlibrary.org/dev/docs/api/search","q":"subject:fiction","offset":null,"docs":[{"author_name":["Jenny Han"],"cover_i":7719210,"key":"/works/OL17508740W","title":"The Summer I Turned Pretty Trilogy","ratings_average":4.2386365,"ratings_count":88},{"author_name":["Alex Michaelides"],"cover_i":9407338,"key":"/works/OL19096402W","title":"The Silent Patient","ratings_average":4.0516434,"ratings_count":213},{"author_name":["Tahereh Mafi"],"cover_i":6974992,"key":"/works/OL16014245W","title":"Shatter Me","ratings_average":3.9554455,"ratings_count":202},{"author_name":["Mary Shelley"],"cover_i":12356249,"key":"/works/OL450063W","title":"Frankenstein; or, The Modern Prometheus","ratings_average":3.9649122,"ratings_count":228},{"author_name":["Oscar Wilde"],"cover_i":14314858,"key":"/works/OL8193416W","title":"The Picture of Dorian Gray","ratings_average":4.1654134,"ratings_count":133}]}
+==================================
+
+========== HTTP REQUEST ==========
+Request ID: 642EBF2A-CD42-4904-8BCF-77CDA50295FD
+Method: GET
+URL: https://openlibrary.org/works/OL45804W.json
+Headers:
+  User-Agent: ShowBook (anuragchourasia1999@gmail.com)
+Request Body:
+<no request body>
+=================================
+
+========== HTTP ERROR ============
+Request ID: 642EBF2A-CD42-4904-8BCF-77CDA50295FD
+Method: GET
+URL: https://openlibrary.org/works/OL45804W.json
+Duration: 7019.30 ms
+Error: Transport error: <urlopen error [Errno 61] Connection refused>
+Response Body:
+{'key': '/works/OL45804W', 'title': 'Fantastic Mr Fox', 'description': {'type': '/type/text', 'value': 'Boggis, Bunce and Bean are three greedy, smelly farmers who hate Fantastic Mr Fox.'}, 'subjects': ['Animals', 'Foxes', "Children's stories", 'Humorous stories'], 'covers': [8739191, 14627509], 'first_publish_date': '1970'}
+==================================
+
+========== HTTP REQUEST ==========
+Request ID: 1440B161-74B8-4C08-8F51-82391EC22469
+Method: GET
+URL: https://openlibrary.org/works/OL45804W/editions.json?limit=5&offset=0
+Headers:
+  User-Agent: ShowBook (anuragchourasia1999@gmail.com)
+Request Body:
+<no request body>
+=================================
+
+========== HTTP RESPONSE =========
+Request ID: 1440B161-74B8-4C08-8F51-82391EC22469
+Method: GET
+URL: https://openlibrary.org/works/OL45804W/editions.json?limit=5&offset=0
+Final URL: https://openlibrary.org/works/OL45804W/editions.json?limit=5&offset=0
+Status: 200
+Duration: 3042.78 ms
+Headers:
+  Server: nginx/1.30.6
+  Date: Mon, 26 Oct 2026 18:33:27 GMT
+  Content-Type: application/json
+  Content-Length: 4117
+  Connection: close
+  vary: Origin
+  x-served-by: FastAPI
+  server-timing: total;dur=223.1, db-legacy;dur=9.5;desc="6 calls", infobase;dur=44.9;desc="1 call", memcache;dur=7.9;desc="3 calls"
+  Referrer-Policy: no-referrer-when-downgrade
+Response Body:
+{"links":{"self":"/works/OL45804W/editions.json?limit=5&offset=0","work":"/works/OL45804W","next":"/works/OL45804W/editions.json?limit=5&offset=5"},"size":161,"entries":[{"type":{"key":"/type/edition"},"publish_date":"2005","publish_country":"is","languages":[{"key":"/languages/heb"}],"work_titles":["Fantastic Mr. Fox"],"title":"Mar shuʻal ha-mehulal","by_statement":"Roʾald Dal ; me-Anglit Binah Ofeḳ ; iyurim Ḳṿenṭin Bleiḳ","authors":[{"key":"/authors/OL34184A"},{"key":"/authors/OL6406799A"},{"key":"/authors/OL236943A"}],"series":["Marganit"],"publishers":["Zemorah-Bitan"],"publish_places":["Or Yehudah"],"pagination":"103 p.","number_of_pages":103,"source_records":["marc:harvard_bibliographic_metadata/ab.bib.09.20150123.full.mrc:799192348:604"],"full_title":"Mar shuʻal ha-mehulal","works":[{"key":"/works/OL45804W"}],"key":"/books/OL57649219M","oclc_numbers":["62887933"],"contributors":[{"role":"Translator","name":"Binah Ofeḳ"}],"translation_of":"Fantastic Mr. Fox","translated_from":[{"key":"/languages/eng"}],"latest_revision":5,"revision":5,"created":{"type":"/type/datetime","value":"2025-01-31T22:07:29.473533"},"last_modified":{"type":"/type/datetime","value":"2026-08-29T22:46:18.919740"}},{"type":{"key":"/type/edition"},"authors":[{"key":"/authors/OL34184A"},{"key":"/authors/OL236943A"}],"languages":[{"key":"/languages/eng"}],"pagination":"96","publish_date":"2024","publishers":["Penguin Books, Limited"],"source_records":["bwb:9780241677377"],"subjects":["Children's fiction"],"title":"Fantastic Mr Fox","full_title":"Fantastic Mr Fox","works":[{"key":"/works/OL45804W"}],"key":"/books/OL51048152M","identifiers":{},"isbn_13":["9780241677377"],"lc_classifications":["PZ7.D1515Fa 2024"],"contributors":[{"role":"Illustrator","name":"Quentin Blake"}],"latest_revision":4,"revision":4,"created":{"type":"/type/datetime","value":"2024-02-17T07:20:41.696991"},"last_modified":{"type":"/type/datetime","value":"2026-08-29T22:46:18.919740"}},{"type":{"key":"/type/edition"},"authors":[{"key":"/authors/OL34184A"},{"key":"/authors/OL236943A"}],"languages":[{"key":"/languages/eng"}],"pagination":"80","publish_date":"2024","publishers":["Penguin Books, Limited"],"source_records":["bwb:9780241610923"],"subjects":["English language"],"title":"Penguin Readers Level 2","subtitle":"Roald Dahl Fantastic Mr Fox","full_title":"Penguin Readers Level 2 Roald Dahl Fantastic Mr Fox","works":[{"key":"/works/OL45804W"}],"key":"/books/OL50652985M","isbn_13":["9780241610923"],"lc_classifications":["PE1128.F3 2024"],"latest_revision":5,"revision":5,"created":{"type":"/type/datetime","value":"2024-01-31T01:34:06.701000"},"last_modified":{"type":"/type/datetime","value":"2026-08-29T22:46:18.919740"}},{"type":{"key":"/type/edition"},"publish_date":"1977","publish_country":"is","languages":[{"key":"/languages/heb"}],"work_titles":["Fantastic Mr. Fox"],"title":"Mar Shuʻal ha-mehulal","by_statement":"me-Anglit Uriʾel Ofeḳ","authors":[{"key":"/authors/OL34184A"}],"oclc_numbers":["19161784"],"series":["Marganit"],"notes":{"type":"/type/text","value":"Translation of: Fantastic Mr. Fox."},"publishers":["Zemorah, Bitan, Modan"],"publish_places":["Tel Aviv"],"pagination":"78 p.","number_of_pages":78,"source_records":["marc:harvard_bibliographic_metadata/ab.bib.00.20150123.full.mrc:9519034:557"],"works":[{"key":"/works/OL45804W"}],"key":"/books/OL50230204M","latest_revision":2,"revision":2,"created":{"type":"/type/datetime","value":"2023-12-08T02:09:14.814932"},"last_modified":{"type":"/type/datetime","value":"2026-08-29T22:46:18.919740"}},{"type":{"key":"/type/edition"},"authors":[{"key":"/authors/OL34184A"}],"isbn_10":["0758755996"],"isbn_13":["9780758755995"],"local_id":["urn:bwbsku:W8-BMI-848"],"source_records":["promise:bwb_daily_pallets_2023-05-01:W8-BMI-848"],"title":"Fantastic Mr. Fox","full_title":"Fantastic Mr. Fox","works":[{"key":"/works/OL45804W"}],"key":"/books/OL47678729M","latest_revision":3,"revision":3,"created":{"type":"/type/datetime","value":"2023-05-03T17:30:36.231307"},"last_modified":{"type":"/type/datetime","value":"2026-08-29T22:46:18.919740"}}]}
+==================================
+
+========== HTTP REQUEST ==========
+Request ID: 51958225-EBED-4108-937D-A238ADD44FCE
+Method: GET
+URL: https://openlibrary.org/books/OL7353617M.json
+Headers:
+  User-Agent: ShowBook (anuragchourasia1999@gmail.com)
+Request Body:
+<no request body>
+=================================
+
+========== HTTP ERROR ============
+Request ID: 51958225-EBED-4108-937D-A238ADD44FCE
+Method: GET
+URL: https://openlibrary.org/books/OL7353617M.json
+Duration: 7032.23 ms
+Error: Transport error: <urlopen error [Errno 61] Connection refused>
+Response Body:
+{'key': '/books/OL7353617M', 'title': 'Fantastic Mr Fox', 'publishers': ['Puffin Books'], 'publish_date': '2000', 'number_of_pages': 96, 'isbn_10': ['0141301139'], 'isbn_13': ['9780141301136'], 'covers': [8739191]}
+==================================
+
+========== HTTP REQUEST ==========
+Request ID: 60B95A8E-3F1F-4E67-86B0-936A985373E4
+Method: GET
+URL: https://api.first.org/data/v1/countries?limit=5
+Headers:
+  User-Agent: ShowBook (anuragchourasia1999@gmail.com)
+Request Body:
+<no request body>
+=================================
+
+========== HTTP RESPONSE =========
+Request ID: 60B95A8E-3F1F-4E67-86B0-936A985373E4
+Method: GET
+URL: https://api.first.org/data/v1/countries?limit=5
+Final URL: https://api.first.org/data/v1/countries?limit=5
+Status: 200
+Duration: 2186.14 ms
+Headers:
+  Connection: close
+  Content-Length: 338
+  x-offset: 0
+  server: nginx
+  content-type: application/json; charset=utf-8
+  x-limit: 5
+  x-content-type-options: nosniff
+  referrer-policy: origin-when-cross-origin
+  permissions-policy: microphone=(), camera=(), autoplay=(self "https://*.first.org")
+  x-total: 249
+  access-control-allow-methods: GET, HEAD, OPTIONS
+  content-security-policy: default-src 'self'; img-src 'self' https: data:; font-src 'self' https:; media-src 'self' *.first.org; connect-src 'self' *.first.org; object-src 'self' *.first.org; frame-src https: data:; frame-ancestors 'self'; base-uri 'self'
+  access-control-allow-origin: *
+  x-xss-protection: 1; mode=block
+  x-frame-options: SAMEORIGIN
+  cache-control: public, max-age=3600, s-maxage=3600
+  access-control-allow-headers: x-requested-with
+  link: <https://api.first.org/data/v1/countries/schema> rel=describedBy
+  Accept-Ranges: bytes
+  Age: 0
+  Date: Mon, 26 Oct 2026 18:33:36 GMT
+  Via: 1.1 varnish
+  X-Served-By: cache-qar-vebr4710025-QAR, cache-qar-vebr4710020-QAR
+  X-Cache: MISS, MISS
+  X-Cache-Hits: 0, 0
+  X-Timer: S1793039614.359020,VS0,VE2112
+  Vary: Accept-Encoding
+  Strict-Transport-Security: max-age=31557600
+  alt-svc: h3=":443";ma=86400,h3-29=":443";ma=86400,h3-27=":443";ma=86400
+Response Body:
+{"status":"OK","status-code":200,"version":"1.0","access":"public","total":249,"offset":0,"limit":5,"data":{"DZ":{"country":"Algeria","region":"Africa"},"AO":{"country":"Angola","region":"Africa"},"BJ":{"country":"Benin","region":"Africa"},"BW":{"country":"Botswana","region":"Africa"},"BF":{"country":"Burkina Faso","region":"Africa"}}}
+
+==================================
+
+========== HTTP REQUEST ==========
+Request ID: D8E09D97-E0E3-41D1-8708-E99ECD9410D3
+Method: GET
+URL: http://ip-api.com/json
+Headers:
+  User-Agent: ShowBook (anuragchourasia1999@gmail.com)
+Request Body:
+<no request body>
+=================================
+
+========== HTTP RESPONSE =========
+Request ID: D8E09D97-E0E3-41D1-8708-E99ECD9410D3
+Method: GET
+URL: http://ip-api.com/json
+Final URL: http://ip-api.com/json
+Status: 200
+Duration: 823.48 ms
+Headers:
+  Date: Mon, 26 Oct 2026 18:33:36 GMT
+  Content-Type: application/json; charset=utf-8
+  Content-Length: 312
+  Access-Control-Allow-Origin: *
+  X-Ttl: 60
+  X-Rl: 44
+  Cache-Control: private, max-age=600
+Response Body:
+{"status":"success","country":"India","countryCode":"IN","region":"MH","regionName":"Maharashtra","city":"Mumbai","zip":"400017","lat":19.0748,"lon":72.8856,"timezone":"Asia/Kolkata","isp":"Akamai Technologies, Inc.","org":"iCloud Private Relay","as":"AS36183 Akamai Technologies, Inc.","query":"172.225.186.28"}
+==================================
+
+========== HTTP REQUEST ==========
+Request ID: 3C8C8D53-92E7-4190-9F4D-C3CB96EEF341
+Method: GET
+URL: https://openlibrary.org/search.json?title=nonexistent_xyz&limit=10&offset=0
+Headers:
+  User-Agent: ShowBook (anuragchourasia1999@gmail.com)
+Request Body:
+<no request body>
+=================================
+
+========== HTTP RESPONSE =========
+Request ID: 3C8C8D53-92E7-4190-9F4D-C3CB96EEF341
+Method: GET
+URL: https://openlibrary.org/search.json?title=nonexistent_xyz&limit=10&offset=0
+Final URL: https://openlibrary.org/search.json?title=nonexistent_xyz&limit=10&offset=0
+Status: 200
+Duration: 15.00 ms
+Headers:
+  Content-Type: application/json
+Response Body:
+{
+  "numFound": 0,
+  "start": 0,
+  "numFoundExact": true,
+  "num_found": 0,
+  "q": "nonexistent_query_xyz_99999",
+  "offset": 0,
+  "docs": []
+}
+==================================
+
+========== HTTP REQUEST ==========
+Request ID: 0AD1EB85-0183-4EBD-BF73-E55E79214207
+Method: GET
+URL: https://openlibrary.org/search.json?q=subject:nonexistent&limit=12
+Headers:
+  User-Agent: ShowBook (anuragchourasia1999@gmail.com)
+Request Body:
+<no request body>
+=================================
+
+========== HTTP RESPONSE =========
+Request ID: 0AD1EB85-0183-4EBD-BF73-E55E79214207
+Method: GET
+URL: https://openlibrary.org/search.json?q=subject:nonexistent&limit=12
+Final URL: https://openlibrary.org/search.json?q=subject:nonexistent&limit=12
+Status: 200
+Duration: 15.00 ms
+Headers:
+  Content-Type: application/json
+Response Body:
+{
+  "numFound": 0,
+  "start": 0,
+  "numFoundExact": true,
+  "num_found": 0,
+  "q": "subject:nonexistent_subject_xyz",
+  "offset": 0,
+  "docs": []
+}
+==================================
+
+========== HTTP REQUEST ==========
+Request ID: 1FE6B401-C918-4FD1-878E-50C66F9F66AF
+Method: GET
+URL: https://openlibrary.org/works/OL45804W.json
+Headers:
+  User-Agent: ShowBook (anuragchourasia1999@gmail.com)
+Request Body:
+<no request body>
+=================================
+
+========== HTTP RESPONSE =========
+Request ID: 1FE6B401-C918-4FD1-878E-50C66F9F66AF
+Method: GET
+URL: https://openlibrary.org/works/OL45804W.json
+Final URL: https://openlibrary.org/works/OL45804W.json
+Status: 200
+Duration: 15.00 ms
+Headers:
+  Content-Type: application/json
+Response Body:
+{
+  "key": "/works/OL45804W",
+  "title": "Minimal Title Only",
+  "description": null,
+  "subjects": [],
+  "covers": []
+}
+==================================
+
+========== HTTP REQUEST ==========
+Request ID: 45B01D8C-CD2D-438A-8F1A-E55C282C6BA6
+Method: GET
+URL: https://openlibrary.org/works/OL45804W/editions.json?limit=20&offset=0
+Headers:
+  User-Agent: ShowBook (anuragchourasia1999@gmail.com)
+Request Body:
+<no request body>
+=================================
+
+========== HTTP RESPONSE =========
+Request ID: 45B01D8C-CD2D-438A-8F1A-E55C282C6BA6
+Method: GET
+URL: https://openlibrary.org/works/OL45804W/editions.json?limit=20&offset=0
+Final URL: https://openlibrary.org/works/OL45804W/editions.json?limit=20&offset=0
+Status: 200
+Duration: 15.00 ms
+Headers:
+  Content-Type: application/json
+Response Body:
+{
+  "size": 0,
+  "entries": []
+}
+==================================
+
+========== HTTP REQUEST ==========
+Request ID: 476A0B5F-6E7C-4968-9852-937CF7FF26A8
+Method: GET
+URL: https://openlibrary.org/books/OL1M.json
+Headers:
+  User-Agent: ShowBook (anuragchourasia1999@gmail.com)
+Request Body:
+<no request body>
+=================================
+
+========== HTTP RESPONSE =========
+Request ID: 476A0B5F-6E7C-4968-9852-937CF7FF26A8
+Method: GET
+URL: https://openlibrary.org/books/OL1M.json
+Final URL: https://openlibrary.org/books/OL1M.json
+Status: 200
+Duration: 15.00 ms
+Headers:
+  Content-Type: application/json
+Response Body:
+{
+  "key": "/books/OL1M",
+  "title": "Untitled Edition"
+}
+==================================
+
+========== HTTP REQUEST ==========
+Request ID: A722686A-BD24-4DB1-B4A8-CF928CD8C9E2
+Method: GET
+URL: https://api.first.org/data/v1/countries
+Headers:
+  User-Agent: ShowBook (anuragchourasia1999@gmail.com)
+Request Body:
+<no request body>
+=================================
+
+========== HTTP RESPONSE =========
+Request ID: A722686A-BD24-4DB1-B4A8-CF928CD8C9E2
+Method: GET
+URL: https://api.first.org/data/v1/countries
+Final URL: https://api.first.org/data/v1/countries
+Status: 200
+Duration: 15.00 ms
+Headers:
+  Content-Type: application/json
+Response Body:
+{
+  "status": "OK",
+  "status-code": 200,
+  "version": "1.0",
+  "access": "public",
+  "total": 0,
+  "offset": 0,
+  "limit": 0,
+  "data": {}
+}
+==================================
+
+========== HTTP REQUEST ==========
+Request ID: 419DF5B0-3BC9-45B1-BE59-B4C164AF3CB2
+Method: GET
+URL: http://ip-api.com/json
+Headers:
+  User-Agent: ShowBook (anuragchourasia1999@gmail.com)
+Request Body:
+<no request body>
+=================================
+
+========== HTTP RESPONSE =========
+Request ID: 419DF5B0-3BC9-45B1-BE59-B4C164AF3CB2
+Method: GET
+URL: http://ip-api.com/json
+Final URL: http://ip-api.com/json
+Status: 200
+Duration: 15.00 ms
+Headers:
+  Content-Type: application/json
+Response Body:
+{
+  "status": "success",
+  "country": "",
+  "countryCode": "",
+  "region": "",
+  "regionName": "",
+  "city": "",
+  "zip": "",
+  "lat": 0,
+  "lon": 0,
+  "timezone": "",
+  "isp": "",
+  "org": "",
+  "as": "",
+  "query": "127.0.0.1"
+}
+==================================
+
+========== HTTP REQUEST ==========
+Request ID: BC15244A-02B2-4676-9AD2-A588A5CE1896
+Method: GET
+URL: https://openlibrary.org/search.json?invalid=true
+Headers:
+  User-Agent: ShowBook (anuragchourasia1999@gmail.com)
+Request Body:
+<no request body>
+=================================
+
+========== HTTP ERROR ============
+Request ID: BC15244A-02B2-4676-9AD2-A588A5CE1896
+Method: GET
+URL: https://openlibrary.org/search.json?invalid=true
+Duration: 45.00 ms
+Error: HTTP 400
+Response Body:
+{
+  "error": "bad_request",
+  "message": "Invalid query parameters syntax error",
+  "code": 400
+}
+==================================
+
+========== HTTP REQUEST ==========
+Request ID: C449CD2F-76C7-4028-B1E1-01042DB22FB3
+Method: GET
+URL: https://openlibrary.org/search.json?q=subject:error
+Headers:
+  User-Agent: ShowBook (anuragchourasia1999@gmail.com)
+Request Body:
+<no request body>
+=================================
+
+========== HTTP ERROR ============
+Request ID: C449CD2F-76C7-4028-B1E1-01042DB22FB3
+Method: GET
+URL: https://openlibrary.org/search.json?q=subject:error
+Duration: 45.00 ms
+Error: HTTP 503
+Response Body:
+{
+  "error": "service_unavailable",
+  "message": "Open Library subject discover search service currently unavailable",
+  "code": 503
+}
+==================================
+
+========== HTTP REQUEST ==========
+Request ID: D1A4E74B-3232-4F8B-B03C-A791D6630193
+Method: GET
+URL: https://openlibrary.org/works/OL0000000W.json
+Headers:
+  User-Agent: ShowBook (anuragchourasia1999@gmail.com)
+Request Body:
+<no request body>
+=================================
+
+========== HTTP ERROR ============
+Request ID: D1A4E74B-3232-4F8B-B03C-A791D6630193
+Method: GET
+URL: https://openlibrary.org/works/OL0000000W.json
+Duration: 45.00 ms
+Error: HTTP 404
+Response Body:
+{
+  "error": "notfound",
+  "key": "/works/OL0000000W",
+  "message": "Work not found",
+  "code": 404
+}
+==================================
+
+========== HTTP REQUEST ==========
+Request ID: 2A0C9E9C-5401-42A6-B159-F75520953881
+Method: GET
+URL: https://openlibrary.org/works/OL0000000W/editions.json
+Headers:
+  User-Agent: ShowBook (anuragchourasia1999@gmail.com)
+Request Body:
+<no request body>
+=================================
+
+========== HTTP ERROR ============
+Request ID: 2A0C9E9C-5401-42A6-B159-F75520953881
+Method: GET
+URL: https://openlibrary.org/works/OL0000000W/editions.json
+Duration: 45.00 ms
+Error: HTTP 404
+Response Body:
+{
+  "error": "notfound",
+  "message": "No editions available for specified key",
+  "code": 404
+}
+==================================
+
+========== HTTP REQUEST ==========
+Request ID: 68182F9E-159C-4ECE-858B-6C0A58722846
+Method: GET
+URL: https://openlibrary.org/books/OL0M.json
+Headers:
+  User-Agent: ShowBook (anuragchourasia1999@gmail.com)
+Request Body:
+<no request body>
+=================================
+
+========== HTTP ERROR ============
+Request ID: 68182F9E-159C-4ECE-858B-6C0A58722846
+Method: GET
+URL: https://openlibrary.org/books/OL0M.json
+Duration: 45.00 ms
+Error: HTTP 404
+Response Body:
+{
+  "error": "notfound",
+  "key": "/books/OL0M",
+  "message": "Book edition not found",
+  "code": 404
+}
+==================================
+
+========== HTTP REQUEST ==========
+Request ID: 9C9A030D-612A-4DED-B9A0-8847F05E1C80
+Method: GET
+URL: https://api.first.org/data/v1/countries
+Headers:
+  User-Agent: ShowBook (anuragchourasia1999@gmail.com)
+Request Body:
+<no request body>
+=================================
+
+========== HTTP ERROR ============
+Request ID: 9C9A030D-612A-4DED-B9A0-8847F05E1C80
+Method: GET
+URL: https://api.first.org/data/v1/countries
+Duration: 45.00 ms
+Error: HTTP 500
+Response Body:
+{
+  "status": "ERROR",
+  "status-code": 500,
+  "error": "Internal Server Error"
+}
+==================================
+
+========== HTTP REQUEST ==========
+Request ID: 8207F2CB-B6CC-42B4-A423-57D0CCDFAA1D
+Method: GET
+URL: http://ip-api.com/json/invalid_ip
+Headers:
+  User-Agent: ShowBook (anuragchourasia1999@gmail.com)
+Request Body:
+<no request body>
+=================================
+
+========== HTTP ERROR ============
+Request ID: 8207F2CB-B6CC-42B4-A423-57D0CCDFAA1D
+Method: GET
+URL: http://ip-api.com/json/invalid_ip
+Duration: 45.00 ms
+Error: HTTP 200
+Response Body:
+{
+  "status": "fail",
+  "message": "invalid query",
+  "query": "invalid_ip"
+}
+==================================
+

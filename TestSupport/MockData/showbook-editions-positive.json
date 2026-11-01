@@ -1,0 +1,297 @@
+{
+  "links": {
+    "self": "/works/OL45804W/editions.json?limit=5&offset=0",
+    "work": "/works/OL45804W",
+    "next": "/works/OL45804W/editions.json?limit=5&offset=5"
+  },
+  "size": 161,
+  "entries": [
+    {
+      "type": {
+        "key": "/type/edition"
+      },
+      "publish_date": "2005",
+      "publish_country": "is",
+      "languages": [
+        {
+          "key": "/languages/heb"
+        }
+      ],
+      "work_titles": [
+        "Fantastic Mr. Fox"
+      ],
+      "title": "Mar shu\u02bbal ha-mehulal",
+      "by_statement": "Ro\u02beald Dal ; me-Anglit Binah Ofe\u1e33 ; iyurim \u1e32\u1e7fen\u1e6din Blei\u1e33",
+      "authors": [
+        {
+          "key": "/authors/OL34184A"
+        },
+        {
+          "key": "/authors/OL6406799A"
+        },
+        {
+          "key": "/authors/OL236943A"
+        }
+      ],
+      "series": [
+        "Marganit"
+      ],
+      "publishers": [
+        "Zemorah-Bitan"
+      ],
+      "publish_places": [
+        "Or Yehudah"
+      ],
+      "pagination": "103 p.",
+      "number_of_pages": 103,
+      "source_records": [
+        "marc:harvard_bibliographic_metadata/ab.bib.09.20150123.full.mrc:799192348:604"
+      ],
+      "full_title": "Mar shu\u02bbal ha-mehulal",
+      "works": [
+        {
+          "key": "/works/OL45804W"
+        }
+      ],
+      "key": "/books/OL57649219M",
+      "oclc_numbers": [
+        "62887933"
+      ],
+      "contributors": [
+        {
+          "role": "Translator",
+          "name": "Binah Ofe\u1e33"
+        }
+      ],
+      "translation_of": "Fantastic Mr. Fox",
+      "translated_from": [
+        {
+          "key": "/languages/eng"
+        }
+      ],
+      "latest_revision": 5,
+      "revision": 5,
+      "created": {
+        "type": "/type/datetime",
+        "value": "2025-01-31T22:07:29.473533"
+      },
+      "last_modified": {
+        "type": "/type/datetime",
+        "value": "2026-08-29T22:46:18.919740"
+      }
+    },
+    {
+      "type": {
+        "key": "/type/edition"
+      },
+      "authors": [
+        {
+          "key": "/authors/OL34184A"
+        },
+        {
+          "key": "/authors/OL236943A"
+        }
+      ],
+      "languages": [
+        {
+          "key": "/languages/eng"
+        }
+      ],
+      "pagination": "96",
+      "publish_date": "2024",
+      "publishers": [
+        "Penguin Books, Limited"
+      ],
+      "source_records": [
+        "bwb:9780241677377"
+      ],
+      "subjects": [
+        "Children's fiction"
+      ],
+      "title": "Fantastic Mr Fox",
+      "full_title": "Fantastic Mr Fox",
+      "works": [
+        {
+          "key": "/works/OL45804W"
+        }
+      ],
+      "key": "/books/OL51048152M",
+      "identifiers": {},
+      "isbn_13": [
+        "9780241677377"
+      ],
+      "lc_classifications": [
+        "PZ7.D1515Fa 2024"
+      ],
+      "contributors": [
+        {
+          "role": "Illustrator",
+          "name": "Quentin Blake"
+        }
+      ],
+      "latest_revision": 4,
+      "revision": 4,
+      "created": {
+        "type": "/type/datetime",
+        "value": "2024-02-17T07:20:41.696991"
+      },
+      "last_modified": {
+        "type": "/type/datetime",
+        "value": "2026-08-29T22:46:18.919740"
+      }
+    },
+    {
+      "type": {
+        "key": "/type/edition"
+      },
+      "authors": [
+        {
+          "key": "/authors/OL34184A"
+        },
+        {
+          "key": "/authors/OL236943A"
+        }
+      ],
+      "languages": [
+        {
+          "key": "/languages/eng"
+        }
+      ],
+      "pagination": "80",
+      "publish_date": "2024",
+      "publishers": [
+        "Penguin Books, Limited"
+      ],
+      "source_records": [
+        "bwb:9780241610923"
+      ],
+      "subjects": [
+        "English language"
+      ],
+      "title": "Penguin Readers Level 2",
+      "subtitle": "Roald Dahl Fantastic Mr Fox",
+      "full_title": "Penguin Readers Level 2 Roald Dahl Fantastic Mr Fox",
+      "works": [
+        {
+          "key": "/works/OL45804W"
+        }
+      ],
+      "key": "/books/OL50652985M",
+      "isbn_13": [
+        "9780241610923"
+      ],
+      "lc_classifications": [
+        "PE1128.F3 2024"
+      ],
+      "latest_revision": 5,
+      "revision": 5,
+      "created": {
+        "type": "/type/datetime",
+        "value": "2024-01-31T01:34:06.701000"
+      },
+      "last_modified": {
+        "type": "/type/datetime",
+        "value": "2026-08-29T22:46:18.919740"
+      }
+    },
+    {
+      "type": {
+        "key": "/type/edition"
+      },
+      "publish_date": "1977",
+      "publish_country": "is",
+      "languages": [
+        {
+          "key": "/languages/heb"
+        }
+      ],
+      "work_titles": [
+        "Fantastic Mr. Fox"
+      ],
+      "title": "Mar Shu\u02bbal ha-mehulal",
+      "by_statement": "me-Anglit Uri\u02beel Ofe\u1e33",
+      "authors": [
+        {
+          "key": "/authors/OL34184A"
+        }
+      ],
+      "oclc_numbers": [
+        "19161784"
+      ],
+      "series": [
+        "Marganit"
+      ],
+      "notes": {
+        "type": "/type/text",
+        "value": "Translation of: Fantastic Mr. Fox."
+      },
+      "publishers": [
+        "Zemorah, Bitan, Modan"
+      ],
+      "publish_places": [
+        "Tel Aviv"
+      ],
+      "pagination": "78 p.",
+      "number_of_pages": 78,
+      "source_records": [
+        "marc:harvard_bibliographic_metadata/ab.bib.00.20150123.full.mrc:9519034:557"
+      ],
+      "works": [
+        {
+          "key": "/works/OL45804W"
+        }
+      ],
+      "key": "/books/OL50230204M",
+      "latest_revision": 2,
+      "revision": 2,
+      "created": {
+        "type": "/type/datetime",
+        "value": "2023-12-08T02:09:14.814932"
+      },
+      "last_modified": {
+        "type": "/type/datetime",
+        "value": "2026-08-29T22:46:18.919740"
+      }
+    },
+    {
+      "type": {
+        "key": "/type/edition"
+      },
+      "authors": [
+        {
+          "key": "/authors/OL34184A"
+        }
+      ],
+      "isbn_10": [
+        "0758755996"
+      ],
+      "isbn_13": [
+        "9780758755995"
+      ],
+      "local_id": [
+        "urn:bwbsku:W8-BMI-848"
+      ],
+      "source_records": [
+        "promise:bwb_daily_pallets_2023-05-01:W8-BMI-848"
+      ],
+      "title": "Fantastic Mr. Fox",
+      "full_title": "Fantastic Mr. Fox",
+      "works": [
+        {
+          "key": "/works/OL45804W"
+        }
+      ],
+      "key": "/books/OL47678729M",
+      "latest_revision": 3,
+      "revision": 3,
+      "created": {
+        "type": "/type/datetime",
+        "value": "2023-05-03T17:30:36.231307"
+      },
+      "last_modified": {
+        "type": "/type/datetime",
+        "value": "2026-08-29T22:46:18.919740"
+      }
+    }
+  ]
+}
