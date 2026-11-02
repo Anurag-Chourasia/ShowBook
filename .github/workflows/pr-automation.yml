@@ -1,0 +1,32 @@
+name: PR Automation
+
+on:
+  pull_request_target:
+    types: [opened, ready_for_review, reopened]
+  pull_request_review:
+    types: [submitted]
+
+permissions:
+  pull-requests: write
+  contents: write
+
+jobs:
+  pr-automation:
+    name: Reviewer & Auto-Merge
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure Reviewer and Auto-Merge
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          IS_DRAFT: ${{ github.event.pull_request.draft }}
+        run: |
+          # 1. Request review from Anurag-Chourasia-iOS
+          gh pr edit "$PR_URL" --add-reviewer Anurag-Chourasia-iOS || echo "Reviewer request already present or failed"
+
+          # 2. Enable auto-merge if PR is ready for review
+          if [ "$IS_DRAFT" != "true" ]; then
+            gh pr merge "$PR_URL" --auto --merge || echo "Auto-merge could not be set"
+          else
+            echo "PR is draft; auto-merge will be enabled once marked ready for review."
+          fi
