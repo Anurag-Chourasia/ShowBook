@@ -24,6 +24,7 @@
 		3403E2C02C7065190063E7D0 /* SupportingFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3403E2B22C7065190063E7D0 /* SupportingFile.swift */; };
 		3403E2C12C7065190063E7D0 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3403E2B42C7065190063E7D0 /* Models.swift */; };
 		3403E2C22C7065190063E7D0 /* NetworkClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3403E2B52C7065190063E7D0 /* NetworkClass.swift */; };
+		R05000000000000000000002 /* BookCatalogCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = R05000000000000000000001 /* BookCatalogCache.swift */; };
 		3403E2D42C7076010063E7D0 /* TextFieldWithDebounce.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3403E2D32C7076010063E7D0 /* TextFieldWithDebounce.swift */; };
 		3403E2DC2C70C0020063E7D0 /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3403E2D92C70C0020063E7D0 /* LoginViewModel.swift */; };
 		3403E2DD2C70C0020063E7D0 /* DashBoardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3403E2DA2C70C0020063E7D0 /* DashBoardViewModel.swift */; };
@@ -92,6 +93,7 @@
 		3403E2B22C7065190063E7D0 /* SupportingFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SupportingFile.swift; sourceTree = "<group>"; };
 		3403E2B42C7065190063E7D0 /* Models.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		3403E2B52C7065190063E7D0 /* NetworkClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkClass.swift; sourceTree = "<group>"; };
+		R05000000000000000000001 /* BookCatalogCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BookCatalogCache.swift; sourceTree = "<group>"; };
 		3403E2D32C7076010063E7D0 /* TextFieldWithDebounce.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldWithDebounce.swift; sourceTree = "<group>"; };
 		3403E2D92C70C0020063E7D0 /* LoginViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LoginViewModel.swift; path = ViewModel/LoginViewModel.swift; sourceTree = "<group>"; };
 		3403E2DA2C70C0020063E7D0 /* DashBoardViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DashBoardViewModel.swift; path = ViewModel/DashBoardViewModel.swift; sourceTree = "<group>"; };
@@ -253,6 +255,7 @@
 				A27000000000000000000001 /* ShowBook/Developer/DeveloperSettingsView.swift */,
 				A27000000000000000000000 /* ShowBook/Developer/AppRuntime.swift */,
 				3403E2B52C7065190063E7D0 /* NetworkClass.swift */,
+				R05000000000000000000001 /* BookCatalogCache.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -495,6 +498,7 @@
 				3403E2BB2C7065190063E7D0 /* PasswordTextFieldView.swift in Sources */,
 				342B8A952C72890700EC41C8 /* Persistence.swift in Sources */,
 				3403E2C22C7065190063E7D0 /* NetworkClass.swift in Sources */,
+				R05000000000000000000002 /* BookCatalogCache.swift in Sources */,
 				3403E2BD2C7065190063E7D0 /* LandingView.swift in Sources */,
 				3403E2D42C7076010063E7D0 /* TextFieldWithDebounce.swift in Sources */,
 				3403E2B82C7065190063E7D0 /* BookmarkButton.swift in Sources */,

@@ -94,7 +94,6 @@ class NetworkClass: ObservableObject {
             }
             
             do {
-                
                 let booksResponse = try JSONDecoder().decode(BooksResponse.self, from: data)
                 completion(.success(booksResponse.docs))
             } catch {

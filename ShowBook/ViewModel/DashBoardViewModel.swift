@@ -22,6 +22,7 @@ class DashboardViewModel: ObservableObject {
     @Published var scrollOffset: CGFloat = 0
     
     var api = NetworkClass()
+    var cache: BookCatalogCache = .shared
     var offset: Int = 0
     private var requestID = UUID()
     private var loadedTitle: String?
@@ -83,13 +84,21 @@ class DashboardViewModel: ObservableObject {
                 self.isLoadingMore = false
                 switch result {
                 case .success(let books):
+                    self.cache.save(books: books, for: title, offset: offset)
                     self.books = offset == 0 ? books : self.books + books
                     self.offset = offset
                     self.loadedTitle = title
                     self.loadingMoreBookNotPossible = books.isEmpty
                 case .failure(let error):
-                    self.errorMessage = error.localizedDescription
-                    self.showAlert = true
+                    if let cached = self.cache.load(for: title, offset: offset), !cached.isEmpty {
+                        self.books = offset == 0 ? cached : self.books + cached
+                        self.offset = offset
+                        self.loadedTitle = title
+                        self.loadingMoreBookNotPossible = cached.isEmpty
+                    } else {
+                        self.errorMessage = error.localizedDescription
+                        self.showAlert = true
+                    }
                 }
             }
         }

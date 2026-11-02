@@ -221,6 +221,35 @@ final class DashboardViewModelTests: XCTestCase {
         XCTAssertTrue(viewModel.isBookLoading)
         XCTAssertEqual(viewModel.offset, 0)
     }
+
+    func testDashboardViewModelFallsBackToOfflineCacheOnNetworkFailure() {
+        let cache = BookCatalogCache.shared
+        cache.clear()
+        defer { cache.clear() }
+
+        let cachedBook = Book(
+            title: "Cached Book Title",
+            ratingsAverage: 4.8,
+            ratingsCount: 50,
+            authorName: ["Cached Author"],
+            coverI: 9999,
+            image: nil,
+            key: "/works/OL9999W"
+        )
+        cache.save(books: [cachedBook], for: "offline fallback", offset: 0)
+
+        let exp = expectation(description: "ViewModel completes fetch with cache fallback")
+        mockApi.result = .failure(URLError(.notConnectedToInternet))
+
+        viewModel.fetchBooks(title: "offline fallback", offset: 0) {
+            XCTAssertEqual(self.viewModel.books.count, 1)
+            XCTAssertEqual(self.viewModel.books.first?.title, "Cached Book Title")
+            XCTAssertFalse(self.viewModel.showAlert)
+            exp.fulfill()
+        }
+
+        waitForExpectations(timeout: 2)
+    }
 }
 
 class MockNetworkClass: NetworkClass {
@@ -321,5 +350,28 @@ final class SearchNavigationRenderingTests: XCTestCase {
         attachment.name = name
         attachment.lifetime = .keepAlways
         add(attachment)
+    }
+
+    func testBookCatalogCacheSavesAndLoadsOffline() {
+        let cache = BookCatalogCache.shared
+        cache.clear()
+        defer { cache.clear() }
+
+        let book = Book(
+            title: "Offline Book",
+            ratingsAverage: 4.5,
+            ratingsCount: 100,
+            authorName: ["Author"],
+            coverI: 12345,
+            image: nil,
+            key: "/works/OL123W"
+        )
+        cache.save(books: [book], for: "offline test", offset: 0)
+
+        let loaded = cache.load(for: "offline test", offset: 0)
+        XCTAssertNotNil(loaded, "Cached book catalog must be loaded from disk")
+        XCTAssertEqual(loaded?.count, 1)
+        XCTAssertEqual(loaded?.first?.title, "Offline Book")
+        XCTAssertEqual(loaded?.first?.key, "/works/OL123W")
     }
 }
