@@ -63,7 +63,7 @@ flowchart TD
 | Details | [BookDetailsViewModel](ShowBook/BookDetails/BookDetailsViewModel.swift) orchestrates work and edition loading through `BookDetailsServing` |
 | Persistence | [PersistenceController](ShowBook/DataBase/Persistence/Persistence.swift) owns account transactions, credential migration, countries, and bookmark operations |
 | Catalog and artwork | [BookItem](ShowBook/View/Book%20Item/BookItem.swift) composes shared tiles; [BookDetailsView](ShowBook/BookDetails/BookDetailsView.swift) also contains cover preview and sharing |
-| Developer controls | [DeveloperSettingsView](ShowBook/Developer/DeveloperSettingsView.swift) owns Debug launch/shake presentation; [AppRuntime](ShowBook/Developer/AppRuntime.swift) selects flags, fixtures, and transport logging |
+| Developer & showcase controls | [DeveloperSettingsView](ShowBook/Developer/DeveloperSettingsView.swift) owns Debug launch/shake presentation; [AppRuntime](ShowBook/Developer/AppRuntime.swift) selects flags, fixtures, and transport logging; `ShowBook Showcase` scheme boots credential-free directly into curated fixture catalog |
 
 ### Request lifecycle and failure behavior
 

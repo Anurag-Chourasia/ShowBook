@@ -167,5 +167,25 @@ final class AuthenticationFlagTests: XCTestCase {
         #endif
         defaults.set(false, forKey: key)
         XCTAssertFalse(AppRuntime.authenticationEnabled)
+
+        #if DEBUG
+        defaults.set("stub", forKey: "developer.source")
+        defaults.set("showcase", forKey: "developer.scenario")
+        XCTAssertEqual(AppRuntime.stubScenario, "showcase")
+        XCTAssertTrue(AppRuntime.isShowcaseMode)
+
+        let subjectsURL = URL(string: "https://openlibrary.org/subjects/fiction.json")!
+        let subjectsBody = ShowcaseStubProtocol.body(for: subjectsURL)
+        XCTAssertNotNil(subjectsBody)
+        XCTAssertTrue(subjectsBody?.contains("The Design of Everyday Things") == true)
+
+        let searchURL = URL(string: "https://openlibrary.org/search.json?q=design")!
+        let searchBody = ShowcaseStubProtocol.body(for: searchURL)
+        XCTAssertNotNil(searchBody)
+        XCTAssertTrue(searchBody?.contains("Clean Code") == true)
+
+        defaults.removeObject(forKey: "developer.source")
+        defaults.removeObject(forKey: "developer.scenario")
+        #endif
     }
 }
