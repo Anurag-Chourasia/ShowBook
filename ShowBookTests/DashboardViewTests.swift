@@ -368,10 +368,17 @@ final class SearchNavigationRenderingTests: XCTestCase {
         )
         cache.save(books: [book], for: "offline test", offset: 0)
 
+        XCTAssertEqual(cache.cachedQueriesCount, 1)
+        XCTAssertGreaterThan(cache.totalSizeBytes, 0)
+
         let loaded = cache.load(for: "offline test", offset: 0)
         XCTAssertNotNil(loaded, "Cached book catalog must be loaded from disk")
         XCTAssertEqual(loaded?.count, 1)
         XCTAssertEqual(loaded?.first?.title, "Offline Book")
         XCTAssertEqual(loaded?.first?.key, "/works/OL123W")
+
+        cache.clear()
+        XCTAssertEqual(cache.cachedQueriesCount, 0)
+        XCTAssertEqual(cache.formattedFileSize, "0 KB")
     }
 }

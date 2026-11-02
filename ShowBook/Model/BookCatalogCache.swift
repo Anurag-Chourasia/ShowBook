@@ -14,6 +14,28 @@ final class BookCatalogCache {
         try? FileManager.default.createDirectory(at: self.directory, withIntermediateDirectories: true)
     }
 
+    var cachedQueriesCount: Int {
+        let files = (try? FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: nil)) ?? []
+        return files.filter { $0.pathExtension == "json" }.count
+    }
+
+    var totalSizeBytes: Int {
+        let files = (try? FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: [.fileSizeKey])) ?? []
+        var total = 0
+        for file in files {
+            if let size = try? file.resourceValues(forKeys: [.fileSizeKey]).fileSize {
+                total += size
+            }
+        }
+        return total
+    }
+
+    var formattedFileSize: String {
+        let bytes = totalSizeBytes
+        guard bytes > 0 else { return "0 KB" }
+        return ByteCountFormatter.string(fromByteCount: Int64(bytes), countStyle: .file)
+    }
+
     private func cacheKey(for title: String, offset: Int) -> String {
         let clean = title.lowercased()
             .trimmingCharacters(in: .whitespacesAndNewlines)
