@@ -21,6 +21,7 @@ xcrun xcodebuild test -project ShowBook.xcodeproj -scheme ShowBook \
     -only-testing:ShowBookTests/BookmarkViewModelTests \
     -only-testing:ShowBookTests/PersistenceRelationshipTests \
     -only-testing:ShowBookTests/BookmarkUUIDMigrationTests \
+    -only-testing:ShowBookTests/RiskBasedIsolationAndConcurrencyTests \
     -only-testing:ShowBookTests/DiscoverServiceTests
 
 END_TIME=$(date +%s)
