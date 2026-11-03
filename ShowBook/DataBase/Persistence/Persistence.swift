@@ -415,7 +415,7 @@ class PersistenceController: ObservableObject {
             context.delete(user)
             saveContext()
         } else {
-            print("User with email \(email) not found")
+            print("User not found")
         }
     }
     
