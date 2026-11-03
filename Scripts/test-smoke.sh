@@ -25,7 +25,8 @@ xcrun xcodebuild test -project ShowBook.xcodeproj -scheme ShowBook \
     -scmProvider system CODE_SIGNING_ALLOWED=NO \
     -only-testing:ShowBookTests/DashboardViewModelTests \
     -only-testing:ShowBookTests/SearchNavigationRenderingTests \
-    -only-testing:ShowBookTests/AccessibilityJourneyTests
+    -only-testing:ShowBookTests/AccessibilityJourneyTests \
+    -only-testing:ShowBookTests/LocalizationAndRTLJourneyTests
 
 END_TIME=$(date +%s)
 ELAPSED=$((END_TIME - START_TIME))

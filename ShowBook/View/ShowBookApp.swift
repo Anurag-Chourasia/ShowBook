@@ -9,21 +9,25 @@ import SwiftUI
 import DesignTokensKit
 import AuthKit
 import AuthKitUI
+import LocalizationKit
+
+extension LocalizationController: AuthLocalizing {}
 
 @main
 struct ShowBookApp: App {
     @ObservedObject private var persistenceController = PersistenceController.shared
     @StateObject private var userViewModel = UserViewModel()
+    private let localization = LocalizationController()
     
     var body: some Scene {
         WindowGroup {
             AppLaunchView { authenticationEnabled in
                 if let error = persistenceController.storeLoadError {
-                    StoreLoadErrorRecoveryView(error: error) {
+                    StoreLoadErrorRecoveryView(error: error, localization: localization) {
                         persistenceController.retryLoadingStore()
                     }
                 } else if authenticationEnabled {
-                    AppAuthGate(brand: .showBook, onSignedOut: { userViewModel.clearCloudAccount() }) { user, session in
+                    AppAuthGate(brand: .showBook, localizer: localization, onSignedOut: { userViewModel.clearCloudAccount() }) { user, session in
                         CloudBookRoot(user: user, session: session, userViewModel: userViewModel)
                     }
                 } else {
@@ -33,6 +37,7 @@ struct ShowBookApp: App {
                 .appAppearance()
                 .environmentObject(userViewModel)
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
+                .environment(\.layoutDirection, localization.isRightToLeft ? .rightToLeft : .leftToRight)
         }
     }
 }
@@ -76,20 +81,21 @@ private struct LocalBookRoot: View {
 /// Present recoverable store-load failures without automatic data deletion.
 struct StoreLoadErrorRecoveryView: View {
     let error: Error
+    var localization: LocalizationProviding = LocalizationController()
     let retryAction: () -> Void
 
     var body: some View {
         VStack(spacing: DesignMetric.p16) {
             Image(systemName: "exclamationmark.triangle.fill")
                 .foregroundColor(DesignColor.yellow)
-            Text("Library Storage Unavailable")
+            Text(L10n.Errors.storeLoadFailed(using: localization))
                 .font(Typography.headline)
                 .foregroundStyle(DesignColor.primary)
-            Text("ShowBook could not open your offline library. Your saved data is safely preserved without deletion.")
+            Text(L10n.Errors.storeLoadMessage(using: localization))
                 .font(Typography.subheadline)
                 .foregroundStyle(DesignColor.secondary)
                 .multilineTextAlignment(.center)
-            Button("Retry Loading Library") {
+            Button(L10n.Errors.recoverableRetry(using: localization)) {
                 retryAction()
             }
             .buttonStyle(.borderedProminent)
@@ -98,5 +104,6 @@ struct StoreLoadErrorRecoveryView: View {
         .padding(.horizontal, DesignMetric.p34)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(DesignColor.grouped)
+        .environment(\.layoutDirection, localization.isRightToLeft ? .rightToLeft : .leftToRight)
     }
 }
