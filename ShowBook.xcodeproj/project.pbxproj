@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		DA752D2A34EA542331C8A72D /* AccessibilityJourneyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 818F519100EDD7B6C4BCBE3F /* AccessibilityJourneyTests.swift */; };
 		342B8AA22C7279B300EC41C8 /* RiskBasedIsolationAndConcurrencyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342B8AA12C7279B300EC41C8 /* RiskBasedIsolationAndConcurrencyTests.swift */; };
 		342B8AA02C7279B300EC41C8 /* PerformanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342B8A9F2C7279B300EC41C8 /* PerformanceTests.swift */; };
 		342B8A9E2C7279B300EC41C8 /* PrivacyManifestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342B8A9D2C7279B300EC41C8 /* PrivacyManifestTests.swift */; };
@@ -77,6 +78,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		818F519100EDD7B6C4BCBE3F /* AccessibilityJourneyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityJourneyTests.swift; sourceTree = "<group>"; };
 		342B8AA12C7279B300EC41C8 /* RiskBasedIsolationAndConcurrencyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiskBasedIsolationAndConcurrencyTests.swift; sourceTree = "<group>"; };
 		3403E26E2C7064310063E7D0 /* ShowBook.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ShowBook.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3403E2712C7064320063E7D0 /* ShowBookApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowBookApp.swift; sourceTree = "<group>"; };
@@ -358,6 +360,7 @@
 				342B8A9D2C7279B300EC41C8 /* PrivacyManifestTests.swift */,
 				342B8A9F2C7279B300EC41C8 /* PerformanceTests.swift */,
 				342B8AA12C7279B300EC41C8 /* RiskBasedIsolationAndConcurrencyTests.swift */,
+				818F519100EDD7B6C4BCBE3F /* AccessibilityJourneyTests.swift */,
 				342B8A8F2C727CB800EC41C8 /* BookmarkButtonViewModelTests.swift */,
 			);
 			path = ShowBookTests;
@@ -529,6 +532,7 @@
 				342B8A9E2C7279B300EC41C8 /* PrivacyManifestTests.swift in Sources */,
 				342B8AA02C7279B300EC41C8 /* PerformanceTests.swift in Sources */,
 				342B8AA22C7279B300EC41C8 /* RiskBasedIsolationAndConcurrencyTests.swift in Sources */,
+				DA752D2A34EA542331C8A72D /* AccessibilityJourneyTests.swift in Sources */,
 				342B8A902C727CB800EC41C8 /* BookmarkButtonViewModelTests.swift in Sources */,
 				342B8A842C71E2A300EC41C8 /* TextFieldObserverTests.swift in Sources */,
 				342B8A882C71E50B00EC41C8 /* DashboardViewTests.swift in Sources */,
