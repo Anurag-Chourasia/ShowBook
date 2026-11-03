@@ -59,7 +59,7 @@ final class RiskBasedIsolationAndConcurrencyTests: XCTestCase {
         // In-memory state must be empty
         XCTAssertEqual(bookmarkViewModel.bookmarkBooks.count, 0, "Signing out must isolate and evict user bookmarks from active view state")
         XCTAssertNil(userViewModel.currentUserUUID)
-        XCTAssertEqual(userViewModel.userEmail, "")
+        XCTAssertNil(UserDefaults.standard.string(forKey: "LoggedInUserEmail"))
 
         // 3. User B signs in - must NOT see Alice's bookmarks
         let userBUUID = UUID()
