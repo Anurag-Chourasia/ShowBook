@@ -222,7 +222,7 @@ struct ShowBookDeveloperView: View {
             name: "ShowBook",
             version: AppRuntime.version,
             build: AppRuntime.build,
-            disclaimer: "ShowBook is a book discovery application. Book metadata and covers are provided by Open Library. Availability and accuracy depend on the source records.\n\nSource: https://openlibrary.org"
+            disclaimer: "ShowBook is a book discovery application. Book metadata and covers are provided by Open Library. Availability and accuracy depend on the source records.\n\nSource: https://openlibrary.org\n\n[Privacy Policy](https://github.com/Anurag-Chourasia/ShowBook/blob/main/Docs/PrivacyInventory.md) • [Support](mailto:anuragchourasiaios@gmail.com)"
         ), layout: CatalogLayout(rawValue: storedLayout) ?? .list)
         .tint(DesignColor.blue)
         .navigationTitle("Know Your Developer")

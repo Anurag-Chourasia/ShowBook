@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		342B8A9E2C7279B300EC41C8 /* PrivacyManifestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342B8A9D2C7279B300EC41C8 /* PrivacyManifestTests.swift */; };
+		3403E2F72C7064330063E7D0 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 3403E2F52C7064330063E7D0 /* PrivacyInfo.xcprivacy */; };
+		3403E2F62C7064330063E7D0 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 3403E2F52C7064330063E7D0 /* PrivacyInfo.xcprivacy */; };
 		3403E2722C7064320063E7D0 /* ShowBookApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3403E2712C7064320063E7D0 /* ShowBookApp.swift */; };
 		3403E2772C7064320063E7D0 /* ShowBook.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 3403E2752C7064320063E7D0 /* ShowBook.xcdatamodeld */; };
 		3403E2792C7064320063E7D0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3403E2782C7064320063E7D0 /* ContentView.swift */; };
@@ -81,6 +84,7 @@
 		3403E27C2C7064330063E7D0 /* ShowBook.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ShowBook.entitlements; sourceTree = "<group>"; };
 		3403E27E2C7064330063E7D0 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		3403E2A22C70648B0063E7D0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		3403E2F52C7064330063E7D0 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		3403E2A42C7065190063E7D0 /* BookItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BookItem.swift; sourceTree = "<group>"; };
 		3403E2A52C7065190063E7D0 /* BookmarkButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BookmarkButton.swift; sourceTree = "<group>"; };
 		3403E2A72C7065190063E7D0 /* EmailTextFieldView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmailTextFieldView.swift; sourceTree = "<group>"; };
@@ -110,6 +114,7 @@
 		342B8A892C71F97500EC41C8 /* UserViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserViewModelTests.swift; sourceTree = "<group>"; };
 		342B8A8B2C72570E00EC41C8 /* BookItemViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookItemViewModelTests.swift; sourceTree = "<group>"; };
 		342B8A8D2C7279B300EC41C8 /* BookmarkViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkViewModelTests.swift; sourceTree = "<group>"; };
+		342B8A9D2C7279B300EC41C8 /* PrivacyManifestTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyManifestTests.swift; sourceTree = "<group>"; };
 		342B8A8F2C727CB800EC41C8 /* BookmarkButtonViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkButtonViewModelTests.swift; sourceTree = "<group>"; };
 		3493640D2C7111C8008A99F8 /* ShowBookTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ShowBookTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A23000000000000000000000 /* ShowBook/BookDetails/BookDetailsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowBook/BookDetails/BookDetailsService.swift; sourceTree = SOURCE_ROOT; };
@@ -174,6 +179,7 @@
 			isa = PBXGroup;
 			children = (
 				3403E2A22C70648B0063E7D0 /* Info.plist */,
+				3403E2F52C7064330063E7D0 /* PrivacyInfo.xcprivacy */,
 				3403E2B62C7065190063E7D0 /* Model */,
 				3403E2C62C7065640063E7D0 /* View */,
 				3403E2CE2C70738A0063E7D0 /* ViewModel */,
@@ -345,6 +351,7 @@
 				342B8A832C71E2A300EC41C8 /* TextFieldObserverTests.swift */,
 				342B8A8B2C72570E00EC41C8 /* BookItemViewModelTests.swift */,
 				342B8A8D2C7279B300EC41C8 /* BookmarkViewModelTests.swift */,
+				342B8A9D2C7279B300EC41C8 /* PrivacyManifestTests.swift */,
 				342B8A8F2C727CB800EC41C8 /* BookmarkButtonViewModelTests.swift */,
 			);
 			path = ShowBookTests;
@@ -452,6 +459,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3403E2F62C7064330063E7D0 /* PrivacyInfo.xcprivacy in Resources */,
 				3403E27F2C7064330063E7D0 /* Preview Assets.xcassets in Resources */,
 				3403E27B2C7064330063E7D0 /* Assets.xcassets in Resources */,
 			);
@@ -461,6 +469,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3403E2F72C7064330063E7D0 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -511,6 +520,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				342B8A9E2C7279B300EC41C8 /* PrivacyManifestTests.swift in Sources */,
 				342B8A902C727CB800EC41C8 /* BookmarkButtonViewModelTests.swift in Sources */,
 				342B8A842C71E2A300EC41C8 /* TextFieldObserverTests.swift in Sources */,
 				342B8A882C71E50B00EC41C8 /* DashboardViewTests.swift in Sources */,

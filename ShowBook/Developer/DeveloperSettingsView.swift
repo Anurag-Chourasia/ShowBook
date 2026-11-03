@@ -271,6 +271,21 @@ struct DeveloperSettingsView: View {
                 Text("Overrides the version shown in Know Your Developer. The signed bundle and App Store version stay unchanged; change those in Xcode.")
             } header: { Text("Version simulation") }
             Section("Appearance") { AppearanceMenu() }
+            Section("Privacy & Support") {
+                Link(destination: URL(string: "https://github.com/Anurag-Chourasia/ShowBook/blob/main/Docs/PrivacyInventory.md")!) {
+                    Label("Privacy Policy", systemImage: "hand.raised")
+                }
+                .accessibilityIdentifier("developer-privacy-policy")
+
+                Link(destination: URL(string: "mailto:anuragchourasiaios@gmail.com")!) {
+                    Label("Developer Support", systemImage: "envelope")
+                }
+                .accessibilityIdentifier("developer-support")
+
+                Text("ShowBook stores user bookmarks locally on device or securely in Supabase when cloud authentication is enabled. No personal data is tracked or sold to third parties.")
+                    .font(Typography.caption)
+                    .foregroundStyle(DesignColor.secondary)
+            }
             Section {
                 Button("Reset developer settings") {
                     authentication = false; discover = true; preview = true; ratings = true; logs = false
