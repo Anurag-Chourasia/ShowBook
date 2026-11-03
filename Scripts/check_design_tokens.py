@@ -4,7 +4,7 @@ import re, sys
 root = Path(__file__).resolve().parents[1]
 source = root / ('myTV' if (root / 'myTV').is_dir() else 'ShowBook')
 patterns = {
-    'shorthand color': r'(?<![\w.])\.(?:primary|secondary|accentColor|white|black|gray|red|green|blue|yellow|orange|clear)\b',
+    'shorthand color': r'(?<![\w.\\])\.(?:primary|secondary|accentColor|white|black|gray|red|green|blue|yellow|orange|clear)\b',
     'inline font role': r'\.font\(\.(?:largeTitle|title|title2|title3|headline|subheadline|body|callout|footnote|caption|caption2)\b',
     'raw color': r'\b(?:Color|UIColor)\s*\(|\bColor\.(?:primary|secondary|accentColor|white|black|gray|red|green|blue|yellow|orange|clear)\b',
     'numeric visual argument': r'\b(?:spacing|width|height|minWidth|minHeight|maxWidth|maxHeight|minimum|cornerRadius|lineWidth|radius|minLength|size)\s*:\s*\d',

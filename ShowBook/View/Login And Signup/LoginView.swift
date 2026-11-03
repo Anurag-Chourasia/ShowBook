@@ -17,7 +17,7 @@ struct LoginView: View {
         GeometryReader { geometry in
             ScrollView {
                 ZStack {
-                    VStack(spacing: DesignMetric.p0) {
+                    VStack(spacing: \.zero) {
                         welcomeText
                         emailField
                         passwordField
@@ -25,7 +25,7 @@ struct LoginView: View {
                         Spacer()
                     }
                     .frame(minHeight: geometry.size.height)
-                    .opacity(viewModel.isLoading ? OpacityToken.p0_2 : OpacityToken.p1_0)
+                    .opacity(viewModel.isLoading ? OpacityTheme.default.p0_2 : OpacityTheme.default.p1_0)
 
                     if viewModel.isLoading {
                         loadingView
@@ -39,18 +39,18 @@ struct LoginView: View {
     }
 
     private var welcomeText: some View {
-        HStack(spacing: DesignMetric.p0) {
+        HStack(spacing: \.zero) {
             Text("Welcome,\nlog in to continue")
-                .font(Typography.title)
-                .padding(.leading, Spacing.thirty)
+                .font(\.title)
+                .padding(.leading, \.thirty)
             Spacer()
         }
-        .padding(.top, Spacing.twenty)
-        .padding(.bottom, DesignMetric.p50)
+        .padding(.top, \.twenty)
+        .padding(.bottom, \.p50)
     }
 
     private var emailField: some View {
-        HStack(spacing: DesignMetric.p0) {
+        HStack(spacing: \.zero) {
             EmailTextFieldView(email: $viewModel.email,
                                placeholderText: "Email",
                                mandatoryField: true)
@@ -59,12 +59,12 @@ struct LoginView: View {
             RoundedRectangle(cornerRadius: ShowBookTheme.fieldCornerRadius)
                 .stroke(ShowBookTheme.colors.border, lineWidth: StrokeWidth.one)
         )
-        .padding(.bottom, Spacing.fourteen)
-        .padding(.horizontal, DesignMetric.p34)
+        .padding(.bottom, \.fourteen)
+        .padding(.horizontal, \.p34)
     }
 
     private var passwordField: some View {
-        HStack(spacing: DesignMetric.p0) {
+        HStack(spacing: \.zero) {
             PasswordTextFieldView(text: $viewModel.password,
                                   placeholderText: "Password",
                                   mandatoryField: true)
@@ -73,20 +73,20 @@ struct LoginView: View {
             RoundedRectangle(cornerRadius: ShowBookTheme.fieldCornerRadius)
                 .stroke(ShowBookTheme.colors.border, lineWidth: StrokeWidth.one)
         )
-        .padding(.bottom, Spacing.twenty)
-        .padding(.horizontal, DesignMetric.p34)
+        .padding(.bottom, \.twenty)
+        .padding(.horizontal, \.p34)
     }
 
     private var loginButton: some View {
-        HStack(spacing: DesignMetric.p0) {
+        HStack(spacing: \.zero) {
             Button(action: {
                 viewModel.handleLogin(userViewModel: userViewModel)
             }) {
                 Text("Login")
-                    .font(Typography.headline)
-                    .frame(height: DesignMetric.p55)
+                    .font(\.headline)
+                    .frame(height: \.p55)
                     .frame(maxWidth: .infinity)
-                    .foregroundColor(DesignColor.white)
+                    .foregroundColor(\.white)
                     .background(RoundedRectangle(cornerRadius: ShowBookTheme.fieldCornerRadius))
             }
             .alert(isPresented: $viewModel.showAlert) {
@@ -103,16 +103,16 @@ struct LoginView: View {
             }
         }
         .foregroundStyle(ShowBookTheme.colors.action)
-        .padding(.bottom, DesignMetric.p18)
-        .padding(.leading, DesignMetric.p33)
-        .padding(.trailing, DesignMetric.p33)
+        .padding(.bottom, \.p18)
+        .padding(.leading, \.p33)
+        .padding(.trailing, \.p33)
     }
 
     private var loadingView: some View {
         CenteredProgressOverlay(width: UIScreen.main.bounds.width) {
             Text("Loading.")
         } background: {
-            ShowBookTheme.colors.surface.opacity(OpacityToken.p0_5)
+            ShowBookTheme.colors.surface.opacity(OpacityTheme.default.p0_5)
         }
     }
 }

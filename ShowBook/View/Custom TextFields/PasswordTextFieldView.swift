@@ -29,23 +29,23 @@ struct PasswordTextFieldView: View {
                 TextField("", text: $text)
             }
         }
-        .padding(.trailing, DesignMetric.p21)
+        .padding(.trailing, \.p21)
         .fieldPlaceholder(when: text.isEmpty) {
             placeholderView
         }
-        .frame(height: DesignMetric.p53)
-        .padding(.leading, DesignMetric.p19)
+        .frame(height: \.p53)
+        .padding(.leading, \.p19)
     }
 
     private var placeholderView: some View {
-        HStack(spacing: DesignMetric.p0) {
+        HStack(spacing: \.zero) {
             Text(placeholderText)
                 .foregroundColor(ShowBookTheme.colors.foreground)
-                .font(Typography.title2)
+                .font(\.title2)
             if mandatoryField {
                 Text(" *")
-                    .foregroundColor(DesignColor.red)
-                    .font(Typography.title2)
+                    .foregroundColor(\.red)
+                    .font(\.title2)
             }
         }
     }
@@ -58,17 +58,17 @@ struct PasswordTextFieldView: View {
                 .renderingMode(.template)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
-                .foregroundColor(DesignColor.gray)
-                .frame(width: DesignMetric.p20, height: DesignMetric.p20)
-                .padding(.leading, Spacing.twenty)
-                .padding(.trailing, DesignMetric.p22_58)
+                .foregroundColor(\.gray)
+                .frame(width: \.p20, height: \.p20)
+                .padding(.leading, \.twenty)
+                .padding(.trailing, \.p22_58)
         }
     }
 
     var body: some View {
         ZStack(alignment: .trailing) {
             passwordField
-                .padding(.trailing, Spacing.thirtyTwo)
+                .padding(.trailing, \.thirtyTwo)
 
             toggleVisibilityButton
         }

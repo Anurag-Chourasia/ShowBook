@@ -23,7 +23,7 @@ struct DashboardView: View {
     var body: some View {
         NavigationStack {
                 ZStack {
-                    VStack(spacing: DesignMetric.p0) {
+                    VStack(spacing: \.zero) {
                         searchField
                         ZStack {
                             if !viewModel.filteredBooks.isEmpty {
@@ -89,7 +89,7 @@ struct DashboardView: View {
                 }
                 .frame(maxWidth: .infinity)
             }
-            .padding(Spacing.twenty)
+            .padding(\.twenty)
             .accessibilityIdentifier("search-state-banner")
         }
     }
@@ -115,9 +115,9 @@ struct DashboardView: View {
         HStack {
             Image(systemName: "book.fill")
                 .resizable()
-                .frame(width: DesignMetric.p21, height: DesignMetric.p21)
-                .padding([.top, .bottom], DesignMetric.p16)
-                .padding([.leading, .trailing], DesignMetric.p19)
+                .frame(width: \.p21, height: \.p21)
+                .padding([.top, .bottom], \.sixteen)
+                .padding([.leading, .trailing], \.p19)
             TextFieldWithDebounce(debouncedText: $viewModel.searchBook)
                 .onChange(of: viewModel.searchBook) {
                     viewModel.performSearch()
@@ -127,8 +127,8 @@ struct DashboardView: View {
             RoundedRectangle(cornerRadius: ShowBookTheme.fieldCornerRadius)
                 .stroke(ShowBookTheme.colors.border, lineWidth: StrokeWidth.one)
         )
-        .padding(.bottom, Spacing.fourteen)
-        .padding(.horizontal, Spacing.twenty)
+        .padding(.bottom, \.fourteen)
+        .padding(.horizontal, \.twenty)
     }
     
     private var sortByFilterView: some View {
@@ -152,35 +152,35 @@ struct DashboardView: View {
                 Label(viewModel.selectedCategoryFilter.isEmpty ? "Sort by" : viewModel.selectedCategoryFilter,
                       systemImage: "arrow.up.arrow.down")
             }
-            .tint(DesignColor.primary)
-            .font(Typography.subheadline)
+            .tint(\.primary)
+            .font(\.subheadline)
             Spacer()
             BookLayoutPicker()
-                .font(Typography.subheadline)
+                .font(\.subheadline)
         }
-        .padding(.horizontal, Spacing.twenty)
-        .padding(.bottom, Spacing.ten)
+        .padding(.horizontal, \.twenty)
+        .padding(.bottom, \.ten)
     }
 
     private var booksListView: some View {
         ScrollView(.vertical, showsIndicators: false) {
-            VStack(spacing: DesignMetric.p0) {
+            VStack(spacing: \.zero) {
                 BookCollection(books: viewModel.filteredBooks) {
                     viewModel.loadMoreBooksIfNeeded {}
                 }
                 if viewModel.isLoadingMore {
                     ProgressView()
                         .progressViewStyle(CircularProgressViewStyle())
-                        .padding(.all, Spacing.system)
+                        .padding(\.sixteen)
                 } else if !viewModel.loadingMoreBookNotPossible {
                     HStack {
                         Text("Loading More...")
-                            .padding(.all, Spacing.system)
-                            .foregroundColor(DesignColor.primary)
+                            .padding(\.sixteen)
+                            .foregroundColor(\.primary)
                     }
                 }
             }
-            .padding(.vertical, Spacing.ten)
+            .padding(.vertical, \.ten)
         }
     }
     
@@ -191,7 +191,7 @@ struct DashboardView: View {
             CenteredProgressOverlay(width: innerGeometry.size.width) {
                 Text("Loading.")
             } background: {
-                ShowBookTheme.colors.surface.opacity(OpacityToken.p0_5)
+                ShowBookTheme.colors.surface.opacity(OpacityTheme.default.p0_5)
             }
         }
     }
@@ -201,7 +201,7 @@ struct DashboardView: View {
             CenteredProgressOverlay(width: innerGeometry.size.width) {
                 Text("Loading.")
             } background: {
-                ShowBookTheme.colors.surface.opacity(OpacityToken.p0_5)
+                ShowBookTheme.colors.surface.opacity(OpacityTheme.default.p0_5)
             }
         }
     }
@@ -224,7 +224,7 @@ struct ShowBookDeveloperView: View {
             build: AppRuntime.build,
             disclaimer: "ShowBook is a book discovery application. Book metadata and covers are provided by Open Library. Availability and accuracy depend on the source records.\n\nSource: https://openlibrary.org\n\n[Privacy Policy](https://github.com/Anurag-Chourasia/ShowBook/blob/main/Docs/PrivacyInventory.md) • [Support](mailto:anuragchourasiaios@gmail.com)"
         ), layout: CatalogLayout(rawValue: storedLayout) ?? .list)
-        .tint(DesignColor.blue)
+        .tint(\.blue)
         .navigationTitle("Know Your Developer")
         .showBookTools(includeDeveloper: false, includeLayout: true)
         .navigationBarTitleDisplayMode(.inline)

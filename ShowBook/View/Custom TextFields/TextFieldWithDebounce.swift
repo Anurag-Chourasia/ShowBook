@@ -34,12 +34,12 @@ struct TextFieldWithDebounce: View {
     var body: some View {
         VStack {
             TextField("", text: $textObserver.searchText)
-                .padding(.trailing, DesignMetric.p21)
+                .padding(.trailing, \.p21)
                 .fieldPlaceholder(when: textObserver.searchText.isEmpty) {
                     HStack {
                         Text("Search for Books")
                             .foregroundColor(ShowBookTheme.colors.foreground)
-                            .font(Typography.title3)
+                            .font(\.title3)
                     }
                 }
                 .onChange(of: textObserver.debouncedText) {

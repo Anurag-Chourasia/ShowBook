@@ -16,7 +16,7 @@ struct LandingView: View {
         
         NavigationStack {
             
-            VStack(alignment: .center, spacing: DesignMetric.p0){
+            VStack(alignment: .center, spacing: \.zero){
                 
                 headerView
                 
@@ -41,11 +41,11 @@ struct LandingView: View {
             Spacer()
             VStack{
                 Text("Show Book")
-                    .font(Typography.largeTitle)
+                    .font(\.largeTitle)
             }
             Spacer()
         }
-        .padding(.top, DesignMetric.p50)
+        .padding(.top, \.p50)
     }
 
     private var logoView: some View {
@@ -54,7 +54,7 @@ struct LandingView: View {
                 Image("Logo")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(width: min(geo.size.width - DesignMetric.p80, DesignMetric.p400), height: geo.size.height)
+                    .frame(width: min(geo.size.width - DesignMetricTheme.default.p80, DesignMetricTheme.default.p400), height: geo.size.height)
                     .clipShape(Circle())
             }
             .frame(width: geo.size.width, alignment: .center)
@@ -68,29 +68,29 @@ struct LandingView: View {
             
             NavigationLink(destination: SignUpView()) {
                 Text("Sign Up")
-                    .font(Typography.headline)
-                    .frame(minWidth: DesignMetric.p80)
-                    .padding(.all, Spacing.system)
-                    .background(DesignColor.blue)
-                    .foregroundColor(DesignColor.white)
-                    .cornerRadius(DesignMetric.p8)
+                    .font(\.headline)
+                    .frame(minWidth: \.p80)
+                    .padding(\.sixteen)
+                    .background(\.blue)
+                    .foregroundColor(\.white)
+                    .cornerRadius(\.eight)
             }
             
             Spacer()
             
             NavigationLink(destination: LoginView()) {
                 Text("Login")
-                    .font(Typography.headline)
-                    .frame(minWidth: DesignMetric.p80)
-                    .padding(.all, Spacing.system)
-                    .background(DesignColor.green)
-                    .foregroundColor(DesignColor.white)
-                    .cornerRadius(DesignMetric.p8)
+                    .font(\.headline)
+                    .frame(minWidth: \.p80)
+                    .padding(\.sixteen)
+                    .background(\.green)
+                    .foregroundColor(\.white)
+                    .cornerRadius(\.eight)
             }
             
             Spacer()
         }
-        .padding(.bottom, DesignMetric.p50)
+        .padding(.bottom, \.p50)
     }
 }
 

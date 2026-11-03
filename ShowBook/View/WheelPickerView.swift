@@ -24,7 +24,7 @@ struct WheelPickerView: View {
                         .tag(index)
                 }
             }
-            .frame(height: DesignMetric.p140)
+            .frame(height: \.p140)
             .pickerStyle(.wheel)
             .onChange(of: selectedCountryIndex){
                 let name = country[selectedCountryIndex]

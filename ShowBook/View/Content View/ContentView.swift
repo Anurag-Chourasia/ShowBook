@@ -53,8 +53,8 @@ struct AppearanceMenu: View {
                 appearancePicker.pickerStyle(.menu)
             }
         }
-        .tint(DesignColor.primary)
-        .foregroundStyle(DesignColor.primary)
+        .tint(\.primary)
+        .foregroundColor(\.primary)
     }
 
     private var appearancePicker: some View {
@@ -136,7 +136,7 @@ private struct ShowBookTools: ViewModifier {
                             }
                         }
                     } label: { Label("App options", systemImage: "line.3.horizontal") }
-                    .tint(DesignColor.primary)
+                    .tint(\.primary)
                     .accessibilityIdentifier("screen-tools")
                 }
             }

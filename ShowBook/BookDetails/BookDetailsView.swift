@@ -14,17 +14,17 @@ struct BookDetailsView: View {
     }
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: Spacing.twenty) {
+            VStack(alignment: .leading, spacing: \.twenty) {
                 LibraryCover(coverID: model.work?.covers?.first(where: { $0 > 0 }) ?? book.coverI, savedImage: book.image)
                     .frame(maxWidth: .infinity)
-                Text(model.work?.title ?? book.title).font(Typography.title).accessibilityAddTraits(.isHeader)
+                Text(model.work?.title ?? book.title).font(\.title).accessibilityAddTraits(.isHeader)
                 if let authors = book.authorName, !authors.isEmpty {
-                    Text(authors.joined(separator: ", ")).font(Typography.body).foregroundStyle(DesignColor.secondary)
+                    Text(authors.joined(separator: ", ")).font(\.body).foregroundColor(\.secondary)
                 }
                 BookmarkButton(book: book, imageUrl: LibraryCover.url(book.coverI))
                 if model.loading && model.work == nil { ProgressView("Loading book details…") }
                 if let error = model.error {
-                    Text(error).foregroundStyle(DesignColor.secondary)
+                    Text(error).foregroundColor(\.secondary)
                     if book.key != nil { Button("Retry") { reload += 1 } }
                 }
                 if let work = model.work {
@@ -33,26 +33,26 @@ struct BookDetailsView: View {
                     if let subjects = work.subjects, !subjects.isEmpty {
                         detailSection("Subjects", text: subjects.joined(separator: " · "))
                     }
-                    Text("Editions").font(Typography.title2).accessibilityAddTraits(.isHeader)
+                    Text("Editions").font(\.title2).accessibilityAddTraits(.isHeader)
                     ForEach(model.editions) { edition in
                         NavigationLink { EditionDetailsView(key: edition.key, title: edition.title) } label: {
                             SurfaceCard {
-                                VStack(alignment: .leading, spacing: Spacing.eight) {
-                                    Text(edition.title).font(Typography.headline)
-                                    if let date = edition.publish_date { Text(date).font(Typography.subheadline) }
-                                    if let publishers = edition.publishers { Text(publishers.joined(separator: ", ")).font(Typography.footnote) }
-                                    Label("Edition details", systemImage: "chevron.right").font(Typography.caption)
+                                VStack(alignment: .leading, spacing: \.eight) {
+                                    Text(edition.title).font(\.headline)
+                                    if let date = edition.publish_date { Text(date).font(\.subheadline) }
+                                    if let publishers = edition.publishers { Text(publishers.joined(separator: ", ")).font(\.footnote) }
+                                    Label("Edition details", systemImage: "chevron.right").font(\.caption)
                                 }.frame(maxWidth: .infinity, alignment: .leading)
                             }
                         }.buttonStyle(.plain)
                     }
-                    if let error = model.editionsError { Text(error).foregroundStyle(DesignColor.secondary) }
+                    if let error = model.editionsError { Text(error).foregroundColor(\.secondary) }
                     if model.loadingEditions { ProgressView("Loading editions…") }
                     else if model.hasMoreEditions {
                         Button(model.editionsError == nil ? "Load more editions" : "Retry editions") { more += 1 }
                     } else if model.editions.isEmpty { Text("No editions available.") }
                 }
-            }.padding(Spacing.twenty)
+            }.padding(\.twenty)
         }
         .navigationTitle("Book details")
         .navigationBarTitleDisplayMode(.inline)
@@ -61,9 +61,9 @@ struct BookDetailsView: View {
         .task(id: more) { if more > 0 { await model.loadMoreEditions() } }
     }
     private func detailSection(_ title: String, text: String) -> some View {
-        VStack(alignment: .leading, spacing: Spacing.eight) {
-            Text(title).font(Typography.title2).accessibilityAddTraits(.isHeader)
-            Text(text).font(Typography.body).textSelection(.enabled)
+        VStack(alignment: .leading, spacing: \.eight) {
+            Text(title).font(\.title2).accessibilityAddTraits(.isHeader)
+            Text(text).font(\.body).textSelection(.enabled)
         }
     }
 }
@@ -77,8 +77,8 @@ struct EditionDetailsView: View {
     @State private var reload = 0
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: Spacing.sixteen) {
-                Text(edition?.title ?? title).font(Typography.title).accessibilityAddTraits(.isHeader)
+            VStack(alignment: .leading, spacing: \.sixteen) {
+                Text(edition?.title ?? title).font(\.title).accessibilityAddTraits(.isHeader)
                 if loading { ProgressView("Loading edition…") }
                 if let error { Text(error); Button("Retry") { reload += 1 } }
                 if let edition {
@@ -94,7 +94,7 @@ struct EditionDetailsView: View {
                         return Locale.current.localizedString(forLanguageCode: code) ?? code
                     }.joined(separator: ", "))
                 }
-            }.frame(maxWidth: .infinity, alignment: .leading).padding(Spacing.twenty)
+            }.frame(maxWidth: .infinity, alignment: .leading).padding(\.twenty)
         }
         .navigationTitle("Edition details").navigationBarTitleDisplayMode(.inline)
         .showBookTools()
@@ -110,9 +110,9 @@ struct EditionDetailsView: View {
         }
     }
     private func field(_ title: String, _ value: String?) -> some View {
-        VStack(alignment: .leading, spacing: Spacing.four) {
-            Text(title).font(Typography.headline)
-            Text(value?.isEmpty == false ? value! : "Not available").font(Typography.body).textSelection(.enabled)
+        VStack(alignment: .leading, spacing: \.four) {
+            Text(title).font(\.headline)
+            Text(value?.isEmpty == false ? value! : "Not available").font(\.body).textSelection(.enabled)
         }
     }
 }
@@ -150,7 +150,7 @@ struct LibraryCover: View {
             BookCoverPreview(coverID: coverID, savedImage: savedImage, title: "Book cover")
         }
     }
-    private var placeholder: some View { Image(systemName: "book.closed").font(Typography.largeTitle).foregroundStyle(DesignColor.secondary) }
+    private var placeholder: some View { Image(systemName: "book.closed").font(\.largeTitle).foregroundColor(\.secondary) }
 }
 
 /// Uses the large cover when available and retains saved artwork for offline viewing.
@@ -173,8 +173,8 @@ struct BookCoverPreview: View {
                 else { unavailable }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .padding(Spacing.sixteen)
-            .background(DesignColor.grouped)
+            .padding(\.sixteen)
+            .background(\.grouped)
             .accessibilityIdentifier("book-cover-preview")
             .navigationTitle("Cover preview")
             .navigationBarTitleDisplayMode(.inline)
@@ -191,7 +191,7 @@ struct BookCoverPreview: View {
                     .accessibilityIdentifier("share-cover")
                 }
             }
-            .tint(DesignColor.primary)
+            .tint(\.primary)
             .sheet(isPresented: $sharing) {
                 if let image {
                     CoverShareSheet(image: image) { error in
@@ -218,10 +218,10 @@ struct BookCoverPreview: View {
         }
     }
     private var unavailable: some View {
-        VStack(spacing: Spacing.twelve) {
-            Image(systemName: "book.closed").font(Typography.largeTitle)
-            Text("Cover unavailable").font(Typography.headline)
-        }.foregroundStyle(DesignColor.secondary)
+        VStack(spacing: \.twelve) {
+            Image(systemName: "book.closed").font(\.largeTitle)
+            Text("Cover unavailable").font(\.headline)
+        }.foregroundColor(\.secondary)
     }
 }
 

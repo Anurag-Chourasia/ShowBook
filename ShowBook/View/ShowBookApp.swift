@@ -85,25 +85,25 @@ struct StoreLoadErrorRecoveryView: View {
     let retryAction: () -> Void
 
     var body: some View {
-        VStack(spacing: DesignMetric.p16) {
+        VStack(spacing: \.sixteen) {
             Image(systemName: "exclamationmark.triangle.fill")
-                .foregroundColor(DesignColor.yellow)
+                .foregroundColor(\.yellow)
             Text(L10n.Errors.storeLoadFailed(using: localization))
-                .font(Typography.headline)
-                .foregroundStyle(DesignColor.primary)
+                .font(\.headline)
+                .foregroundColor(\.primary)
             Text(L10n.Errors.storeLoadMessage(using: localization))
-                .font(Typography.subheadline)
-                .foregroundStyle(DesignColor.secondary)
+                .font(\.subheadline)
+                .foregroundColor(\.secondary)
                 .multilineTextAlignment(.center)
             Button(L10n.Errors.recoverableRetry(using: localization)) {
                 retryAction()
             }
             .buttonStyle(.borderedProminent)
-            .tint(DesignColor.primary)
+            .tint(\.primary)
         }
-        .padding(.horizontal, DesignMetric.p34)
+        .padding(.horizontal, \.p34)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(DesignColor.grouped)
+        .background(\.grouped)
         .environment(\.layoutDirection, localization.isRightToLeft ? .rightToLeft : .leftToRight)
     }
 }

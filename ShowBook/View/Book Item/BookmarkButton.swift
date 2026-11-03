@@ -27,12 +27,12 @@ struct BookmarkButton: View {
     
     private var bookmarkImage: some View {
         Image(systemName: viewModel.isBookmarked ? "bookmark.fill" : "bookmark")
-            .foregroundColor(viewModel.isBookmarked ? DesignColor.white : DesignColor.green)
-            .padding(Spacing.eight)
+            .foregroundColor(viewModel.isBookmarked ? \.white : \.green)
+            .padding(\.eight)
             .frame(minWidth: TouchTarget.minimum, minHeight: TouchTarget.minimum)
-            .background(viewModel.isBookmarked ? DesignColor.green : DesignColor.groupedSecondary)
+            .background(viewModel.isBookmarked ? \.green : \.groupedSecondary)
             .clipShape(Circle())
-            .shadow(radius: DesignMetric.p3)
+            .shadow(radius: DesignMetricTheme.default.p3)
     }
 }
 

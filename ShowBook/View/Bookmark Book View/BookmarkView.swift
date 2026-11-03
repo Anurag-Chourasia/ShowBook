@@ -17,7 +17,7 @@ struct BookmarkView: View {
     @StateObject private var viewModel = BookmarkViewModel()
     
     var body: some View {
-        VStack(spacing: DesignMetric.p0) {
+        VStack(spacing: \.zero) {
             ZStack{
                 booksListView
                     .onAppear {
@@ -46,10 +46,10 @@ struct BookmarkView: View {
     
     private var booksListView: some View {
             ScrollView(.vertical, showsIndicators: false) {
-                VStack(spacing: DesignMetric.p0) {
+                VStack(spacing: \.zero) {
                     BookCollection(books: viewModel.bookmarkBooks)
                 }
-                .padding(.vertical, Spacing.ten)
+                .padding(.vertical, \.ten)
             }
         }
     
@@ -58,7 +58,7 @@ struct BookmarkView: View {
             CenteredProgressOverlay(width: innerGeometry.size.width) {
                 Text("Loading.")
             } background: {
-                ShowBookTheme.colors.surface.opacity(OpacityToken.p0_5)
+                ShowBookTheme.colors.surface.opacity(OpacityTheme.default.p0_5)
             }
         }
     }

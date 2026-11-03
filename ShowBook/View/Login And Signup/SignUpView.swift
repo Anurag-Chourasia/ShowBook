@@ -30,7 +30,7 @@ struct SignUpView: View {
 
     private var content: some View {
         ScrollView {
-            VStack(spacing: DesignMetric.p0) {
+            VStack(spacing: \.zero) {
                 welcomeText
                 Spacer()
                 emailField
@@ -38,28 +38,28 @@ struct SignUpView: View {
                 passwordRequirements
                 if !viewModel.countries.isEmpty && !viewModel.isLoading {
                     WheelPickerView(selectedCountryIndex: $viewModel.selectedCountryIndex, country: viewModel.countries)
-                        .padding(.vertical, Spacing.system)
+                        .padding(.vertical, \.sixteen)
                 }
                 signUpButton
                 Spacer()
             }
-            .opacity(viewModel.isLoading ? OpacityToken.p0_2 : OpacityToken.p1_0)
+            .opacity(viewModel.isLoading ? OpacityTheme.default.p0_2 : OpacityTheme.default.p1_0)
         }
     }
 
     private var welcomeText: some View {
-        HStack(spacing: DesignMetric.p0) {
+        HStack(spacing: \.zero) {
             Text("Welcome,\nSign up to continue")
-                .font(Typography.title)
-                .padding(.leading, Spacing.thirty)
+                .font(\.title)
+                .padding(.leading, \.thirty)
             Spacer()
         }
-        .padding(.top, Spacing.twenty)
-        .padding(.bottom, DesignMetric.p50)
+        .padding(.top, \.twenty)
+        .padding(.bottom, \.p50)
     }
 
     private var emailField: some View {
-        HStack(spacing: DesignMetric.p0) {
+        HStack(spacing: \.zero) {
             EmailTextFieldView(email: $viewModel.email,
                                placeholderText: "Email",
                                mandatoryField: true)
@@ -68,12 +68,12 @@ struct SignUpView: View {
             RoundedRectangle(cornerRadius: ShowBookTheme.fieldCornerRadius)
                 .stroke(ShowBookTheme.colors.border, lineWidth: StrokeWidth.one)
         )
-        .padding(.bottom, Spacing.twenty)
-        .padding(.horizontal, DesignMetric.p34)
+        .padding(.bottom, \.twenty)
+        .padding(.horizontal, \.p34)
     }
 
     private var passwordField: some View {
-        HStack(spacing: DesignMetric.p0) {
+        HStack(spacing: \.zero) {
             PasswordTextFieldView(text: $viewModel.password,
                                   placeholderText: "Password",
                                   mandatoryField: true)
@@ -82,8 +82,8 @@ struct SignUpView: View {
             RoundedRectangle(cornerRadius: ShowBookTheme.fieldCornerRadius)
                 .stroke(ShowBookTheme.colors.border, lineWidth: StrokeWidth.one)
         )
-        .padding(.bottom, Spacing.twenty)
-        .padding(.horizontal, DesignMetric.p34)
+        .padding(.bottom, \.twenty)
+        .padding(.horizontal, \.p34)
     }
 
     private var passwordRequirements: some View {
@@ -95,7 +95,7 @@ struct SignUpView: View {
             requirementItem(viewModel.password.hasNumberCharacter, text: "Must contain a number character")
             requirementItem(viewModel.password.count >= 8, text: "At least 8 characters")
         }
-        .padding(.horizontal, Spacing.twenty)
+        .padding(.horizontal, \.twenty)
     }
 
     private func requirementItem(_ isValid: Bool, text: String) -> some View {
@@ -104,19 +104,19 @@ struct SignUpView: View {
             Text(text)
             Spacer()
         }
-        .padding(.vertical, Spacing.five)
+        .padding(.vertical, \.five)
     }
 
     private var signUpButton: some View {
-        HStack(spacing: DesignMetric.p0) {
+        HStack(spacing: \.zero) {
             Button(action:{ 
                 viewModel.handleSignUp(userViewModel: userViewModel)
             }) {
                 Text("Sign Up")
-                    .font(Typography.headline)
-                    .frame(height: DesignMetric.p55)
+                    .font(\.headline)
+                    .frame(height: \.p55)
                     .frame(maxWidth: .infinity)
-                    .foregroundColor(DesignColor.white)
+                    .foregroundColor(\.white)
                     .background(RoundedRectangle(cornerRadius: ShowBookTheme.fieldCornerRadius))
             }
             .alert(isPresented: $viewModel.showAlert) {
@@ -135,15 +135,15 @@ struct SignUpView: View {
         
         }
         .foregroundColor(ShowBookTheme.colors.action)
-        .padding(.vertical, DesignMetric.p18)
-        .padding(.horizontal, DesignMetric.p33)
+        .padding(.vertical, \.p18)
+        .padding(.horizontal, \.p33)
     }
 
     private var loadingOverlay: some View {
         CenteredProgressOverlay(width: UIScreen.main.bounds.width) {
             Text("Loading.")
         } background: {
-            ShowBookTheme.colors.surface.opacity(OpacityToken.p0_5)
+            ShowBookTheme.colors.surface.opacity(OpacityTheme.default.p0_5)
         }
     }
 }

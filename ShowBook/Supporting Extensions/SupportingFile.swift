@@ -35,12 +35,12 @@ func isValidPassword(_ password: String) -> Bool {
 
 enum ShowBookTheme {
     static let colors = SemanticColors(
-        surface: DesignColor.groupedSecondary,
-        foreground: DesignColor.primary,
-        border: DesignColor.secondary,
-        action: DesignColor.oceanAction,
-        onAction: DesignColor.white)
-    static let fieldCornerRadius: CGFloat = DesignMetric.p26_5
+        surface: ColorTheme.default.groupedSecondary,
+        foreground: ColorTheme.default.primary,
+        border: ColorTheme.default.secondary,
+        action: ColorTheme.default.oceanAction,
+        onAction: ColorTheme.default.white)
+    static let fieldCornerRadius: CGFloat = DesignMetricTheme.default.p26_5
 }
 
 extension View {

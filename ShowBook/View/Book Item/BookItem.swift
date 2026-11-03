@@ -22,7 +22,7 @@ struct BookItem: View {
     private var coverSize: CGSize { layout == .grid ? CatalogMetrics.coverGridSize : CatalogMetrics.coverListSize }
 
     var body: some View {
-        CatalogTile(layout: layout, colors: SemanticColors(surface: DesignColor.groupedSecondary)) {
+        CatalogTile(layout: layout, colors: SemanticColors(surface: ColorTheme.default.groupedSecondary)) {
             if !dynamicTypeSize.isAccessibilitySize {
                 NavigationLink { BookDetailsView(book: item) } label: { cover }
                     .accessibilityLabel("Details for " + item.title)
@@ -30,36 +30,36 @@ struct BookItem: View {
                     .highPriorityGesture(LongPressGesture().onEnded { _ in if AppRuntime.coverPreviewEnabled { previewPresented = true } })
             }
         } details: {
-            VStack(alignment: .leading, spacing: Spacing.eight) {
+            VStack(alignment: .leading, spacing: \.eight) {
                 NavigationLink { BookDetailsView(book: item) } label: {
-                    VStack(alignment: .leading, spacing: Spacing.eight) {
+                    VStack(alignment: .leading, spacing: \.eight) {
                 Text(item.title)
-                    .font(Typography.headline)
-                    .foregroundStyle(DesignColor.primary)
+                    .font(\.headline)
+                    .foregroundColor(\.primary)
                     .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : CatalogMetrics.listTitleLines)
                 Text(item.authorName?.joined(separator: ", ").nilIfEmpty ?? "No Author")
-                    .font(Typography.footnote)
-                    .foregroundStyle(DesignColor.secondary)
+                    .font(\.footnote)
+                    .foregroundColor(\.secondary)
                     .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : CatalogMetrics.listTitleLines)
                 if showsRatings && AppRuntime.ratingsEnabled, let rating = item.availableRating {
                 if !dynamicTypeSize.isAccessibilitySize {
-                HStack(spacing: Spacing.zero) {
+                HStack(spacing: \.zero) {
                     ForEach(0..<CatalogMetrics.maximumRating, id: \.self) { index in
                         Image(systemName: Double(index) < rating.average.rounded(.down) ? "star.fill" : "star")
                     }
                 }
-                .font(Typography.caption)
-                .foregroundStyle(DesignColor.yellow)
+                .font(\.caption)
+                .foregroundColor(\.yellow)
                 .accessibilityHidden(true)
                 }
                 Text("\(rating.average.formattedString(maxFractionDigits: 2)) average · \(rating.count) ratings")
-                    .font(Typography.caption)
-                    .foregroundStyle(DesignColor.secondary)
+                    .font(\.caption)
+                    .foregroundColor(\.secondary)
                     .fixedSize(horizontal: false, vertical: true)
                 } else if showsRatings && AppRuntime.ratingsEnabled {
                     Text("Not rated")
-                        .font(Typography.caption)
-                        .foregroundStyle(DesignColor.secondary)
+                        .font(\.caption)
+                        .foregroundColor(\.secondary)
                 }
                     }
                 }.buttonStyle(.plain)
@@ -103,8 +103,8 @@ struct BookItem: View {
     }
 
     private var placeholder: some View {
-        Rectangle().fill(DesignColor.grouped)
-            .overlay { Image(systemName: "book.closed").foregroundStyle(DesignColor.secondary) }
+        Rectangle().fill(\.grouped)
+            .overlay { Image(systemName: "book.closed").foregroundColor(\.secondary) }
     }
 }
 
@@ -127,7 +127,7 @@ struct BookLayoutPicker: View {
                               else { storedLayout = layout.rawValue }
                           },
                           onGridUnavailable: { showGridUnavailable = true })
-            .tint(DesignColor.primary)
+            .tint(\.primary)
             .accessibilityIdentifier("book-layout-menu")
             .alert("List layout", isPresented: $showGridUnavailable) {
                 Button("OK", role: .cancel) {}
@@ -149,14 +149,14 @@ struct BookCollection: View {
     var body: some View {
         Group {
             if layout == .grid {
-                LazyVGrid(columns: [GridItem(.adaptive(minimum: CatalogMetrics.bookGridMinimum), spacing: Spacing.twelve)], spacing: Spacing.twelve) {
+                LazyVGrid(columns: [GridItem(.adaptive(minimum: CatalogMetrics.bookGridMinimum), spacing: \.twelve)], spacing: \.twelve) {
                     tiles
                 }
             } else {
-                LazyVStack(spacing: Spacing.twelve) { tiles }
+                LazyVStack(spacing: \.twelve) { tiles }
             }
         }
-        .padding(.horizontal, Spacing.sixteen)
+        .padding(.horizontal, \.sixteen)
     }
 
     private var tiles: some View {
