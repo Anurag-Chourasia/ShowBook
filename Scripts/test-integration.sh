@@ -5,7 +5,13 @@ cd "$(dirname "$0")/.."
 echo "=== [ShowBook] Integration Lane: Persistence Migrations & Catalog Services ==="
 START_TIME=$(date +%s)
 
-destination="${TEST_DESTINATION:-platform=iOS Simulator,name=iPhone 11}"
+# Prevent CI from recording snapshot baselines
+if [[ "${CI:-}" != "" && ( "${RECORD_SNAPSHOTS:-0}" == 1 || "${SNAPSHOT_RECORD:-0}" == 1 ) ]]; then
+    echo "CI cannot record snapshots" >&2; exit 1
+fi
+python3 Scripts/verify-snapshot-baselines.py
+
+destination="${TEST_DESTINATION:-platform=iOS Simulator,name=iPhone 11,OS=27.0}"
 result="${TEST_RESULT_PATH:-${RUNNER_TEMP:-/tmp}/ShowBookIntegration.xcresult}"
 rm -rf "$result"
 
