@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		DA752D2B34EA542331C8A72E /* LocalizationAndRTLJourneyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 818F519200EDD7B6C4BCBE40 /* LocalizationAndRTLJourneyTests.swift */; };
 		DA752D2A34EA542331C8A72D /* AccessibilityJourneyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 818F519100EDD7B6C4BCBE3F /* AccessibilityJourneyTests.swift */; };
 		342B8AA22C7279B300EC41C8 /* RiskBasedIsolationAndConcurrencyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342B8AA12C7279B300EC41C8 /* RiskBasedIsolationAndConcurrencyTests.swift */; };
 		342B8AA02C7279B300EC41C8 /* PerformanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342B8A9F2C7279B300EC41C8 /* PerformanceTests.swift */; };
@@ -78,6 +79,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		818F519200EDD7B6C4BCBE40 /* LocalizationAndRTLJourneyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizationAndRTLJourneyTests.swift; sourceTree = "<group>"; };
 		818F519100EDD7B6C4BCBE3F /* AccessibilityJourneyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityJourneyTests.swift; sourceTree = "<group>"; };
 		342B8AA12C7279B300EC41C8 /* RiskBasedIsolationAndConcurrencyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiskBasedIsolationAndConcurrencyTests.swift; sourceTree = "<group>"; };
 		3403E26E2C7064310063E7D0 /* ShowBook.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ShowBook.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -361,6 +363,7 @@
 				342B8A9F2C7279B300EC41C8 /* PerformanceTests.swift */,
 				342B8AA12C7279B300EC41C8 /* RiskBasedIsolationAndConcurrencyTests.swift */,
 				818F519100EDD7B6C4BCBE3F /* AccessibilityJourneyTests.swift */,
+				818F519200EDD7B6C4BCBE40 /* LocalizationAndRTLJourneyTests.swift */,
 				342B8A8F2C727CB800EC41C8 /* BookmarkButtonViewModelTests.swift */,
 			);
 			path = ShowBookTests;
@@ -533,6 +536,7 @@
 				342B8AA02C7279B300EC41C8 /* PerformanceTests.swift in Sources */,
 				342B8AA22C7279B300EC41C8 /* RiskBasedIsolationAndConcurrencyTests.swift in Sources */,
 				DA752D2A34EA542331C8A72D /* AccessibilityJourneyTests.swift in Sources */,
+				DA752D2B34EA542331C8A72E /* LocalizationAndRTLJourneyTests.swift in Sources */,
 				342B8A902C727CB800EC41C8 /* BookmarkButtonViewModelTests.swift in Sources */,
 				342B8A842C71E2A300EC41C8 /* TextFieldObserverTests.swift in Sources */,
 				342B8A882C71E50B00EC41C8 /* DashboardViewTests.swift in Sources */,
@@ -889,10 +893,10 @@
 			repositoryURL = "https://github.com/Anurag-Chourasia/LocalizationKit.git";
 			requirement = {
 				kind = exactVersion;
-				version = 0.1.1;
+				version = 0.2.0;
 			};
 		};
-		D841594D0C2F49D7BFC541D2 /* AuthKit */ = {isa = XCRemoteSwiftPackageReference; repositoryURL = "https://github.com/Anurag-Chourasia/AuthKit.git"; requirement = {kind = exactVersion; version = 0.2.5; }; };
+		D841594D0C2F49D7BFC541D2 /* AuthKit */ = {isa = XCRemoteSwiftPackageReference; repositoryURL = "https://github.com/Anurag-Chourasia/AuthKit.git"; requirement = {kind = exactVersion; version = 0.2.6; }; };
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
