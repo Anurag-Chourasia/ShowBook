@@ -92,9 +92,24 @@ jobs:
           -onlyUsePackageVersionsFromResolvedFile -disableAutomaticPackageResolution
           -scmProvider system SDKROOT=iphonesimulator CODE_SIGNING_ALLOWED=NO build
 
-      - name: Run existing application tests
-        timeout-minutes: 15
-        run: bash TestSupport/run-app-tests.sh "$RUNNER_TEMP/AppDerived"
+      - name: Select or boot iOS Simulator
+        run: |
+          simulator_id=$(xcrun simctl list devices available -j | python3 -c 'import json,sys; d=json.load(sys.stdin); print(next(x["udid"] for k,v in d["devices"].items() if "iOS" in k for x in v if "iPhone" in x["name"]))')
+          xcrun simctl boot "$simulator_id" || true
+          xcrun simctl bootstatus "$simulator_id" -b || true
+          echo "TEST_DESTINATION=platform=iOS Simulator,id=$simulator_id" >> "$GITHUB_ENV"
+
+      - name: Run Fast test lane (PR and Push)
+        run: bash Scripts/test-fast.sh
+
+      - name: Run UI Smoke test lane (PR and Push)
+        run: bash Scripts/test-smoke.sh
+
+      - name: Run Integration & Performance test lanes (Merge to main & Scheduled)
+        if: github.event_name != 'pull_request'
+        run: |
+          bash Scripts/test-integration.sh
+          bash Scripts/test-performance.sh
 
       - name: Build Release without developer UI
         run: >-
@@ -106,6 +121,15 @@ jobs:
 
       - name: Verify developer tools are excluded from Release
         run: python3 Scripts/check_release_developer_ui.py "$RUNNER_TEMP/AppDerived/Build/Products/Release-iphonesimulator/ShowBook.app/ShowBook"
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: showbook-test-results
+          path: |
+            ${{ runner.temp }}/*.xcresult
+            /tmp/*.xcresult
 
       - name: Remove dependency credentials
         if: always()
