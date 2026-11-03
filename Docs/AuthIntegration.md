@@ -32,7 +32,7 @@ sign-in/session/refresh/local-sign-out tests passed. Motivation Daily's Back-but
 UI journey passed. ShowBook account-scope/logout unit tests passed.
 
 The apps are installed on iPhone 11 / iOS 27.0 for manual testing. Host integration changes are tracked on the milestone completion branch.
-The app dependency record pins AuthKit 0.2.3.
+The app dependency record pins AuthKit 0.2.5.
 
 Google/GitHub browser sign-in and email recovery still require end-to-end simulator validation.
 
@@ -56,3 +56,27 @@ Validation: targeted AuthenticationFlagTests passed; signed Debug and Release
 simulator builds passed. Manually checked developer-first launch, AuthKit-on
 sign-in route and AuthKit-off existing content route on iPhone 11 / iOS 27.0.
 Logs: /tmp/showbook-developer-flag-test.log and /tmp/showbook-developer-flag-release.log.
+
+## UUID Bookmark Migration and Safe Local Account Linking — 3 November 2026
+
+ShowBook transitions bookmark ownership from mutable email strings to stable user UUIDs
+introduced in the ShowBookV5 Core Data model:
+
+- **Entity Updates**: `userUUID: UUID?` is added to both `BookEntity` and `UserEntity`.
+  Lightweight migration preserves all existing records (`BookEntity` and `UserEntity`) from
+  previous schema versions (`ShowBook`, `ShowBookV2`, `ShowBookV3`, `ShowBookV4`).
+- **Explicit Local-Account Linking**: When a user signs in via cloud authentication, any matching
+  local account record (`UserEntity` matching the authenticated email) is explicitly linked to the
+  cloud UUID. Legacy `passwordHash` and local credentials are preserved intact, enabling seamless
+  fallback if the developer authentication flag is switched back to local mode.
+- **Transactional Migration & Rollback**: Bookmark migration (`PersistenceController.migrateBookmarks`)
+  assigns the user's UUID to matching email bookmarks in an isolated transaction. In-flight errors
+  automatically roll back mutations. Explicit rollback (`PersistenceController.rollbackBookmarkMigration`)
+  is supported to unbind UUIDs while preserving all bookmark contents and email attributes.
+- **User Scoping**: Queries and bookmark mutations scope by `userUUID` when present, with fallback to
+  `email` for legacy records (`userUUID == currentUUID OR (userUUID == nil AND email == currentUserEmail)`).
+  This ensures strict account isolation across switching accounts and preserves access across email changes.
+- **Recoverable Store-Load Failures**: Persistent store loading captures errors in `PersistenceController.storeLoadError`
+  and presents a recoverable `StoreLoadErrorRecoveryView` in `ShowBookApp`. The app avoids calling `fatalError`
+  or automatically deleting the underlying SQLite database file.
+

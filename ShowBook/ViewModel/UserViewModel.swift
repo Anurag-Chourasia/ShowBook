@@ -7,9 +7,13 @@
 
 import Foundation
 import Combine
+#if canImport(AuthKit)
+import AuthKit
+#endif
 
 class UserViewModel: ObservableObject {
     @Published var isLoggedIn: Bool = false
+    @Published var currentUserUUID: UUID?
     var cloudSignOut: (() -> Void)?
     var persistenceController = PersistenceController.shared
     
@@ -17,13 +21,24 @@ class UserViewModel: ObservableObject {
         checkLoginStatus()
     }
     
-    func setUpPersistenceController(controller : PersistenceController){
+    func setUpPersistenceController(controller: PersistenceController) {
         persistenceController = controller
         checkLoginStatus()
     }
     
     func checkLoginStatus() {
-        guard let userEmail = UserDefaults.standard.value(forKey: "LoggedInUserEmail") as? String else {
+        if let uuidString = UserDefaults.standard.string(forKey: "LoggedInUserUUID"),
+           let uuid = UUID(uuidString: uuidString) {
+            currentUserUUID = uuid
+            if cloudSignOut != nil {
+                isLoggedIn = true
+                return
+            }
+        } else {
+            currentUserUUID = nil
+        }
+
+        guard let userEmail = UserDefaults.standard.string(forKey: "LoggedInUserEmail") else {
             isLoggedIn = false
             return
         }
@@ -36,21 +51,48 @@ class UserViewModel: ObservableObject {
         }
         return false
     }
-    
-    func activateCloudAccount(email: String, signOut: @escaping () -> Void) {
+
+    #if canImport(AuthKit)
+    func activateCloudAccount(user: AuthUser, signOut: @escaping () -> Void) {
         cloudSignOut = signOut
-        UserDefaults.standard.set(email.lowercased(), forKey: "LoggedInUserEmail")
+        currentUserUUID = user.id
+        UserDefaults.standard.set(user.id.uuidString, forKey: "LoggedInUserUUID")
+        let email = user.email?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() ?? ""
+        if !email.isEmpty {
+            UserDefaults.standard.set(email, forKey: "LoggedInUserEmail")
+            _ = try? PersistenceController.linkLocalAccount(email: email, toUUID: user.id, in: persistenceController.container.viewContext)
+            _ = try? PersistenceController.migrateBookmarks(fromEmail: email, toUUID: user.id, in: persistenceController.container.viewContext)
+        } else {
+            UserDefaults.standard.removeObject(forKey: "LoggedInUserEmail")
+        }
+        isLoggedIn = true
+    }
+    #endif
+
+    func activateCloudAccount(email: String, uuid: UUID? = nil, signOut: @escaping () -> Void) {
+        cloudSignOut = signOut
+        let resolvedUUID = uuid ?? UUID()
+        currentUserUUID = resolvedUUID
+        UserDefaults.standard.set(resolvedUUID.uuidString, forKey: "LoggedInUserUUID")
+        let cleanEmail = email.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        UserDefaults.standard.set(cleanEmail, forKey: "LoggedInUserEmail")
+        _ = try? PersistenceController.linkLocalAccount(email: cleanEmail, toUUID: resolvedUUID, in: persistenceController.container.viewContext)
+        _ = try? PersistenceController.migrateBookmarks(fromEmail: cleanEmail, toUUID: resolvedUUID, in: persistenceController.container.viewContext)
         isLoggedIn = true
     }
 
     func clearCloudAccount() {
         cloudSignOut = nil
+        currentUserUUID = nil
+        UserDefaults.standard.removeObject(forKey: "LoggedInUserUUID")
         UserDefaults.standard.removeObject(forKey: "LoggedInUserEmail")
         isLoggedIn = false
     }
 
     func logout() {
         if let cloudSignOut { cloudSignOut(); return }
+        currentUserUUID = nil
+        UserDefaults.standard.removeObject(forKey: "LoggedInUserUUID")
         UserDefaults.standard.removeObject(forKey: "LoggedInUserEmail")
         isLoggedIn = false
     }

@@ -107,7 +107,7 @@ final class PersistenceRelationshipTests: XCTestCase {
     }
 
     func testLegacySQLiteStoreMigratesWithoutLosingData() throws {
-        for version in ["ShowBook", "ShowBookV2", "ShowBookV3"] {
+        for version in ["ShowBook", "ShowBookV2", "ShowBookV3", "ShowBookV4"] {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         defer { try? FileManager.default.removeItem(at: directory) }
@@ -156,6 +156,267 @@ final class PersistenceRelationshipTests: XCTestCase {
         XCTAssertEqual(books.count, 1)
         XCTAssertEqual(books.first?.value(forKey: "title") as? String, "Saved bookmark")
         XCTAssertNil(books.first?.value(forKey: "workKey"))
+        XCTAssertNil(books.first?.value(forKey: "userUUID"))
         }
+    }
+}
+
+final class BookmarkUUIDMigrationTests: XCTestCase {
+    var persistence: PersistenceController!
+    var userViewModel: UserViewModel!
+    var bookmarkViewModel: BookmarkViewModel!
+
+    @discardableResult
+    private func createBookEntity(
+        in context: NSManagedObjectContext,
+        title: String,
+        email: String,
+        userUUID: UUID? = nil
+    ) -> BookEntity {
+        guard let entity = NSEntityDescription.insertNewObject(forEntityName: "BookEntity", into: context) as? BookEntity else {
+            fatalError("Failed to cast to BookEntity")
+        }
+        entity.title = title
+        entity.email = email
+        entity.userUUID = userUUID
+        return entity
+    }
+
+    override func setUpWithError() throws {
+        try super.setUpWithError()
+        UserDefaults.standard.removeObject(forKey: "LoggedInUserUUID")
+        UserDefaults.standard.removeObject(forKey: "LoggedInUserEmail")
+        UserDefaults.standard.removeObject(forKey: "developer.authentication")
+
+        persistence = PersistenceController(container: PersistenceController.createInMemoryPersistentContainer())
+        userViewModel = UserViewModel()
+        userViewModel.setUpPersistenceController(controller: persistence)
+        bookmarkViewModel = BookmarkViewModel()
+        bookmarkViewModel.setUpPersitenceController(controller: persistence)
+    }
+
+    override func tearDown() {
+        UserDefaults.standard.removeObject(forKey: "LoggedInUserUUID")
+        UserDefaults.standard.removeObject(forKey: "LoggedInUserEmail")
+        UserDefaults.standard.removeObject(forKey: "developer.authentication")
+        persistence = nil
+        userViewModel = nil
+        bookmarkViewModel = nil
+        super.tearDown()
+    }
+
+    func testExplicitLocalAccountLinking() throws {
+        let email = "localuser@example.com"
+        let uuid = UUID()
+        let context = persistence.container.viewContext
+
+        XCTAssertTrue(persistence.saveUser(email: email, password: "SecretPassword123!"))
+
+        let linkedUser = try PersistenceController.linkLocalAccount(email: email, toUUID: uuid, in: context)
+        XCTAssertNotNil(linkedUser)
+        XCTAssertEqual(linkedUser?.userUUID, uuid)
+        XCTAssertEqual(linkedUser?.email, email)
+        XCTAssertNotNil(linkedUser?.passwordHash, "Legacy passwordHash must be preserved after linking")
+
+        let nonExistent = try PersistenceController.linkLocalAccount(email: "nobody@example.com", toUUID: UUID(), in: context)
+        XCTAssertNil(nonExistent)
+    }
+
+    func testEmailToUUIDBookmarkMigration() throws {
+        let email = "reader@example.com"
+        let targetUUID = UUID()
+        let context = persistence.container.viewContext
+
+        for i in 1...3 {
+            createBookEntity(in: context, title: "Book \(i)", email: email, userUUID: nil)
+        }
+        try context.save()
+
+        let migratedCount = try PersistenceController.migrateBookmarks(fromEmail: email, toUUID: targetUUID, in: context)
+        XCTAssertEqual(migratedCount, 3)
+
+        let request: NSFetchRequest<BookEntity> = BookEntity.fetchRequest()
+        let books = try context.fetch(request)
+        XCTAssertEqual(books.count, 3)
+        for book in books {
+            XCTAssertEqual(book.userUUID, targetUUID)
+            XCTAssertEqual(book.email, email)
+        }
+
+        let secondRun = try PersistenceController.migrateBookmarks(fromEmail: email, toUUID: targetUUID, in: context)
+        XCTAssertEqual(secondRun, 0)
+    }
+
+    func testEmailChangePreservesBookmarksAcrossCloudSessions() throws {
+        let stableUUID = UUID()
+        let initialEmail = "reader.initial@example.com"
+        let updatedEmail = "reader.updated@example.com"
+
+        userViewModel.activateCloudAccount(email: initialEmail, uuid: stableUUID) {}
+        XCTAssertEqual(userViewModel.currentUserUUID, stableUUID)
+
+        let book = Book(title: "Architecture Patterns", ratingsAverage: 4.8, ratingsCount: 15, authorName: ["Author"], coverI: 101, image: nil)
+        persistence.saveBook(book, imageData: nil)
+
+        bookmarkViewModel.loadBookmarks()
+        XCTAssertEqual(bookmarkViewModel.bookmarkBooks.count, 1)
+        XCTAssertEqual(bookmarkViewModel.bookmarkBooks.first?.title, "Architecture Patterns")
+
+        userViewModel.activateCloudAccount(email: updatedEmail, uuid: stableUUID) {}
+        XCTAssertEqual(userViewModel.currentUserUUID, stableUUID)
+        XCTAssertEqual(UserDefaults.standard.string(forKey: "LoggedInUserEmail"), updatedEmail)
+
+        bookmarkViewModel.loadBookmarks()
+        XCTAssertEqual(bookmarkViewModel.bookmarkBooks.count, 1)
+        XCTAssertEqual(bookmarkViewModel.bookmarkBooks.first?.title, "Architecture Patterns")
+    }
+
+    func testAccountSwitchingIsolatesBookmarks() throws {
+        let userAUUID = UUID()
+        let userAEmail = "userA@example.com"
+        let userBUUID = UUID()
+        let userBEmail = "userB@example.com"
+
+        userViewModel.activateCloudAccount(email: userAEmail, uuid: userAUUID) {}
+        let bookA = Book(title: "Book of A", ratingsAverage: 4.0, ratingsCount: 1, authorName: ["Author A"], coverI: 1, image: nil)
+        persistence.saveBook(bookA, imageData: nil)
+
+        bookmarkViewModel.loadBookmarks()
+        XCTAssertEqual(bookmarkViewModel.bookmarkBooks.map(\.title), ["Book of A"])
+
+        userViewModel.activateCloudAccount(email: userBEmail, uuid: userBUUID) {}
+        bookmarkViewModel.loadBookmarks()
+        XCTAssertEqual(bookmarkViewModel.bookmarkBooks.count, 0)
+
+        let bookB = Book(title: "Book of B", ratingsAverage: 5.0, ratingsCount: 2, authorName: ["Author B"], coverI: 2, image: nil)
+        persistence.saveBook(bookB, imageData: nil)
+
+        bookmarkViewModel.loadBookmarks()
+        XCTAssertEqual(bookmarkViewModel.bookmarkBooks.map(\.title), ["Book of B"])
+
+        userViewModel.activateCloudAccount(email: userAEmail, uuid: userAUUID) {}
+        bookmarkViewModel.loadBookmarks()
+        XCTAssertEqual(bookmarkViewModel.bookmarkBooks.map(\.title), ["Book of A"])
+
+        userViewModel.clearCloudAccount()
+        bookmarkViewModel.loadBookmarks()
+        XCTAssertEqual(bookmarkViewModel.bookmarkBooks.count, 0)
+    }
+
+    func testFlagTransitionsPreserveLegacyHashingAndRecords() throws {
+        let email = "hybrid@example.com"
+        let password = "HybridPassword123!"
+
+        UserDefaults.standard.set(false, forKey: "developer.authentication")
+        XCTAssertTrue(persistence.saveUser(email: email, password: password))
+
+        let localUser = try XCTUnwrap(persistence.fetchUser(email: email))
+        let initialHash = localUser.passwordHash
+        XCTAssertNotNil(initialHash)
+
+        UserDefaults.standard.set(email, forKey: "LoggedInUserEmail")
+        let localBook = Book(title: "Local Story", ratingsAverage: 4.2, ratingsCount: 3, authorName: ["Local Author"], coverI: 50, image: nil)
+        persistence.saveBook(localBook, imageData: nil)
+        XCTAssertTrue(persistence.doesBookExist(title: "Local Story", authors: ["Local Author"]))
+
+        UserDefaults.standard.set(true, forKey: "developer.authentication")
+        let cloudUUID = UUID()
+        userViewModel.activateCloudAccount(email: email, uuid: cloudUUID) {}
+
+        let migratedBooks = persistence.fetchBooks()
+        XCTAssertEqual(migratedBooks.count, 1)
+        XCTAssertEqual(migratedBooks.first?.title, "Local Story")
+
+        UserDefaults.standard.set(false, forKey: "developer.authentication")
+        userViewModel.clearCloudAccount()
+        UserDefaults.standard.set(email, forKey: "LoggedInUserEmail")
+
+        let preservedUser = try XCTUnwrap(persistence.fetchUser(email: email))
+        XCTAssertEqual(preservedUser.passwordHash, initialHash)
+        let hash = try XCTUnwrap(preservedUser.passwordHash)
+        XCTAssertTrue(try PasswordCredential.verify(password, encoded: hash))
+
+        let fallbackBooks = persistence.fetchBooks()
+        XCTAssertEqual(fallbackBooks.count, 1)
+        XCTAssertEqual(fallbackBooks.first?.title, "Local Story")
+    }
+
+    func testFailedMigrationRollbackPreservesOriginalRecords() throws {
+        let email = "failing@example.com"
+        let targetUUID = UUID()
+        let context = persistence.container.viewContext
+
+        createBookEntity(in: context, title: "Unmigrated Book", email: email, userUUID: nil)
+        try context.save()
+
+        struct SimulatedSaveError: Error {}
+
+        XCTAssertThrowsError(
+            try PersistenceController.migrateBookmarks(
+                fromEmail: email,
+                toUUID: targetUUID,
+                in: context,
+                save: { _ in throw SimulatedSaveError() }
+            )
+        )
+
+        let request: NSFetchRequest<BookEntity> = BookEntity.fetchRequest()
+        request.predicate = NSPredicate(format: "title == %@", "Unmigrated Book")
+        let books = try context.fetch(request)
+        XCTAssertEqual(books.count, 1)
+        XCTAssertNil(books.first?.userUUID, "Failed migration must roll back userUUID mutation")
+        XCTAssertEqual(books.first?.email, email)
+    }
+
+    func testExplicitRollbackBookmarkMigration() throws {
+        let email = "rollback@example.com"
+        let uuid = UUID()
+        let context = persistence.container.viewContext
+
+        createBookEntity(in: context, title: "Rollback Candidate", email: email, userUUID: uuid)
+        try context.save()
+
+        let rolledBackCount = try PersistenceController.rollbackBookmarkMigration(forUUID: uuid, in: context)
+        XCTAssertEqual(rolledBackCount, 1)
+
+        let request: NSFetchRequest<BookEntity> = BookEntity.fetchRequest()
+        request.predicate = NSPredicate(format: "title == %@", "Rollback Candidate")
+        let books = try context.fetch(request)
+        XCTAssertEqual(books.count, 1)
+        XCTAssertNil(books.first?.userUUID)
+        XCTAssertEqual(books.first?.email, email)
+    }
+
+    func testRecoverableStoreLoadFailurePreservesDataWithoutDeletion() throws {
+        let tempDirectory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: tempDirectory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: tempDirectory) }
+
+        let storeURL = tempDirectory.appendingPathComponent("ShowBookTest.sqlite")
+        let model = PersistenceController.managedObjectModel()
+
+        let coordinator = NSPersistentStoreCoordinator(managedObjectModel: model)
+        let store = try coordinator.addPersistentStore(ofType: NSSQLiteStoreType, configurationName: nil, at: storeURL)
+        let context = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
+        context.persistentStoreCoordinator = coordinator
+
+        createBookEntity(in: context, title: "Durable Book", email: "durable@example.com")
+        try context.save()
+        try coordinator.remove(store)
+
+        struct SimulatedLoadError: Error {}
+        let controller = PersistenceController(container: NSPersistentContainer(name: "ShowBook", managedObjectModel: model))
+
+        #if DEBUG
+        controller.simulateStoreLoadFailure(error: SimulatedLoadError())
+        XCTAssertFalse(controller.isStoreLoaded)
+        XCTAssertNotNil(controller.storeLoadError)
+
+        XCTAssertTrue(FileManager.default.fileExists(atPath: storeURL.path), "Store files must be preserved without automatic deletion")
+
+        controller.clearStoreLoadFailure()
+        XCTAssertTrue(controller.isStoreLoaded)
+        XCTAssertNil(controller.storeLoadError)
+        #endif
     }
 }

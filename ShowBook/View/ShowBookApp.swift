@@ -6,18 +6,23 @@
 //
 
 import SwiftUI
+import DesignTokensKit
 import AuthKit
 import AuthKitUI
 
 @main
 struct ShowBookApp: App {
-    private let persistenceController = PersistenceController.shared
+    @ObservedObject private var persistenceController = PersistenceController.shared
     @StateObject private var userViewModel = UserViewModel()
     
     var body: some Scene {
         WindowGroup {
             AppLaunchView { authenticationEnabled in
-                if authenticationEnabled {
+                if let error = persistenceController.storeLoadError {
+                    StoreLoadErrorRecoveryView(error: error) {
+                        persistenceController.retryLoadingStore()
+                    }
+                } else if authenticationEnabled {
                     AppAuthGate(brand: .showBook, onSignedOut: { userViewModel.clearCloudAccount() }) { user, session in
                         CloudBookRoot(user: user, session: session, userViewModel: userViewModel)
                     }
@@ -43,9 +48,8 @@ private struct CloudBookRoot: View {
             if ready { ContentView() } else { ProgressView("Opening library") }
         }
         .task {
-            // Preserve existing per-email bookmarks. Providers without an email get a
-            // stable UUID namespace, never the previous user's saved-book scope.
-            userViewModel.activateCloudAccount(email: user.email ?? "supabase:\(user.id.uuidString)") {
+            // Bind stable UUID identity and migrate existing email bookmarks
+            userViewModel.activateCloudAccount(user: user) {
                 Task { await session.signOut() }
             }
             ready = true
@@ -66,5 +70,33 @@ private struct LocalBookRoot: View {
             userViewModel.checkLoginStatus()
             ready = true
         }
+    }
+}
+
+/// Present recoverable store-load failures without automatic data deletion.
+struct StoreLoadErrorRecoveryView: View {
+    let error: Error
+    let retryAction: () -> Void
+
+    var body: some View {
+        VStack(spacing: DesignMetric.p16) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .foregroundColor(DesignColor.yellow)
+            Text("Library Storage Unavailable")
+                .font(Typography.headline)
+                .foregroundStyle(DesignColor.primary)
+            Text("ShowBook could not open your offline library. Your saved data is safely preserved without deletion.")
+                .font(Typography.subheadline)
+                .foregroundStyle(DesignColor.secondary)
+                .multilineTextAlignment(.center)
+            Button("Retry Loading Library") {
+                retryAction()
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(DesignColor.primary)
+        }
+        .padding(.horizontal, DesignMetric.p34)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(DesignColor.grouped)
     }
 }
