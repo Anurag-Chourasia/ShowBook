@@ -21,6 +21,11 @@ class BookmarkViewModel: ObservableObject {
     }
     
     func loadBookmarks() {
+        if persistenceController.storeLoadError != nil {
+            showAlert = true
+            errorMessage = "Library storage is temporarily unavailable. Your saved data is intact."
+            return
+        }
         isLoading = true
         bookmarkBooks = persistenceController.fetchBooks()
         if bookmarkBooks.isEmpty {

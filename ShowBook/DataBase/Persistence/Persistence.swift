@@ -10,12 +10,26 @@ import UIKit
 import CommonCrypto
 import Security
 
-class PersistenceController {
+class PersistenceController: ObservableObject {
     static let shared = PersistenceController()
     private let credentialQueue = DispatchQueue(label: "ShowBook.credentials", qos: .userInitiated)
     @Published var updatedBooks: [Book]?
+    @Published var storeLoadError: Error?
+    var isStoreLoaded: Bool { storeLoadError == nil }
     var container: NSPersistentContainer {
         didSet { container.viewContext.automaticallyMergesChangesFromParent = true }
+    }
+
+    var currentUserUUID: UUID? {
+        if let uuidString = UserDefaults.standard.string(forKey: "LoggedInUserUUID"),
+           let uuid = UUID(uuidString: uuidString) {
+            return uuid
+        }
+        return nil
+    }
+
+    var currentUserEmail: String {
+        UserDefaults.standard.string(forKey: "LoggedInUserEmail") ?? ""
     }
 
     init(container: NSPersistentContainer) {
@@ -27,10 +41,14 @@ class PersistenceController {
         let managedObjectModel = PersistenceController.managedObjectModel()
         container = NSPersistentContainer(name: "ShowBook", managedObjectModel: managedObjectModel)
         container.viewContext.automaticallyMergesChangesFromParent = true
-        container.loadPersistentStores { [weak self] (storeDescription, error) in
+        container.loadPersistentStores { [weak self] (_, error) in
             if let error = error {
-                fatalError("Error loading Core Data stores: \(error)")
+                // Present recoverable store-load failures without automatic data deletion
+                self?.storeLoadError = error
+                print("Error loading Core Data stores: \(error). Existing data files are preserved.")
+                return
             }
+            self?.storeLoadError = nil
             self?.migrateLegacyCredentials { result in
                 if case .failure = result {
                     // Do not log credentials or managed objects. Login/next launch can retry.
@@ -39,6 +57,30 @@ class PersistenceController {
             }
         }
     }
+
+    func retryLoadingStore(completion: ((Result<Void, Error>) -> Void)? = nil) {
+        container.loadPersistentStores { [weak self] (_, error) in
+            DispatchQueue.main.async {
+                if let error = error {
+                    self?.storeLoadError = error
+                    completion?(.failure(error))
+                } else {
+                    self?.storeLoadError = nil
+                    completion?(.success(()))
+                }
+            }
+        }
+    }
+
+    #if DEBUG
+    func simulateStoreLoadFailure(error: Error) {
+        self.storeLoadError = error
+    }
+
+    func clearStoreLoadFailure() {
+        self.storeLoadError = nil
+    }
+    #endif
 
     static func managedObjectModel() -> NSManagedObjectModel {
         guard let modelURL = Bundle.main.url(forResource: "ShowBook", withExtension: "momd") else {
@@ -50,15 +92,16 @@ class PersistenceController {
         return managedObjectModel
     }
 
-    static func createInMemoryPersistentContainer() -> NSPersistentContainer {
+    static func createInMemoryPersistentContainer(onLoadError: ((Error) -> Void)? = nil) -> NSPersistentContainer {
         let managedObjectModel = managedObjectModel()
         let container = NSPersistentContainer(name: "ShowBook", managedObjectModel: managedObjectModel)
         let description = NSPersistentStoreDescription()
         description.type = NSInMemoryStoreType
         container.persistentStoreDescriptions = [description]
-        container.loadPersistentStores { (storeDescription, error) in
+        container.loadPersistentStores { (_, error) in
             if let error = error {
-                fatalError("Error loading Core Data stores: \(error)")
+                onLoadError?(error)
+                print("Error loading in-memory store: \(error)")
             }
         }
         return container
@@ -205,6 +248,7 @@ class PersistenceController {
         user.passwordHash = hash
         user.password = nil
         user.isSuccessfullyLoggedIn = true
+        user.userUUID = UUID()
         do { try context.save() }
         catch { context.delete(user); throw error }
     }
@@ -232,6 +276,9 @@ class PersistenceController {
                     } else {
                         guard let legacy = user.password, legacy == password else { throw CredentialError.wrongPassword }
                         user.passwordHash = try PasswordCredential.make(password)
+                    }
+                    if user.userUUID == nil {
+                        user.userUUID = UUID()
                     }
                     user.password = nil
                     user.isSuccessfullyLoggedIn = true
@@ -283,16 +330,33 @@ class PersistenceController {
     }
 
     func fetchUser(email: String) -> UserEntity? {
+        guard storeLoadError == nil else { return nil }
         let context = container.viewContext
         
         let fetchRequest: NSFetchRequest<UserEntity> = UserEntity.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "email == %@", email)
+        fetchRequest.predicate = NSPredicate(format: "email ==[c] %@", email.lowercased())
         
         do {
             let users = try context.fetch(fetchRequest)
             return users.first
         } catch {
             print("Error fetching user: \(error)")
+            return nil
+        }
+    }
+
+    func fetchUser(uuid: UUID) -> UserEntity? {
+        guard storeLoadError == nil else { return nil }
+        let context = container.viewContext
+
+        let fetchRequest: NSFetchRequest<UserEntity> = UserEntity.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "userUUID == %@", uuid as CVarArg)
+
+        do {
+            let users = try context.fetch(fetchRequest)
+            return users.first
+        } catch {
+            print("Error fetching user by uuid: \(error)")
             return nil
         }
     }
@@ -357,73 +421,58 @@ class PersistenceController {
     
 
     func saveBook(_ book: Book, imageData: Data?) {
+        guard storeLoadError == nil else { return }
         let context = container.viewContext
-        let userEmail = UserDefaults.standard.value(forKey: "LoggedInUserEmail") as? String ?? ""
-        
+        let userEmail = currentUserEmail
+        let userUUID = currentUserUUID
+
         let fetchRequest: NSFetchRequest<BookEntity> = BookEntity.fetchRequest()
-        
-        var predicates: [NSPredicate] = [
-            NSPredicate(format: "title == %@", book.title),
-            NSPredicate(format: "email == %@", userEmail)
-        ]
-        
-        if let ratingsAverage = book.ratingsAverage {
-            predicates.append(NSPredicate(format: "ratingsAverage == %f", ratingsAverage))
+        let scope = userScopePredicate()
+        let identityPredicate: NSPredicate
+        if let key = book.key, !key.isEmpty {
+            identityPredicate = NSPredicate(format: "workKey == %@", key)
+        } else {
+            identityPredicate = NSPredicate(format: "title ==[c] %@", book.title)
         }
-        
-        if let ratingsCount = book.ratingsCount {
-            predicates.append(NSPredicate(format: "ratingsCount == %d", Int32(ratingsCount)))
-        }
-        
-        if let coverI = book.coverI {
-            predicates.append(NSPredicate(format: "coverI == %d", Int32(coverI)))
-        }
-        
-        if let authorName = book.authorName?.first {
-            predicates.append(NSPredicate(format: "ANY authorNames == %@", authorName))
-        }
-        
-        fetchRequest.predicate = book.key.map { NSPredicate(format: "workKey == %@ AND email == %@", $0, userEmail) }
-            ?? NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
-        
+        fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [identityPredicate, scope])
+
         do {
             let results = try context.fetch(fetchRequest)
             let bookEntity: BookEntity
-            
+
             if let existingBook = results.first {
                 bookEntity = existingBook
             } else {
                 bookEntity = BookEntity(context: context)
             }
-            
+
             bookEntity.workKey = book.key
             bookEntity.title = book.title
             bookEntity.ratingsAverage = book.ratingsAverage ?? 0.0
             bookEntity.ratingsCount = Int32(book.ratingsCount ?? 0)
             bookEntity.coverI = Int32(book.coverI ?? 0)
             bookEntity.email = userEmail
-            
+            bookEntity.userUUID = userUUID
+
             if let authorNames = book.authorName {
                 bookEntity.authorNames = authorNames as NSObject
             }
-            
+
             bookEntity.image = imageData
-            
+
             try context.save()
-            
+
             updateBooks(fetchBooks())
         } catch {
             print("Failed to save book: \(error.localizedDescription)")
         }
     }
 
-
     func fetchBooks() -> [Book] {
-        let userEmail = UserDefaults.standard.value(forKey: "LoggedInUserEmail") as? String ?? ""
-
+        guard storeLoadError == nil else { return [] }
         let context = container.viewContext
         let fetchRequest: NSFetchRequest<BookEntity> = BookEntity.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "email == %@", userEmail)
+        fetchRequest.predicate = userScopePredicate()
 
         do {
             let bookEntities = try context.fetch(fetchRequest)
@@ -446,13 +495,18 @@ class PersistenceController {
     }
 
     func bookExists(_ book: Book) -> BookEntity? {
+        guard storeLoadError == nil else { return nil }
         let context = container.viewContext
-        let userEmail = UserDefaults.standard.value(forKey: "LoggedInUserEmail") as? String ?? ""
-        
         let fetchRequest: NSFetchRequest<BookEntity> = BookEntity.fetchRequest()
-        fetchRequest.predicate = book.key.map { NSPredicate(format: "workKey == %@ AND email == %@", $0, userEmail) }
-            ?? NSPredicate(format: "title == %@ AND email == %@", book.title, userEmail)
-        
+        let scope = userScopePredicate()
+        let identityPredicate: NSPredicate
+        if let key = book.key, !key.isEmpty {
+            identityPredicate = NSPredicate(format: "workKey == %@", key)
+        } else {
+            identityPredicate = NSPredicate(format: "title ==[c] %@", book.title)
+        }
+        fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [identityPredicate, scope])
+
         do {
             let results = try context.fetch(fetchRequest)
             return results.first
@@ -463,11 +517,12 @@ class PersistenceController {
     }
 
     func deleteBook(_ book: Book) {
+        guard storeLoadError == nil else { return }
         let context = container.viewContext
-        
+
         if let bookEntity = bookExists(book) {
             context.delete(bookEntity)
-            
+
             do {
                 try context.save()
                 updateBooks(fetchBooks())
@@ -478,61 +533,43 @@ class PersistenceController {
             print("Book does not exist in the database.")
         }
     }
-    
+
     func deleteAllBooks() {
+        guard storeLoadError == nil else { return }
         let context = container.viewContext
-        
-        // Create a fetch request to retrieve all BookEntity instances
         let fetchRequest: NSFetchRequest<BookEntity> = BookEntity.fetchRequest()
-        
+        fetchRequest.predicate = userScopePredicate()
+
         do {
-            // Fetch all book entities
             let bookEntities = try context.fetch(fetchRequest)
-            
-            // Delete all fetched book entities
             for bookEntity in bookEntities {
                 context.delete(bookEntity)
             }
-            
-            // Save the context to persist changes
             try context.save()
-            
-            // Update the books list if necessary
             updateBooks(fetchBooks())
         } catch {
             print("Failed to delete all books: \(error.localizedDescription)")
         }
     }
 
-    
     func doesBookExist(title: String, authors: [String]?) -> Bool {
+        guard storeLoadError == nil else { return false }
         let context = container.viewContext
-        let userEmail = UserDefaults.standard.value(forKey: "LoggedInUserEmail") as? String ?? ""
-
         let fetchRequest: NSFetchRequest<BookEntity> = BookEntity.fetchRequest()
 
-        // Create the predicate for matching title and email
-        let titlePredicate = NSPredicate(format: "title == %@", title)
-        let emailPredicate = NSPredicate(format: "email == %@", userEmail)
-
-        // Check if authors is nil or empty
+        let titlePredicate = NSPredicate(format: "title ==[c] %@", title)
         let authorPredicate: NSPredicate
         if let authors = authors, !authors.isEmpty {
-            // Create an array of predicates for each author in the authors array
             let authorPredicates = authors.map { author in
                 NSPredicate(format: "ANY authorNames == %@", author)
             }
-            // Combine all author predicates using OR
             authorPredicate = NSCompoundPredicate(type: .or, subpredicates: authorPredicates)
         } else {
-            // If authors is nil or empty, the predicate should always be true
             authorPredicate = NSPredicate(format: "TRUEPREDICATE")
         }
 
-        // Combine all predicates using AND
-        let finalPredicate = NSCompoundPredicate(type: .and, subpredicates: [titlePredicate, emailPredicate, authorPredicate])
-
-        fetchRequest.predicate = finalPredicate
+        let scope = userScopePredicate()
+        fetchRequest.predicate = NSCompoundPredicate(type: .and, subpredicates: [titlePredicate, authorPredicate, scope])
 
         do {
             let results = try context.fetch(fetchRequest)
@@ -544,33 +581,23 @@ class PersistenceController {
     }
 
     func doesBookHaveImageData(title: String, authors: [String]?) -> Bool {
+        guard storeLoadError == nil else { return false }
         let context = container.viewContext
-        let userEmail = UserDefaults.standard.value(forKey: "LoggedInUserEmail") as? String ?? ""
-
         let fetchRequest: NSFetchRequest<BookEntity> = BookEntity.fetchRequest()
 
-        // Create the predicate for matching title and email
-        let titlePredicate = NSPredicate(format: "title == %@", title)
-        let emailPredicate = NSPredicate(format: "email == %@", userEmail)
-
-        // Check if authors is nil or empty
+        let titlePredicate = NSPredicate(format: "title ==[c] %@", title)
         let authorPredicate: NSPredicate
         if let authors = authors, !authors.isEmpty {
-            // Create an array of predicates for each author in the authors array
             let authorPredicates = authors.map { author in
                 NSPredicate(format: "ANY authorNames == %@", author)
             }
-            // Combine all author predicates using OR
             authorPredicate = NSCompoundPredicate(type: .or, subpredicates: authorPredicates)
         } else {
-            // If authors is nil or empty, the predicate should always be true
             authorPredicate = NSPredicate(format: "TRUEPREDICATE")
         }
 
-        // Combine all predicates using AND
-        let finalPredicate = NSCompoundPredicate(type: .and, subpredicates: [titlePredicate, emailPredicate, authorPredicate])
-
-        fetchRequest.predicate = finalPredicate
+        let scope = userScopePredicate()
+        fetchRequest.predicate = NSCompoundPredicate(type: .and, subpredicates: [titlePredicate, authorPredicate, scope])
 
         do {
             let results = try context.fetch(fetchRequest)
@@ -581,6 +608,109 @@ class PersistenceController {
         } catch {
             print("Failed to fetch book: \(error.localizedDescription)")
             return false
+        }
+    }
+
+    // MARK: - UUID Bookmark Migration and Local Account Linking
+
+    func userScopePredicate() -> NSPredicate {
+        if let currentUUID = currentUserUUID {
+            let email = currentUserEmail.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+            if !email.isEmpty {
+                return NSPredicate(format: "userUUID == %@ OR (userUUID == nil AND email ==[c] %@)", currentUUID as CVarArg, email)
+            } else {
+                return NSPredicate(format: "userUUID == %@", currentUUID as CVarArg)
+            }
+        } else {
+            let email = currentUserEmail.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+            return NSPredicate(format: "email ==[c] %@", email)
+        }
+    }
+
+    @discardableResult
+    func migrateBookmarks(fromEmail: String, toUUID: UUID) throws -> Int {
+        try Self.migrateBookmarks(fromEmail: fromEmail, toUUID: toUUID, in: container.viewContext)
+    }
+
+    @discardableResult
+    static func migrateBookmarks(
+        fromEmail: String,
+        toUUID: UUID,
+        in context: NSManagedObjectContext,
+        save: (NSManagedObjectContext) throws -> Void = { try $0.save() }
+    ) throws -> Int {
+        let cleanEmail = fromEmail.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        guard !cleanEmail.isEmpty else { return 0 }
+
+        let fetchRequest: NSFetchRequest<BookEntity> = BookEntity.fetchRequest()
+        fetchRequest.predicate = NSPredicate(
+            format: "email ==[c] %@ AND (userUUID == nil OR userUUID != %@)",
+            cleanEmail,
+            toUUID as CVarArg
+        )
+
+        let booksToMigrate = try context.fetch(fetchRequest)
+        guard !booksToMigrate.isEmpty else { return 0 }
+
+        do {
+            for book in booksToMigrate {
+                book.userUUID = toUUID
+            }
+            try save(context)
+            return booksToMigrate.count
+        } catch {
+            context.rollback()
+            throw error
+        }
+    }
+
+    @discardableResult
+    static func rollbackBookmarkMigration(
+        forUUID: UUID,
+        in context: NSManagedObjectContext,
+        save: (NSManagedObjectContext) throws -> Void = { try $0.save() }
+    ) throws -> Int {
+        let fetchRequest: NSFetchRequest<BookEntity> = BookEntity.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "userUUID == %@", forUUID as CVarArg)
+
+        let books = try context.fetch(fetchRequest)
+        guard !books.isEmpty else { return 0 }
+
+        do {
+            for book in books {
+                book.userUUID = nil
+            }
+            try save(context)
+            return books.count
+        } catch {
+            context.rollback()
+            throw error
+        }
+    }
+
+    @discardableResult
+    static func linkLocalAccount(
+        email: String,
+        toUUID: UUID,
+        in context: NSManagedObjectContext,
+        save: (NSManagedObjectContext) throws -> Void = { try $0.save() }
+    ) throws -> UserEntity? {
+        let cleanEmail = email.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        guard !cleanEmail.isEmpty else { return nil }
+
+        let fetchRequest: NSFetchRequest<UserEntity> = UserEntity.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "email ==[c] %@", cleanEmail)
+
+        let users = try context.fetch(fetchRequest)
+        guard let user = users.first else { return nil }
+
+        do {
+            user.userUUID = toUUID
+            try save(context)
+            return user
+        } catch {
+            context.rollback()
+            throw error
         }
     }
 
