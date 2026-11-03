@@ -24,7 +24,8 @@ xcrun xcodebuild test -project ShowBook.xcodeproj -scheme ShowBook \
     -disableAutomaticPackageResolution \
     -scmProvider system CODE_SIGNING_ALLOWED=NO \
     -only-testing:ShowBookTests/DashboardViewModelTests \
-    -only-testing:ShowBookTests/SearchNavigationRenderingTests
+    -only-testing:ShowBookTests/SearchNavigationRenderingTests \
+    -only-testing:ShowBookTests/AccessibilityJourneyTests
 
 END_TIME=$(date +%s)
 ELAPSED=$((END_TIME - START_TIME))

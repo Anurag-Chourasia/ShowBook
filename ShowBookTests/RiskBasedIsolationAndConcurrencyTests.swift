@@ -86,16 +86,18 @@ final class RiskBasedIsolationAndConcurrencyTests: XCTestCase {
         let titles = (1...10).map { "Concurrent Volume \($0)" }
 
         DispatchQueue.concurrentPerform(iterations: 10) { index in
-            let b = Book(
-                title: titles[index],
-                ratingsAverage: 4.0,
-                ratingsCount: 10,
-                authorName: ["Author \(index)"],
-                coverI: index,
-                image: nil
-            )
-            self.persistence.saveBook(b, imageData: nil)
-            expectation.fulfill()
+            DispatchQueue.main.async {
+                let b = Book(
+                    title: titles[index],
+                    ratingsAverage: 4.0,
+                    ratingsCount: 10,
+                    authorName: ["Author \(index)"],
+                    coverI: index,
+                    image: nil
+                )
+                self.persistence.saveBook(b, imageData: nil)
+                expectation.fulfill()
+            }
         }
 
         wait(for: [expectation], timeout: 5.0)
