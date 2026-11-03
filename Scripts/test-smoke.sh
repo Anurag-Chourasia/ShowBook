@@ -5,6 +5,11 @@ cd "$(dirname "$0")/.."
 echo "=== [ShowBook] UI Smoke Lane: Critical User Journeys ==="
 START_TIME=$(date +%s)
 
+# Prevent CI from recording snapshot baselines
+if [[ "${CI:-}" != "" && ( "${RECORD_SNAPSHOTS:-0}" == 1 || "${SNAPSHOT_RECORD:-0}" == 1 ) ]]; then
+    echo "CI cannot record snapshots" >&2; exit 1
+fi
+
 destination="${TEST_DESTINATION:-platform=iOS Simulator,name=iPhone 11}"
 result="${TEST_RESULT_PATH:-${RUNNER_TEMP:-/tmp}/ShowBookSmoke.xcresult}"
 rm -rf "$result"
