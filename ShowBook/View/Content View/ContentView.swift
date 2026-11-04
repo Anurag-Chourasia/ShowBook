@@ -7,6 +7,8 @@
 
 import SwiftUI
 import DesignTokensKit
+import LocalizationKit
+import UIComponentsKit
 
 struct ContentView: View {
     @EnvironmentObject var userViewModel: UserViewModel
@@ -45,10 +47,10 @@ struct AppearanceMenu: View {
                 Menu {
                     appearancePicker.pickerStyle(.inline)
                 } label: {
-                    Image(systemName: "circle.lefthalf.filled")
+                    Image(\.circleLefthalfFilled)
                 }
-                .accessibilityLabel("Appearance")
-                .accessibilityIdentifier("appearance-menu")
+                .accessibilityLabel(\.appearance)
+                .accessibilityIdentifier(.appearanceMenu)
             } else {
                 appearancePicker.pickerStyle(.menu)
             }
@@ -62,7 +64,7 @@ struct AppearanceMenu: View {
             Text("System").tag(AppAppearance.system)
             Text("Light").tag(AppAppearance.light)
             Text("Dark").tag(AppAppearance.dark)
-        } label: { Label("Appearance", systemImage: "circle.lefthalf.filled") }
+        } label: { Label(Text(\.appearance), \.circleLefthalfFilled) }
     }
 }
 
@@ -117,27 +119,27 @@ private struct ShowBookTools: ViewModifier {
                     Menu {
                         if onLogout != nil {
                             Button { savedPresented = true } label: {
-                                Label("Saved books", systemImage: "bookmark")
+                                Label(Text(\.savedBooks), \.bookmark)
                             }
-                            .accessibilityIdentifier("bookmarkButton")
+                            .accessibilityIdentifier(.bookmarkButton)
                         }
                         AppearanceMenu()
                         if includeLayout { BookLayoutPicker() }
                         if includeDeveloper {
                             Button { developerPresented = true } label: {
-                                Label("Know Your Developer", systemImage: "person.crop.circle")
+                                Label(Text(\.knowYourDeveloper), \.personCropCircle)
                             }
                         }
                         if let onLogout {
                             Section {
                                 Button(role: .destructive, action: onLogout) {
-                                    Label("Log out", systemImage: "rectangle.portrait.and.arrow.right")
+                                    Label(Text(\.logout), \.rectanglePortraitAndArrowRight)
                                 }
                             }
                         }
-                    } label: { Label("App options", systemImage: "line.3.horizontal") }
+                    } label: { Label(Text(\.appOptions), \.line3Horizontal) }
                     .tint(\.primary)
-                    .accessibilityIdentifier("screen-tools")
+                    .accessibilityIdentifier(.screenTools)
                 }
             }
             .navigationDestination(isPresented: $savedPresented) { BookmarkView() }
@@ -146,8 +148,8 @@ private struct ShowBookTools: ViewModifier {
                     ShowBookDeveloperView()
                         .toolbar {
                             ToolbarItem(placement: .topBarLeading) {
-                                Button { developerPresented = false } label: { Image(systemName: "xmark") }
-                                    .accessibilityLabel("Close developer profile")
+                                Button { developerPresented = false } label: { Image(\.close) }
+                                    .accessibilityLabel(\.developerCloseProfile)
                             }
                         }
                 }

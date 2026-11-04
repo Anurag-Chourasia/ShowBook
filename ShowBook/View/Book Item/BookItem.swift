@@ -1,6 +1,7 @@
 import SwiftUI
 import DesignTokensKit
 import UIComponentsKit
+import LocalizationKit
 
 struct BookItem: View {
     let item: Book
@@ -74,7 +75,7 @@ struct BookItem: View {
                 BookmarkButton(book: item, imageUrl: imageURL)
             }
         }
-        .accessibilityIdentifier("book-tile-\(layout.rawValue)")
+        .accessibilityIdentifier(.bookTile(layout.rawValue))
         .accessibilityActions {
             if AppRuntime.coverPreviewEnabled { Button("Preview cover") { previewPresented = true } }
         }
@@ -104,7 +105,7 @@ struct BookItem: View {
 
     private var placeholder: some View {
         Rectangle().fill(\.grouped)
-            .overlay { Image(systemName: "book.closed").foregroundColor(\.secondary) }
+            .overlay { Image(\.bookClosed).foregroundColor(\.secondary) }
     }
 }
 
@@ -128,9 +129,9 @@ struct BookLayoutPicker: View {
                           },
                           onGridUnavailable: { showGridUnavailable = true })
             .tint(\.primary)
-            .accessibilityIdentifier("book-layout-menu")
+            .accessibilityIdentifier(.bookLayoutMenu)
             .alert("List layout", isPresented: $showGridUnavailable) {
-                Button("OK", role: .cancel) {}
+                Button(\.ok, role: .cancel) {}
             } message: { Text("List layout keeps book details readable at this text size.") }
     }
 }

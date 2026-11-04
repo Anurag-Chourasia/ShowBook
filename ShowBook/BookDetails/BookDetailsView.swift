@@ -1,6 +1,7 @@
 import SwiftUI
 import DesignTokensKit
 import UIComponentsKit
+import LocalizationKit
 
 struct BookDetailsView: View {
     let book: Book
@@ -41,7 +42,7 @@ struct BookDetailsView: View {
                                     Text(edition.title).font(\.headline)
                                     if let date = edition.publish_date { Text(date).font(\.subheadline) }
                                     if let publishers = edition.publishers { Text(publishers.joined(separator: ", ")).font(\.footnote) }
-                                    Label("Edition details", systemImage: "chevron.right").font(\.caption)
+                                    Label(Text(\.editionDetails), \.chevronRight).font(\.caption)
                                 }.frame(maxWidth: .infinity, alignment: .leading)
                             }
                         }.buttonStyle(.plain)
@@ -150,7 +151,7 @@ struct LibraryCover: View {
             BookCoverPreview(coverID: coverID, savedImage: savedImage, title: "Book cover")
         }
     }
-    private var placeholder: some View { Image(systemName: "book.closed").font(\.largeTitle).foregroundColor(\.secondary) }
+    private var placeholder: some View { Image(\.bookClosed).font(\.largeTitle).foregroundColor(\.secondary) }
 }
 
 /// Uses the large cover when available and retains saved artwork for offline viewing.
@@ -175,20 +176,20 @@ struct BookCoverPreview: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .padding(\.sixteen)
             .background(\.grouped)
-            .accessibilityIdentifier("book-cover-preview")
+            .accessibilityIdentifier(.bookCoverPreview)
             .navigationTitle("Cover preview")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button { dismiss() } label: { Image(systemName: "xmark") }
-                        .accessibilityLabel("Close cover preview")
+                    Button { dismiss() } label: { Image(\.close) }
+                        .accessibilityLabel(\.closeCoverPreview)
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button { sharing = true } label: {
-                        Label("Share cover", systemImage: "square.and.arrow.up")
+                        Label(Text(\.shareCover), \.squareAndArrowUp)
                     }
                     .disabled(image == nil)
-                    .accessibilityIdentifier("share-cover")
+                    .accessibilityIdentifier(.shareCover)
                 }
             }
             .tint(\.primary)
@@ -201,7 +202,7 @@ struct BookCoverPreview: View {
             }
             .alert("Couldn’t share cover", isPresented: Binding(
                 get: { shareError != nil }, set: { if !$0 { shareError = nil } }
-            )) { Button("OK", role: .cancel) {} } message: { Text(shareError ?? "") }
+            )) { Button(\.ok, role: .cancel) {} } message: { Text(shareError ?? "") }
             .task {
                 image = savedImage.flatMap(UIImage.init(data:))
                 defer { loading = false }
@@ -219,8 +220,8 @@ struct BookCoverPreview: View {
     }
     private var unavailable: some View {
         VStack(spacing: \.twelve) {
-            Image(systemName: "book.closed").font(\.largeTitle)
-            Text("Cover unavailable").font(\.headline)
+            Image(\.bookClosed).font(\.largeTitle)
+            Text(\.coverUnavailable).font(\.headline)
         }.foregroundColor(\.secondary)
     }
 }

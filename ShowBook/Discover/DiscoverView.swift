@@ -28,7 +28,7 @@ struct DiscoverView: View {
                     Picker("Category", selection: $category) {
                         ForEach(DiscoverCategory.allCases) { Text($0.title).tag($0) }
                     }.pickerStyle(.menu)
-                    .accessibilityIdentifier("discover-category")
+                    .accessibilityIdentifier(.discoverCategory)
                     if let date = model.cachedAt {
                         Text("Saved titles · \(date.formatted(date: .abbreviated, time: .omitted)). Covers may need a connection.")
                             .font(\.caption).foregroundColor(\.secondary)
@@ -38,7 +38,7 @@ struct DiscoverView: View {
                     ProgressView("Finding books…").frame(maxWidth: .infinity)
                 } else if let message = model.message {
                     StateMessage {
-                        Image(systemName: "wifi.exclamationmark")
+                        Image(\.wifiExclamationmark)
                     } title: { Text("Discover is unavailable") }
                     detail: { Text(message) }
                     actions: { Button("Retry") { reload += 1 } }
@@ -52,7 +52,7 @@ struct DiscoverView: View {
                             Section {
                                 ForEach(["Title", "Average", "Hits"], id: \.self) { option in
                                     Button { sort = option } label: {
-                                        if sort == option { Label(option, systemImage: "checkmark") }
+                                        if sort == option { Label(option, \.checkmark) }
                                         else { Text(option) }
                                     }
                                 }
@@ -61,9 +61,9 @@ struct DiscoverView: View {
                                 Button("Clear", role: .destructive) { sort = "" }
                             }
                         } label: {
-                            Label(sort.isEmpty ? "Sort by" : sort, systemImage: "arrow.up.arrow.down")
+                            Label(sort.isEmpty ? "Sort by" : sort, \.arrowUpArrowDown)
                         }
-                        .accessibilityIdentifier("discover-sort-menu")
+                        .accessibilityIdentifier(.discoverSortMenu)
                         Spacer()
                         BookLayoutPicker(selection: $layout)
                     }
@@ -74,7 +74,7 @@ struct DiscoverView: View {
             }.padding(.vertical, \.sixteen)
         }
         .tint(\.primary)
-        .accessibilityIdentifier("discover-screen")
+        .accessibilityIdentifier(.discoverScreen)
         .task(id: category) { await model.load(category) }
         .task(id: reload) { if reload > 0 { await model.load(category, refresh: true) } }
         .refreshable { await model.load(category, refresh: true) }

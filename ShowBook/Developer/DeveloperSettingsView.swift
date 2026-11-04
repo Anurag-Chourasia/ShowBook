@@ -1,6 +1,7 @@
 import SwiftUI
 import DesignTokensKit
 import LocalizationKit
+import UIComponentsKit
 
 struct AppLaunchView<Content: View>: View {
     let content: (Bool) -> Content
@@ -82,7 +83,7 @@ struct ShowcaseBadgeView: View {
             )
         }
         .padding(.top, \.four)
-        .accessibilityIdentifier("showcase-demo-indicator")
+        .accessibilityIdentifier(.showcaseDemoIndicator)
         .accessibilityLabel(\.showcaseDemoA11y)
     }
 }
@@ -179,58 +180,62 @@ struct DeveloperSettingsView: View {
     var body: some View {
         Form {
             Section {
-                Text("Configure ShowBook runtime, cache, and feature flags. Shake device from any screen to reopen.")
+                Text(\.developerSettingsSubtitleShowBook)
                 Button(buttonTitle, action: onContinue)
                     .foregroundColor(\.primary)
-                    .accessibilityIdentifier("developer-open-app")
+                    .accessibilityIdentifier(.developerOpenApp)
             }
-            Section("Quick presets") {
+            Section(header: Text(\.developerQuickPresets)) {
                 Button {
                     source = "stub"
                     scenario = "showcase"
                     onContinue()
                 } label: {
-                    Label("Showcase (Populated)", systemImage: "sparkles")
+                    Label(Text(\.developerPresetShowcase), \.sparkles)
                 }
-                .accessibilityIdentifier("developer-preset-showcase")
+                .accessibilityIdentifier(.developerPresetShowcase)
 
                 Button {
                     source = "stub"
                     scenario = "empty"
                     onContinue()
                 } label: {
-                    Label("Empty State (Zero Results)", systemImage: "tray")
+                    Label(Text(\.developerPresetEmpty), \.tray)
                 }
-                .accessibilityIdentifier("developer-preset-empty")
+                .accessibilityIdentifier(.developerPresetEmpty)
 
                 Button {
                     source = "stub"
                     scenario = "offline"
                     onContinue()
                 } label: {
-                    Label("Offline Resilience", systemImage: "wifi.slash")
+                    Label(Text(\.developerPresetOffline), \.wifiSlash)
                 }
-                .accessibilityIdentifier("developer-preset-offline")
+                .accessibilityIdentifier(.developerPresetOffline)
 
                 Button {
                     source = "live"
                     onContinue()
                 } label: {
-                    Label("Live Open Library", systemImage: "globe")
+                    Label(Text(\.developerPresetLiveLibrary), \.globe)
                 }
-                .accessibilityIdentifier("developer-preset-live")
+                .accessibilityIdentifier(.developerPresetLive)
             }
-            Section("Cache & offline storage") {
-                LabeledContent("Disk cache", value: cacheSummary.isEmpty ? "Checking..." : cacheSummary)
-                Button("Purge catalog cache", role: .destructive) {
+            Section(header: Text(\.developerCacheAndOffline)) {
+                LabeledContent(String(\.developerDiskCache), value: cacheSummary.isEmpty ? String(\.developerChecking) : cacheSummary)
+                Button(role: .destructive) {
                     diskCache.clear()
                     refreshCacheSummary()
+                } label: {
+                    Text(\.developerPurgeCatalogCache)
                 }
-                .accessibilityIdentifier("developer-purge-cache")
+                .accessibilityIdentifier(.developerPurgeCache)
             }
-            Section("Feature flags") {
-                Toggle("Authentication · AuthKit", isOn: $authentication)
-                    .accessibilityIdentifier("developer-authentication")
+            Section(header: Text(\.developerFeatureFlags)) {
+                Toggle(isOn: $authentication) {
+                    Text(\.developerAuthentication)
+                }
+                .accessibilityIdentifier(.developerAuthentication)
                 Text("New feature, off by default. Enable to use cloud sign-in. Apply settings to activate changes; disabling it preserves the saved cloud session.")
 
                 Toggle("Discover", isOn: $discover)
@@ -238,23 +243,25 @@ struct DeveloperSettingsView: View {
                 Toggle("Ratings", isOn: $ratings)
             }
             Section {
-                Toggle("HTTP logs in Xcode console", isOn: $logs)
+                Toggle(isOn: $logs) {
+                    Text(\.developerHttpLogs)
+                }
                 Text("Full redacted request and response bodies. Large logs can slow debugging. Release builds never enable this.")
-            } header: { Text("Debug logs") }
+            } header: { Text(\.developerDebugLogs) }
             Section {
-                Picker("Data source", selection: $source) {
+                Picker(String(\.developerDataSource), selection: $source) {
                     Text("Live · Open Library").tag("live")
                     Text("Stub · local fixtures").tag("stub")
                 }
                 if source == "stub" {
-                    Picker("Stub scenario", selection: $scenario) {
-                        Text("Success").tag("success")
-                        Text("Empty results").tag("empty")
-                        Text("Offline error").tag("offline")
+                    Picker(String(\.developerScenario), selection: $scenario) {
+                        Text(\.developerScenarioSuccess).tag("success")
+                        Text(\.developerScenarioEmpty).tag("empty")
+                        Text(\.developerScenarioOffline).tag("offline")
                     }
                 }
                 Text("Live uses the production APIs. Stub replaces API responses and disables remote cover loading. Local accounts and bookmarks remain on this device.")
-            } header: { Text("Environment") }
+            } header: { Text(\.developerEnvironment) }
             Section {
                 Picker("Discover layout", selection: $variant) {
                     Text("A · List").tag("A")
@@ -263,40 +270,42 @@ struct DeveloperSettingsView: View {
                 Text("Local experiment override for visual testing. No remote assignment, analytics, or experiment results are collected.")
             } header: { Text("A/B testing") }
             Section {
-                LabeledContent("Installed version", value: AppRuntime.actualVersion)
-                LabeledContent("Installed build", value: AppRuntime.actualBuild)
-                TextField("Simulated version (optional)", text: $version)
+                LabeledContent(String(\.developerInstalledVersion), value: AppRuntime.actualVersion)
+                LabeledContent(String(\.developerInstalledBuild), value: AppRuntime.actualBuild)
+                TextField(String(\.developerSimulatedVersion), text: $version)
                     .textInputAutocapitalization(.never).autocorrectionDisabled()
-                TextField("Simulated build (optional)", text: $build)
+                TextField(String(\.developerSimulatedBuild), text: $build)
                     .textInputAutocapitalization(.never).autocorrectionDisabled()
                 Text("Overrides the version shown in Know Your Developer. The signed bundle and App Store version stay unchanged; change those in Xcode.")
-            } header: { Text("Version simulation") }
+            } header: { Text(\.developerVersionSimulation) }
             Section("Appearance") { AppearanceMenu() }
-            Section("Privacy & Support") {
+            Section(header: Text(\.developerPrivacySupport)) {
                 Link(destination: URL(string: "https://github.com/Anurag-Chourasia/ShowBook/blob/main/Docs/PrivacyInventory.md")!) {
-                    Label("Privacy Policy", systemImage: "hand.raised")
+                    Label(Text(\.developerPrivacyPolicy), \.handRaised)
                 }
-                .accessibilityIdentifier("developer-privacy-policy")
+                .accessibilityIdentifier(.developerPrivacyPolicy)
 
                 Link(destination: URL(string: "mailto:anuragchourasiaios@gmail.com")!) {
-                    Label("Developer Support", systemImage: "envelope")
+                    Label(Text(\.developerSupport), \.envelope)
                 }
-                .accessibilityIdentifier("developer-support")
+                .accessibilityIdentifier(.developerSupport)
 
                 Text("ShowBook stores user bookmarks locally on device or securely in Supabase when cloud authentication is enabled. No personal data is tracked or sold to third parties.")
                     .font(\.caption)
                     .foregroundColor(\.secondary)
             }
             Section {
-                Button("Reset developer settings") {
+                Button(role: .destructive) {
                     authentication = false; discover = true; preview = true; ratings = true; logs = false
                     source = "live"; scenario = "success"; variant = "A"
                     version = ""; build = ""
+                } label: {
+                    Text(\.developerResetSettings)
                 }
                 .foregroundColor(\.primary)
             }
         }
-        .navigationTitle("Developer settings")
+        .navigationTitle(Text(\.developerSettingsTitle))
         .navigationBarTitleDisplayMode(.inline)
         .tint(\.primary)
         .toggleStyle(SwitchToggleStyle(tint: ColorTheme.default.green))
