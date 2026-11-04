@@ -7,6 +7,7 @@
 
 import SwiftUI
 import DesignTokensKit
+import LocalizationKit
 
 struct BookmarkButton: View {
     @StateObject private var viewModel = BookmarkButtonViewModel()
@@ -18,7 +19,7 @@ struct BookmarkButton: View {
             bookmarkImage
         }
         .buttonStyle(.plain)
-        .accessibilityLabel(viewModel.isBookmarked ? "Remove bookmark" : "Bookmark book")
+        .accessibilityLabel(viewModel.isBookmarked ? \.bookmarkRemove : \.bookmarkAdd)
         .accessibilityValue(book.title)
         .onAppear {
             viewModel.configure(book: book, imageUrl: imageUrl)
@@ -26,7 +27,7 @@ struct BookmarkButton: View {
     }
     
     private var bookmarkImage: some View {
-        Image(systemName: viewModel.isBookmarked ? "bookmark.fill" : "bookmark")
+        Image(viewModel.isBookmarked ? \.bookmarkFill : \.bookmark)
             .foregroundColor(viewModel.isBookmarked ? \.white : \.green)
             .padding(\.eight)
             .frame(minWidth: TouchTarget.minimum, minHeight: TouchTarget.minimum)
