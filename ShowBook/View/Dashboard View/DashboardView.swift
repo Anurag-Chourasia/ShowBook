@@ -98,18 +98,18 @@ struct DashboardView: View {
 
     private var searchStateTitle: String {
         switch viewModel.searchState {
-        case .empty: return "No books found"
-        case .failed: return "Unable to search"
-        case .tooShort: return "Keep typing"
-        default: return "Start searching to see books"
+        case .empty: return String(\ShowBookStrings.searchNoBooksFound)
+        case .failed: return String(\ShowBookStrings.searchUnableToSearch)
+        case .tooShort: return String(\ShowBookStrings.searchKeepTyping)
+        default: return String(\ShowBookStrings.searchStartSearching)
         }
     }
 
     private var searchStateDetail: String {
         switch viewModel.searchState {
-        case .empty: return "No matches for “\(viewModel.searchBook)”. Check the spelling or try another book title."
-        case .failed: return "We couldn’t load books. Check your connection and try again."
-        default: return "Enter at least 3 characters of a book title to begin."
+        case .empty: return String(format: String(\ShowBookStrings.searchNoMatches), locale: LocalizationController.shared.locale, viewModel.searchBook)
+        case .failed: return String(\ShowBookStrings.searchConnectionError)
+        default: return String(\ShowBookStrings.searchMinimumCharacters)
         }
     }
 

@@ -27,7 +27,7 @@ struct BookItem: View {
             if !dynamicTypeSize.isAccessibilitySize {
                 NavigationLink { BookDetailsView(book: item) } label: { cover }
                     .accessibilityLabel(String(format: String(\ShowBookStrings.detailsFor), locale: LocalizationController.shared.locale, item.title))
-                    .accessibilityHint(AppRuntime.coverPreviewEnabled ? "Tap for details. Hold to preview the cover." : "Opens book details")
+                    .accessibilityHint(AppRuntime.coverPreviewEnabled ? String(\ShowBookStrings.detailsPreviewHint) : String(\ShowBookStrings.detailsOpens))
                     .highPriorityGesture(LongPressGesture().onEnded { _ in if AppRuntime.coverPreviewEnabled { previewPresented = true } })
             }
         } details: {
