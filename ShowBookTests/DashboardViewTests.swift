@@ -250,19 +250,56 @@ final class DashboardViewModelTests: XCTestCase {
 
         waitForExpectations(timeout: 2)
     }
+    func testSupersededSearchAndExplicitCancellationCancelOwnedTasks() {
+        viewModel.searchBook = "First"
+        viewModel.performSearch()
+        viewModel.searchBook = "Second"
+        viewModel.performSearch()
+        XCTAssertTrue(mockApi.handles[0].isCancelled)
+        XCTAssertFalse(mockApi.handles[1].isCancelled)
+        viewModel.cancelRequests()
+        XCTAssertTrue(mockApi.handles[1].isCancelled)
+        mockApi.pending[1](.failure(URLError(.cancelled)))
+        let drained = expectation(description: "Canceled UI result rejected")
+        DispatchQueue.main.async {
+            XCTAssertFalse(self.viewModel.showAlert)
+            XCTAssertFalse(self.viewModel.isLoadingMore)
+            XCTAssertTrue(self.viewModel.books.isEmpty)
+            drained.fulfill()
+        }
+        wait(for: [drained], timeout: 2)
+    }
+
+    func testDashboardTeardownCancelsTransport() {
+        let api = MockNetworkClass()
+        var model: DashboardViewModel? = DashboardViewModel()
+        model?.api = api
+        model?.searchBook = "Pending"
+        model?.performSearch()
+        weak var released = model
+        model = nil
+        XCTAssertNil(released)
+        XCTAssertTrue(api.handles[0].isCancelled)
+    }
+
 }
 
 class MockNetworkClass: NetworkClass {
     var result: Result<[Book], Error>?
     var offsets: [Int] = []
+    var handles: [Task<Void, Never>] = []
+    deinit { handles.forEach { $0.cancel() } }
     var pending: [(Result<[Book], Error>) -> Void] = []
     
-    override func fetchBooks(title: String, offset: Int, completion: @escaping (Result<[Book], Error>) -> Void) {
+    override func fetchBooks(title: String, offset: Int, completion: @escaping (Result<[Book], Error>) -> Void) -> Task<Void, Never>? {
         offsets.append(offset)
         pending.append(completion)
         if let result = result {
             completion(result)
         }
+        let handle = Task<Void, Never> { try? await Task.sleep(nanoseconds: 30_000_000_000) }
+        handles.append(handle)
+        return handle
     }
 }
 

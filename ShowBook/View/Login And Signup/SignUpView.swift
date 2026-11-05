@@ -24,6 +24,7 @@ struct SignUpView: View {
             }
         }
         .onAppear(perform: viewModel.loadData)
+        .onDisappear { viewModel.cancelCountryRequest() }
         .navigationTitle(String(\CommonStrings.authTitleCreateAccount))
         .navigationBarTitleDisplayMode(.inline)
         .showBookTools()

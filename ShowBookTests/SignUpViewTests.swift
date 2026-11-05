@@ -145,7 +145,7 @@ final class SignUpViewModelTests: XCTestCase {
     
     class MockNetworkClass: NetworkClass {
 
-        override func fetchCountries(completion: @escaping (CountryModel?, Error?) -> Void) {
+        override func fetchCountries(completion: @escaping (CountryModel?, Error?) -> Void) -> Task<Void, Never>? {
 
             let countriesData: [String: Datum] = [
                 "IN": Datum(country: "India", region: .asia),
@@ -261,6 +261,7 @@ final class SignUpViewModelTests: XCTestCase {
                 data: countriesData
             )
             completion(mockCountries, nil)
+            return nil
         }
 
     }
@@ -286,8 +287,9 @@ final class SignUpViewModelTests: XCTestCase {
 
 private final class CountryLoadingNetwork: NetworkClass {
     var empty = false
-    override func fetchCountries(completion: @escaping (CountryModel?, Error?) -> Void) {
+    override func fetchCountries(completion: @escaping (CountryModel?, Error?) -> Void) -> Task<Void, Never>? {
         completion(CountryModel(status: "OK", statusCode: 200, version: "1", access: "public", total: empty ? 0 : 2, offset: 0, limit: 100,
                                 data: empty ? [:] : ["CA": Datum(country: "Canada", region: Region(rawValue: "North America")), "IN": Datum(country: "India", region: .asia)]), nil)
+        return nil
     }
 }

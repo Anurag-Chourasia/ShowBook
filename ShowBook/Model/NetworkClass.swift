@@ -14,12 +14,14 @@ class NetworkClass: ObservableObject {
     private let session: URLSession?
     init(session: URLSession? = nil) { self.session = session }
 
-    // Legacy callbacks remain off-main and have no caller-owned cancellation handle.
-    private func fetchData(from url: URL, completion: @escaping (Data?, URLResponse?, Error?) -> Void) {
+    // Callbacks remain off-main; consumers own the returned cancellation handle.
+    private func fetchData(from url: URL, completion: @escaping (Data?, URLResponse?, Error?) -> Void) -> Task<Void, Never> {
         let transport = AppNetworking.client(session: session)
-        Task.detached { [transport] in
+        return Task.detached { [transport] in
             do {
+                try Task.checkCancellation()
                 let response = try await transport.send(URLRequest(url: url))
+                try Task.checkCancellation()
                 completion(response.data, response.response, nil)
             } catch is CancellationError {
                 completion(nil, nil, URLError(.cancelled))
@@ -30,16 +32,17 @@ class NetworkClass: ObservableObject {
     }
 
     var fetchBooksCalledCount = 0
-    func fetchCountries(completion: @escaping (CountryModel?,Error?) -> Void) {
+    @discardableResult
+    func fetchCountries(completion: @escaping (CountryModel?, Error?) -> Void) -> Task<Void, Never>? {
         guard let url = URL(string: "https://api.first.org/data/v1/countries") else {
             #if DEBUG
             print("Invalid URL")
             #endif
             completion(nil,NSError(domain: "URLCreationError", code: 0, userInfo: [NSLocalizedDescriptionKey : "Invalid URL"]))
-            return
+            return nil
         }
         
-        fetchData(from: url) { data, response, error in
+        return fetchData(from: url) { data, _, error in
             if let error {
                 completion(nil, error)
                 return
@@ -66,7 +69,8 @@ class NetworkClass: ObservableObject {
 
     }
     
-    func fetchBooks(title: String, offset: Int, completion: @escaping (Result<[Book], Error>) -> Void) {
+    @discardableResult
+    func fetchBooks(title: String, offset: Int, completion: @escaping (Result<[Book], Error>) -> Void) -> Task<Void, Never>? {
         var components = URLComponents(string: "https://openlibrary.org/search.json")!
         components.queryItems = [
             URLQueryItem(name: "title", value: title),
@@ -79,10 +83,10 @@ class NetworkClass: ObservableObject {
         fetchBooksCalledCount += 1
         guard let url = components.url else {
             completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])))
-            return
+            return nil
         }
         
-        fetchData(from: url) { data, response, error in
+        return fetchData(from: url) { data, _, error in
             if let error = error {
                 completion(.failure(error))
                 return
