@@ -638,6 +638,25 @@ class PersistenceController: ObservableObject {
         }
     }
 
+    enum IdentityMigrationError: Error { case conflictingOwner }
+
+    /// One isolated transaction: a failed link or save cannot publish half a migration.
+    func activateCloudIdentity(email: String, uuid: UUID,
+                               save: (NSManagedObjectContext) throws -> Void = { try $0.save() }) throws {
+        if let storeLoadError { throw storeLoadError }
+        let context = container.newBackgroundContext()
+        try context.performAndWait {
+            do {
+                _ = try Self.linkLocalAccount(email: email, toUUID: uuid, in: context, save: { _ in })
+                _ = try Self.migrateBookmarks(fromEmail: email, toUUID: uuid, in: context, save: { _ in })
+                if context.hasChanges { try save(context) }
+            } catch {
+                context.rollback()
+                throw error
+            }
+        }
+    }
+
     @discardableResult
     func migrateBookmarks(fromEmail: String, toUUID: UUID) throws -> Int {
         try Self.migrateBookmarks(fromEmail: fromEmail, toUUID: toUUID, in: container.viewContext)
@@ -655,9 +674,8 @@ class PersistenceController: ObservableObject {
 
         let fetchRequest: NSFetchRequest<BookEntity> = BookEntity.fetchRequest()
         fetchRequest.predicate = NSPredicate(
-            format: "email ==[c] %@ AND (userUUID == nil OR userUUID != %@)",
-            cleanEmail,
-            toUUID as CVarArg
+            format: "email ==[c] %@ AND userUUID == nil",
+            cleanEmail
         )
 
         let booksToMigrate = try context.fetch(fetchRequest)
@@ -714,6 +732,14 @@ class PersistenceController: ObservableObject {
 
         let users = try context.fetch(fetchRequest)
         guard let user = users.first else { return nil }
+
+        if let owner = user.userUUID, owner != toUUID {
+            // Local credential records already have a UUID before first cloud linking.
+            // Preserve that supported bridge, but never rebind an existing library owner.
+            let owned: NSFetchRequest<BookEntity> = BookEntity.fetchRequest()
+            owned.predicate = NSPredicate(format: "userUUID == %@", owner as CVarArg)
+            if try context.count(for: owned) > 0 { throw IdentityMigrationError.conflictingOwner }
+        }
 
         do {
             user.userUUID = toUUID

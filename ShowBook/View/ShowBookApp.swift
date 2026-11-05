@@ -47,17 +47,33 @@ private struct CloudBookRoot: View {
     let user: AuthUser
     let session: SessionManager
     @ObservedObject var userViewModel: UserViewModel
-    @State private var ready = false
+    private let localization = LocalizationController(initialLocale: .current)
+    @State private var activatedIdentity: String?
+    private var identity: String { "\(user.id)|\(user.email ?? "")" }
     var body: some View {
         Group {
-            if ready { ContentView() } else { ProgressView(String(\ShowBookStrings.loadingLibrary)) }
+            if activatedIdentity == identity && userViewModel.isLoggedIn && userViewModel.currentUserUUID == user.id {
+                ContentView()
+            } else if let error = userViewModel.activationError {
+                VStack {
+                    StoreLoadErrorRecoveryView(error: error, localization: localization) {
+                        userViewModel.retryCloudActivation()
+                        if userViewModel.isLoggedIn { activatedIdentity = identity }
+                    }
+                    Button(L10n.Auth.signOut(using: localization)) {
+                        userViewModel.abandonCloudActivation()
+                    }
+                }
+            } else {
+                ProgressView(String(\ShowBookStrings.loadingLibrary))
+            }
         }
-        .task {
-            // Bind stable UUID identity and migrate existing email bookmarks
+        .task(id: identity) {
+            activatedIdentity = nil
             userViewModel.activateCloudAccount(user: user) {
                 Task { await session.signOut() }
             }
-            ready = true
+            if userViewModel.isLoggedIn { activatedIdentity = identity }
         }
     }
 }

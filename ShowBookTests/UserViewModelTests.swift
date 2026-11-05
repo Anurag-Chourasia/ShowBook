@@ -122,7 +122,7 @@ final class UserViewModelTests: XCTestCase {
     
     func testCloudAccountBindsBookmarksAndDelegatesLogoutUntilConfirmed() {
         var requestedSignOut = false
-        viewModel.activateCloudAccount(email: "Cloud@Example.com") { requestedSignOut = true }
+        viewModel.activateCloudAccount(email: "Cloud@Example.com", uuid: UUID()) { requestedSignOut = true }
         XCTAssertTrue(viewModel.isLoggedIn)
         XCTAssertEqual(UserDefaults.standard.string(forKey: "LoggedInUserEmail"), "cloud@example.com")
         viewModel.logout()
@@ -187,5 +187,145 @@ final class AuthenticationFlagTests: XCTestCase {
         defaults.removeObject(forKey: "developer.source")
         defaults.removeObject(forKey: "developer.scenario")
         #endif
+    }
+}
+
+@MainActor
+final class IdentityActivationRecoveryTests: XCTestCase {
+    private enum InjectedFailure: Error { case link, save }
+    private var persistence: PersistenceController!
+    private var model: UserViewModel!
+    private var previousEmail: Any?
+    private var previousUUID: Any?
+    private let email = "migration@example.com"
+
+    override func setUpWithError() throws {
+        previousEmail = UserDefaults.standard.object(forKey: "LoggedInUserEmail")
+        previousUUID = UserDefaults.standard.object(forKey: "LoggedInUserUUID")
+        UserDefaults.standard.removeObject(forKey: "LoggedInUserEmail")
+        UserDefaults.standard.removeObject(forKey: "LoggedInUserUUID")
+        persistence = PersistenceController(container: PersistenceController.createInMemoryPersistentContainer())
+        model = UserViewModel()
+        model.setUpPersistenceController(controller: persistence)
+    }
+
+    override func tearDownWithError() throws {
+        model = nil
+        persistence = nil
+        UserDefaults.standard.set(previousEmail, forKey: "LoggedInUserEmail")
+        UserDefaults.standard.set(previousUUID, forKey: "LoggedInUserUUID")
+    }
+
+    private func seed(owner: UUID? = nil) throws {
+        let context = persistence.container.viewContext
+        let user = try XCTUnwrap(NSEntityDescription.insertNewObject(forEntityName: "UserEntity", into: context) as? UserEntity)
+        user.email = email
+        user.userUUID = owner
+        let book = try XCTUnwrap(NSEntityDescription.insertNewObject(forEntityName: "BookEntity", into: context) as? BookEntity)
+        book.title = "Preserved legacy book"
+        book.email = email
+        book.userUUID = owner
+        try context.save()
+    }
+
+    private func owners() throws -> (UUID?, [UUID?]) {
+        let context = persistence.container.newBackgroundContext()
+        return try context.performAndWait {
+            let users = try context.fetch(UserEntity.fetchRequest())
+            let books = try context.fetch(BookEntity.fetchRequest())
+            return (users.first?.userUUID, books.map(\.userUUID))
+        }
+    }
+
+    func testLinkFailureDoesNotPublishIdentityAndRetryUsesSameUUID() throws {
+        try seed()
+        let uuid = UUID()
+        var attempts = 0
+        model.migrateIdentity = { store, email, uuid in
+            attempts += 1
+            if attempts == 1 { throw InjectedFailure.link }
+            try store.activateCloudIdentity(email: email, uuid: uuid)
+        }
+        model.activateCloudAccount(email: email, uuid: uuid) {}
+        XCTAssertFalse(model.isLoggedIn)
+        XCTAssertNotNil(model.activationError)
+        XCTAssertNil(UserDefaults.standard.string(forKey: "LoggedInUserUUID"))
+        XCTAssertNil(try owners().0)
+        XCTAssertEqual(try owners().1, [nil])
+        model.checkLoginStatus()
+        XCTAssertFalse(model.isLoggedIn)
+
+        model.retryCloudActivation()
+        XCTAssertTrue(model.isLoggedIn)
+        XCTAssertNil(model.activationError)
+        XCTAssertEqual(model.currentUserUUID, uuid)
+        XCTAssertEqual(try owners().0, uuid)
+        XCTAssertEqual(try owners().1, [uuid])
+    }
+
+    func testFinalSaveFailureRollsBackLinkAndBookmarkTogether() throws {
+        try seed()
+        let uuid = UUID()
+        model.migrateIdentity = { store, email, uuid in
+            try store.activateCloudIdentity(email: email, uuid: uuid) { _ in throw InjectedFailure.save }
+        }
+        model.activateCloudAccount(email: email, uuid: uuid) {}
+        XCTAssertFalse(model.isLoggedIn)
+        XCTAssertNotNil(model.activationError)
+        XCTAssertNil(try owners().0)
+        XCTAssertEqual(try owners().1, [nil])
+        XCTAssertNil(UserDefaults.standard.string(forKey: "LoggedInUserUUID"))
+
+        model.migrateIdentity = { try $0.activateCloudIdentity(email: $1, uuid: $2) }
+        model.retryCloudActivation()
+        XCTAssertEqual(try owners().0, uuid)
+        XCTAssertEqual(try owners().1, [uuid])
+        XCTAssertTrue(model.isLoggedIn)
+    }
+
+    func testExistingLibraryOwnerIsNeverReassignedByEmail() throws {
+        let original = UUID()
+        try seed(owner: original)
+        model.activateCloudAccount(email: email, uuid: UUID()) {}
+        XCTAssertFalse(model.isLoggedIn)
+        XCTAssertNotNil(model.activationError)
+        XCTAssertEqual(try owners().0, original)
+        XCTAssertEqual(try owners().1, [original])
+    }
+
+    func testIdempotentActivationAndRelaunchKeepCommittedIdentity() throws {
+        try seed()
+        let uuid = UUID()
+        model.activateCloudAccount(email: email, uuid: uuid) {}
+        model.activateCloudAccount(email: email, uuid: uuid) {}
+        XCTAssertTrue(model.isLoggedIn)
+        XCTAssertEqual(try owners().1, [uuid])
+        let restored = UserViewModel()
+        restored.setUpPersistenceController(controller: persistence)
+        restored.activateCloudAccount(email: email, uuid: uuid) {}
+        XCTAssertTrue(restored.isLoggedIn)
+        XCTAssertEqual(restored.currentUserUUID, uuid)
+        XCTAssertEqual(try owners().1, [uuid])
+    }
+
+    func testAbandonDelegatesSignOutWithoutDeletingLegacyData() throws {
+        try seed()
+        var signedOut = false
+        model.migrateIdentity = { _, _, _ in throw InjectedFailure.link }
+        model.activateCloudAccount(email: email, uuid: UUID()) { signedOut = true }
+        model.abandonCloudActivation()
+        XCTAssertTrue(signedOut)
+        XCTAssertNil(model.activationError)
+        XCTAssertEqual(try owners().1, [nil])
+        model.retryCloudActivation()
+        XCTAssertFalse(model.isLoggedIn)
+    }
+
+    func testEmailOnlyMigrationSkipsAlreadyOwnedBookmarks() throws {
+        let original = UUID()
+        try seed(owner: original)
+        let context = persistence.container.viewContext
+        XCTAssertEqual(try PersistenceController.migrateBookmarks(fromEmail: email, toUUID: UUID(), in: context), 0)
+        XCTAssertEqual(try owners().1, [original])
     }
 }
