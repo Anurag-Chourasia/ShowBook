@@ -66,6 +66,7 @@ private struct ShowBookTools: ViewModifier {
                             }
                         }
                     } label: { Label(Text(\.appOptions), \.line3Horizontal) }
+                    .labelStyle(.iconOnly)
                     .tint(\.primary)
                     .accessibilityIdentifier(.screenTools)
                 }
