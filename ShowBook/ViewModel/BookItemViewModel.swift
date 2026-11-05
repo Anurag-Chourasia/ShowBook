@@ -14,7 +14,8 @@ class BookItemViewModel: ObservableObject {
     @Published var isBookmarked: Bool = false
     @Published var showBookmarkButton: Bool = false
 
-    private var persistenceController = PersistenceController.shared
+    private var persistenceController: PersistenceController
+    private let bookmarkSave = BookmarkSaveRequest()
     private var bookItem: Book
     private var imageUrl: URL?
 
@@ -26,18 +27,21 @@ class BookItemViewModel: ObservableObject {
         imageUrl
     }
 
-    init(item: Book) {
+    init(item: Book, persistenceController: PersistenceController = .shared) {
+        self.persistenceController = persistenceController
         self.bookItem = item
         self.imageUrl = URL(string: "https://covers.openlibrary.org/b/id/\(item.coverI ?? 0)-M.jpg")
         fetchInitialState()
     }
     
     func setUpPersistenceController(controller : PersistenceController){
+        bookmarkSave.cancel()
         self.persistenceController = controller
         fetchInitialState()
     }
 
     func configure(imageUrl: URL?) {
+        bookmarkSave.cancel()
         self.imageUrl = imageUrl
         fetchInitialState()
     }
@@ -49,6 +53,7 @@ class BookItemViewModel: ObservableObject {
                 
             }
         } else {
+            bookmarkSave.cancel()
             persistenceController.deleteBook(bookItem)
         }
     }
@@ -63,30 +68,60 @@ class BookItemViewModel: ObservableObject {
     }
     
     func handleBookmarkAdded(completion: @escaping () -> Void) {
-        guard let imageUrl = imageUrl else {
-            persistenceController.saveBook(bookItem, imageData: nil)
-            completion()  // Call completion when done
-            return
-        }
-        
-        DispatchQueue.main.async {
-            self.downloadImage(from: imageUrl) { imageData in
-                self.persistenceController.saveBook(self.bookItem, imageData: ((imageData?.count ?? 0) > 100 ? imageData : nil))
-                completion()  // Call completion when done
-            }
-        }
+        bookmarkSave.start(book: bookItem, imageURL: imageUrl, controller: persistenceController,
+                           download: downloadImage, completion: completion)
     }
 
-    
     func downloadImage(from url: URL, completion: @escaping (Data?) -> Void) {
-        URLSession.shared.dataTask(with: url) { data, _, _ in
-            completion(data)
-        }.resume()
+        bookmarkSave.download(from: url, completion: completion)
     }
-    
+
     func onTao() {
         withAnimation(.smooth) {
             showBookmarkButton.toggle()
+        }
+    }
+}
+
+/// Host-owned lifetime guard shared by both bookmark presentation adapters.
+final class BookmarkSaveRequest {
+    private var generation = UUID()
+    private var task: URLSessionDataTask?
+
+    deinit { task?.cancel() }
+
+    func cancel() {
+        generation = UUID()
+        task?.cancel()
+        task = nil
+    }
+
+    func download(from url: URL, completion: @escaping (Data?) -> Void) {
+        task = URLSession.shared.dataTask(with: url) { data, _, _ in completion(data) }
+        task?.resume()
+    }
+
+    func start(book: Book, imageURL: URL?, controller: PersistenceController,
+               download: (URL, @escaping (Data?) -> Void) -> Void,
+               completion: @escaping () -> Void) {
+        cancel()
+        let requestID = generation
+        let owner = controller.bookmarkOwner
+        let context = controller.container.viewContext
+        let receive: (Data?) -> Void = { [weak self] data in
+            context.perform { [weak self] in
+                defer { completion() }
+                guard let self, self.generation == requestID,
+                      controller.container.viewContext === context,
+                      controller.bookmarkOwner == owner else { return }
+                self.task = nil
+                controller.saveBook(book, imageData: (data?.count ?? 0) > 100 ? data : nil)
+            }
+        }
+        if let imageURL {
+            download(imageURL, receive)
+        } else {
+            receive(nil)
         }
     }
 }

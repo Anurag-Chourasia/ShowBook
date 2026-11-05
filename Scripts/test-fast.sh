@@ -37,6 +37,7 @@ xcrun xcodebuild test -project ShowBook.xcodeproj -scheme ShowBook \
     -disableAutomaticPackageResolution \
     -scmProvider system CODE_SIGNING_ALLOWED=NO \
     -only-testing:ShowBookTests/BookItemViewModelTests \
+    -only-testing:ShowBookTests/BookmarkSaveLifetimeTests \
     -only-testing:ShowBookTests/BookmarkButtonViewModelTests \
     -only-testing:ShowBookTests/TextFieldObserverTests \
     -only-testing:ShowBookTests/PrivacyManifestTests \

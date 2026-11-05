@@ -88,7 +88,7 @@ class BookItemViewModelTests: XCTestCase {
     func testHandleBookmarkAddedSavesBookWith_ImageData() {
         let expectation = XCTestExpectation(description: "Download and save the image data")
         let imageUrl = URL(string: "https://covers.openlibrary.org/b/id/\(12345)-M.jpg")!
-        viewModel = BookItemViewModel(item: mockBook)
+        viewModel = FixtureCoverBookItemViewModel(item: mockBook)
         viewModel.configure(imageUrl: imageUrl)
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             self.viewModel.handleBookmarkAdded{
@@ -103,7 +103,7 @@ class BookItemViewModelTests: XCTestCase {
     func testHandleBookmarkAddedSavesBookWith_NoImageData() {
         let expectation = XCTestExpectation(description: "Download and save the image data")
         let imageUrl = URL(string: "https://covers.openlibrary.org/b/id/\(-1)-M.jpg")!
-        //        viewModel = BookItemViewModel(item: mockBook, controller: mockPersistenceController)
+        viewModel = FixtureCoverBookItemViewModel(item: mockBook)
         viewModel.configure(imageUrl: imageUrl)
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             self.viewModel.handleBookmarkAdded{
@@ -325,5 +325,196 @@ extension BookDetailsTests {
             attachment.lifetime = .keepAlways
             add(attachment)
         }
+    }
+}
+
+private final class FixtureCoverBookItemViewModel: BookItemViewModel {
+    override func downloadImage(from url: URL, completion: @escaping (Data?) -> Void) {
+        completion(url.lastPathComponent == "-1-M.jpg" ? nil : Data(repeating: 1, count: 200))
+    }
+}
+
+private final class DelayedCoverBookItemViewModel: BookItemViewModel {
+    var responses: [(Data?) -> Void] = []
+    override func downloadImage(from url: URL, completion: @escaping (Data?) -> Void) {
+        responses.append(completion)
+    }
+}
+
+private final class DelayedCoverBookmarkViewModel: BookmarkButtonViewModel {
+    var response: ((Data?) -> Void)?
+    override func downloadImage(from url: URL, completion: @escaping (Data?) -> Void) {
+        response = completion
+    }
+}
+
+private final class BookmarkRecordingPersistence: PersistenceController {
+    var savedOwners: [String] = []
+    override func saveBook(_ book: Book, imageData: Data?) {
+        XCTAssertTrue(Thread.isMainThread, "viewContext must be accessed on its owning main queue")
+        XCTAssertEqual(container.viewContext.concurrencyType, .mainQueueConcurrencyType)
+        savedOwners.append(currentUserEmail)
+        super.saveBook(book, imageData: imageData)
+    }
+}
+
+@MainActor
+final class BookmarkSaveLifetimeTests: XCTestCase {
+    private var persistence: BookmarkRecordingPersistence!
+    private var priorEmail: Any?
+    private var priorUUID: Any?
+    private let account = UUID()
+    private var book: Book {
+        Book(title: "Delayed fixture", ratingsAverage: nil, ratingsCount: nil,
+             authorName: ["Fixture"], coverI: 1, image: nil, key: "/works/DELAYED")
+    }
+
+    override func setUpWithError() throws {
+        priorEmail = UserDefaults.standard.object(forKey: "LoggedInUserEmail")
+        priorUUID = UserDefaults.standard.object(forKey: "LoggedInUserUUID")
+        UserDefaults.standard.set("a@example.com", forKey: "LoggedInUserEmail")
+        UserDefaults.standard.set(account.uuidString, forKey: "LoggedInUserUUID")
+        persistence = BookmarkRecordingPersistence(container: PersistenceController.createInMemoryPersistentContainer())
+    }
+
+    override func tearDownWithError() throws {
+        UserDefaults.standard.set(priorEmail, forKey: "LoggedInUserEmail")
+        UserDefaults.standard.set(priorUUID, forKey: "LoggedInUserUUID")
+        PersistenceController.invalidateBookmarkSession()
+        persistence = nil
+    }
+
+    private func model() -> DelayedCoverBookItemViewModel {
+        DelayedCoverBookItemViewModel(item: book, persistenceController: persistence)
+    }
+
+    private func deliver(_ response: @escaping (Data?) -> Void, data: Data? = Data(repeating: 1, count: 200)) async {
+        let scheduled = expectation(description: "Background response scheduled")
+        DispatchQueue.global().async { response(data); scheduled.fulfill() }
+        await fulfillment(of: [scheduled], timeout: 2)
+        await persistence.container.viewContext.perform {}
+    }
+
+    func testAccountSwitchRejectsLateSave() async {
+        let vm = model()
+        vm.toggleBookmark()
+        UserDefaults.standard.set("b@example.com", forKey: "LoggedInUserEmail")
+        await deliver(vm.responses[0])
+        XCTAssertTrue(persistence.savedOwners.isEmpty)
+        XCTAssertTrue(persistence.fetchBooks().isEmpty)
+    }
+
+    func testUUIDSwitchWithSameEmailRejectsLateSave() async {
+        let vm = model()
+        vm.toggleBookmark()
+        UserDefaults.standard.set(UUID().uuidString, forKey: "LoggedInUserUUID")
+        await deliver(vm.responses[0])
+        XCTAssertTrue(persistence.savedOwners.isEmpty)
+    }
+
+    func testLogoutRejectsLateSave() async {
+        let vm = model()
+        vm.toggleBookmark()
+        UserViewModel().logout()
+        await deliver(vm.responses[0])
+        XCTAssertTrue(persistence.savedOwners.isEmpty)
+    }
+
+    func testLogoutAndReturnToSameIdentityStillRejectsOldSession() async {
+        let vm = model()
+        vm.toggleBookmark()
+        UserViewModel().logout()
+        UserDefaults.standard.set("a@example.com", forKey: "LoggedInUserEmail")
+        UserDefaults.standard.set(account.uuidString, forKey: "LoggedInUserUUID")
+        await deliver(vm.responses[0])
+        XCTAssertTrue(persistence.savedOwners.isEmpty)
+    }
+
+    func testRemovingBeforeResponseDoesNotResurrectBookmark() async {
+        let vm = model()
+        vm.toggleBookmark()
+        vm.toggleBookmark()
+        await deliver(vm.responses[0])
+        XCTAssertFalse(vm.isBookmarked)
+        XCTAssertTrue(persistence.savedOwners.isEmpty)
+        XCTAssertTrue(persistence.fetchBooks().isEmpty)
+    }
+
+    func testRepeatedAddOnlyAcceptsNewestResponse() async {
+        let vm = model()
+        vm.toggleBookmark()
+        vm.toggleBookmark()
+        vm.toggleBookmark()
+        await deliver(vm.responses[0])
+        XCTAssertTrue(persistence.savedOwners.isEmpty)
+        await deliver(vm.responses[1], data: Data(repeating: 2, count: 200))
+        XCTAssertEqual(persistence.savedOwners, ["a@example.com"])
+        XCTAssertEqual(persistence.fetchBooks().first?.image, Data(repeating: 2, count: 200))
+    }
+
+    func testTeardownReleasesModelAndRejectsOutstandingResponse() async throws {
+        var vm: DelayedCoverBookItemViewModel? = model()
+        vm?.toggleBookmark()
+        let response = try XCTUnwrap(vm?.responses.first)
+        weak var released = vm
+        vm = nil
+        XCTAssertNil(released)
+        await deliver(response)
+        XCTAssertTrue(persistence.savedOwners.isEmpty)
+    }
+
+    func testFailedDownloadSavesWithoutCoverOnContextQueue() async {
+        let vm = model()
+        vm.toggleBookmark()
+        await deliver(vm.responses[0], data: nil)
+        XCTAssertEqual(persistence.savedOwners, ["a@example.com"])
+        XCTAssertEqual(persistence.fetchBooks().map(\.key), ["/works/DELAYED"])
+        XCTAssertEqual(persistence.bookExists(book)?.email, "a@example.com")
+        XCTAssertEqual(persistence.bookExists(book)?.userUUID, account)
+        XCTAssertNil(persistence.fetchBooks().first?.image)
+    }
+
+    func testTinyResponseKeepsExistingNoCoverFallback() async {
+        let vm = model()
+        vm.toggleBookmark()
+        await deliver(vm.responses[0], data: Data(repeating: 1, count: 100))
+        XCTAssertEqual(persistence.savedOwners.count, 1)
+        XCTAssertNil(persistence.fetchBooks().first?.image)
+    }
+
+    func testNoURLSavesWithoutStartingDownload() async {
+        let vm = model()
+        vm.configure(imageUrl: nil)
+        let completed = expectation(description: "No-cover bookmark saved")
+        vm.handleBookmarkAdded { completed.fulfill() }
+        await fulfillment(of: [completed], timeout: 2)
+        XCTAssertTrue(vm.responses.isEmpty)
+        XCTAssertEqual(persistence.savedOwners, ["a@example.com"])
+    }
+
+    func testReconfigurationRejectsOldResponse() async {
+        let vm = model()
+        vm.toggleBookmark()
+        vm.configure(imageUrl: URL(string: "https://fixture.invalid/new.jpg"))
+        await deliver(vm.responses[0])
+        XCTAssertTrue(persistence.savedOwners.isEmpty)
+    }
+
+    func testReplacementContextRejectsOldResponse() async {
+        let vm = model()
+        vm.toggleBookmark()
+        persistence.container = PersistenceController.createInMemoryPersistentContainer()
+        await deliver(vm.responses[0])
+        XCTAssertTrue(persistence.savedOwners.isEmpty)
+    }
+
+    func testBookmarkButtonAdapterUsesSameAccountGuard() async throws {
+        let vm = DelayedCoverBookmarkViewModel(persistenceController: persistence)
+        vm.configure(book: book, imageUrl: URL(string: "https://fixture.invalid/cover.jpg"))
+        vm.toggleBookmark()
+        UserDefaults.standard.set("b@example.com", forKey: "LoggedInUserEmail")
+        let response = try XCTUnwrap(vm.response)
+        await deliver(response)
+        XCTAssertTrue(persistence.savedOwners.isEmpty)
     }
 }

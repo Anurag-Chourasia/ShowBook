@@ -54,6 +54,7 @@ class UserViewModel: ObservableObject {
 
     #if canImport(AuthKit)
     func activateCloudAccount(user: AuthUser, signOut: @escaping () -> Void) {
+        PersistenceController.invalidateBookmarkSession()
         cloudSignOut = signOut
         currentUserUUID = user.id
         UserDefaults.standard.set(user.id.uuidString, forKey: "LoggedInUserUUID")
@@ -70,6 +71,7 @@ class UserViewModel: ObservableObject {
     #endif
 
     func activateCloudAccount(email: String, uuid: UUID? = nil, signOut: @escaping () -> Void) {
+        PersistenceController.invalidateBookmarkSession()
         cloudSignOut = signOut
         let resolvedUUID = uuid ?? UUID()
         currentUserUUID = resolvedUUID
@@ -82,6 +84,7 @@ class UserViewModel: ObservableObject {
     }
 
     func clearCloudAccount() {
+        PersistenceController.invalidateBookmarkSession()
         cloudSignOut = nil
         currentUserUUID = nil
         UserDefaults.standard.removeObject(forKey: "LoggedInUserUUID")
@@ -90,6 +93,7 @@ class UserViewModel: ObservableObject {
     }
 
     func logout() {
+        PersistenceController.invalidateBookmarkSession()
         if let cloudSignOut { cloudSignOut(); return }
         currentUserUUID = nil
         UserDefaults.standard.removeObject(forKey: "LoggedInUserUUID")
