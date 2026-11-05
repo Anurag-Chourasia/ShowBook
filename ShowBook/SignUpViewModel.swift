@@ -20,6 +20,17 @@ class SignUpViewModel: ObservableObject {
     @Published var selectedCountryIndex: Int = 0
     
     private let api: NetworkClass
+    private var countryTask: Task<Void, Never>?
+    private var countryRequestID = UUID()
+
+    deinit { countryTask?.cancel() }
+
+    func cancelCountryRequest() {
+        countryRequestID = UUID()
+        countryTask?.cancel()
+        countryTask = nil
+        isLoading = false
+    }
 
     private let regionCode: String?
     init(api: NetworkClass = NetworkClass(), regionCode: String? = Locale.current.region?.identifier) {
@@ -98,9 +109,14 @@ class SignUpViewModel: ObservableObject {
     }
     
     private func loadCountries() {
-        api.fetchCountries { [weak self] fetchedCountries, error in
+        countryTask?.cancel()
+        countryRequestID = UUID()
+        isLoading = true
+        let id = countryRequestID
+        countryTask = api.fetchCountries { [weak self] fetchedCountries, error in
             DispatchQueue.main.async {
-                guard let self else { return }
+                guard let self, self.countryRequestID == id else { return }
+                self.countryTask = nil
                 guard let fetchedCountries, error == nil else {
                     self.errorMessage = error?.localizedDescription ?? String(\ShowBookStrings.errorUnexpected)
                     self.showAlert = true

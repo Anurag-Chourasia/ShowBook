@@ -121,6 +121,10 @@ struct DashboardView: View {
                 .padding([.top, .bottom], \.sixteen)
                 .padding([.leading, .trailing], \.p19)
             TextFieldWithDebounce(debouncedText: $viewModel.searchBook)
+                .onDisappear { viewModel.cancelRequests() }
+                .onChange(of: userViewModel.isLoggedIn) {
+                    if !userViewModel.isLoggedIn { viewModel.cancelRequests() }
+                }
                 .onChange(of: viewModel.searchBook) {
                     viewModel.performSearch()
                 }
