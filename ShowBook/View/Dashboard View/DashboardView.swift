@@ -133,6 +133,15 @@ struct DashboardView: View {
         .padding(.horizontal, \.twenty)
     }
     
+    private func localizedSortTitle(_ value: String) -> String {
+        switch value {
+        case "Title": String(\ShowBookStrings.discoverSortTitle)
+        case "Average": String(\ShowBookStrings.discoverSortAverage)
+        case "Hits": String(\ShowBookStrings.discoverSortHits)
+        default: value
+        }
+    }
+
     private var sortByFilterView: some View {
         HStack {
             Menu {
@@ -140,9 +149,9 @@ struct DashboardView: View {
                     ForEach(viewModel.sortByCategoryArray, id: \.self) { category in
                         Button { viewModel.selectedCategoryFilter = category } label: {
                             if viewModel.selectedCategoryFilter == category {
-                                Label(category, systemImage: \.checkmark)
+                                Label(localizedSortTitle(category), systemImage: \.checkmark)
                             } else {
-                                Text(category)
+                                Text(localizedSortTitle(category))
                             }
                         }
                     }
@@ -151,7 +160,7 @@ struct DashboardView: View {
                     Button(String(\ShowBookStrings.actionClear), role: .destructive) { viewModel.selectedCategoryFilter = "" }
                 }
             } label: {
-                Label(viewModel.selectedCategoryFilter.isEmpty ? "Sort by" : viewModel.selectedCategoryFilter,
+                Label(viewModel.selectedCategoryFilter.isEmpty ? String(\ShowBookStrings.sortBy) : localizedSortTitle(viewModel.selectedCategoryFilter),
                       systemImage: \.arrowUpArrowDown)
             }
             .tint(\.primary)
