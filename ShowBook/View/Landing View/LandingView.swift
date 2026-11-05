@@ -7,40 +7,41 @@ import DesignTokensKit
 //
 
 import SwiftUI
+import LocalizationKit
 import CoreData
 
 struct LandingView: View {
     @EnvironmentObject var userViewModel: UserViewModel
-    
+
     var body: some View {
-        
+
         NavigationStack {
-            
-            VStack(alignment: .center, spacing: \.zero){
-                
+
+            VStack(alignment: .center, spacing: \.zero) {
+
                 headerView
-                
+
                 Spacer()
-                
+
                 logoView
-                
+
                 Spacer()
-                
+
                 navigationButtons
-                
+
             }
-            .navigationTitle("Welcome")
+            .navigationTitle(String(\ShowBookStrings.welcomeTitle))
             .navigationBarTitleDisplayMode(.inline)
             .showBookTools()
         }
-       
+
     }
 
     private var headerView: some View {
         HStack {
             Spacer()
             VStack{
-                Text("Show Book")
+                Text(String(\ShowBookStrings.appName))
                     .font(\.largeTitle)
             }
             Spacer()
@@ -61,13 +62,12 @@ struct LandingView: View {
         }
     }
 
-
     private var navigationButtons: some View {
         HStack {
             Spacer()
-            
+
             NavigationLink(destination: SignUpView()) {
-                Text("Sign Up")
+                Text(String(\CommonStrings.authTitleCreateAccount))
                     .font(\.headline)
                     .frame(minWidth: \.p80)
                     .padding(\.sixteen)
@@ -75,11 +75,11 @@ struct LandingView: View {
                     .foregroundColor(\.white)
                     .cornerRadius(\.eight)
             }
-            
+
             Spacer()
-            
+
             NavigationLink(destination: LoginView()) {
-                Text("Login")
+                Text(String(\CommonStrings.authTitleSignIn))
                     .font(\.headline)
                     .frame(minWidth: \.p80)
                     .padding(\.sixteen)
@@ -87,7 +87,7 @@ struct LandingView: View {
                     .foregroundColor(\.white)
                     .cornerRadius(\.eight)
             }
-            
+
             Spacer()
         }
         .padding(.bottom, \.p50)

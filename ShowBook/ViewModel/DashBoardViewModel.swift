@@ -20,12 +20,20 @@ class DashboardViewModel: ObservableObject {
     @Published var isLoadingMore: Bool = false
     @Published var loadingMoreBookNotPossible: Bool = false
     @Published var scrollOffset: CGFloat = 0
-    
+
     var api = NetworkClass()
     var cache: BookCatalogCache = .shared
     var offset: Int = 0
     private var requestID = UUID()
     private var loadedTitle: String?
+
+    private struct FilterCache {
+        let query: String
+        let filter: String
+        let books: [Book]
+        let result: [Book]
+    }
+    private var filterCache: FilterCache?
 
     enum SearchState: Equatable { case idle, tooShort, loading, results, empty, failed }
     var searchState: SearchState {
@@ -37,26 +45,43 @@ class DashboardViewModel: ObservableObject {
         if !errorMessage.isEmpty { return .failed }
         return loadedTitle == searchBook ? .empty : .idle
     }
-    
+
     var sortByCategoryArray: [String] = ["Title", "Average", "Hits"]
-    
+
     var filteredBooks: [Book] {
-        guard searchBook.trimmingCharacters(in: .whitespacesAndNewlines).count >= 3 else {
+        let query = searchBook.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard query.count >= 3 else {
             return []
         }
-        
+
+        if let cache = filterCache,
+           cache.query == query,
+           cache.filter == selectedCategoryFilter,
+           cache.books == books {
+            return cache.result
+        }
+
+        let sorted: [Book]
         switch selectedCategoryFilter {
         case "Title":
-            return books.sorted { $0.title < $1.title }
+            sorted = books.sorted { $0.title < $1.title }
         case "Average":
-            return books.sorted { ($0.ratingsAverage ?? 0) > ($1.ratingsAverage ?? 0) }
+            sorted = books.sorted { ($0.ratingsAverage ?? 0) > ($1.ratingsAverage ?? 0) }
         case "Hits":
-            return books.sorted { ($0.ratingsCount ?? 0) > ($1.ratingsCount ?? 0) }
+            sorted = books.sorted { ($0.ratingsCount ?? 0) > ($1.ratingsCount ?? 0) }
         default:
-            return books
+            sorted = books
         }
+
+        filterCache = FilterCache(
+            query: query,
+            filter: selectedCategoryFilter,
+            books: books,
+            result: sorted
+        )
+        return sorted
     }
-    
+
     func performSearch() {
         requestID = UUID()
         books = []

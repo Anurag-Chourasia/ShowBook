@@ -1,5 +1,5 @@
 import Foundation
-import CommonNetworking
+import CommonNetworkingKit
 
 /// Release behaviour is independent of any developer preferences left on a device.
 enum AppRuntime {
@@ -80,18 +80,18 @@ enum AppRuntime {
 }
 
 enum AppNetworking {
-    static func client(session: URLSession? = nil) -> CommonNetworking.HTTPClient {
+    static func client(session: URLSession? = nil) -> CommonNetworkingKit.HTTPClient {
         context(session: session).client
     }
     /// Capture the source once so a settings change during a request cannot mix cache environments.
-    static func context(session: URLSession? = nil) -> (client: CommonNetworking.HTTPClient, namespace: String) {
+    static func context(session: URLSession? = nil) -> (client: CommonNetworkingKit.HTTPClient, namespace: String) {
         #if DEBUG
         let scenario = AppRuntime.stubScenario
         let namespace = scenario.map { "stub-" + $0 } ?? "live"
         let enabled = UserDefaults.standard.object(forKey: "developer.httpLogs") as? Bool
             ?? (ProcessInfo.processInfo.environment["HTTP_LOGGING"] == "1")
         let logger: HTTPLogger? = enabled ? .console : nil
-        if let session { return (CommonNetworking.HTTPClient(session: session, logger: logger), namespace) }
+        if let session { return (CommonNetworkingKit.HTTPClient(session: session, logger: logger), namespace) }
         if let scenario {
             let session: URLSession
             switch scenario {
@@ -100,11 +100,11 @@ enum AppNetworking {
             case "showcase": session = DeveloperStubSessions.showcase
             default: session = DeveloperStubSessions.success
             }
-            return (CommonNetworking.HTTPClient(session: session, logger: logger), namespace)
+            return (CommonNetworkingKit.HTTPClient(session: session, logger: logger), namespace)
         }
-        return (CommonNetworking.HTTPClient(session: .shared, logger: logger), namespace)
+        return (CommonNetworkingKit.HTTPClient(session: .shared, logger: logger), namespace)
         #else
-        return (CommonNetworking.HTTPClient(session: session ?? .shared), "live")
+        return (CommonNetworkingKit.HTTPClient(session: session ?? .shared), "live")
         #endif
     }
 }

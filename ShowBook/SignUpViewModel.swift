@@ -1,3 +1,4 @@
+import LocalizationKit
 //
 //  SignUpViewModel.swift
 //  ShowBook
@@ -39,13 +40,13 @@ class SignUpViewModel: ObservableObject {
         if !email.isEmpty && !password.isEmpty {
             if !isValidEmail(email) {
                 DispatchQueue.main.async {
-                    self.errorMessage = "Enter a valid email"
+                    self.errorMessage = String(\ShowBookStrings.errorInvalidEmail)
                     self.showAlert = true
                     self.isLoading = false
                 }
             } else if !isValidPassword(password) {
                 DispatchQueue.main.async {
-                    self.errorMessage = "Password must contain 8 characters minimum including 1 alphabet, 1 number, and 1 special character like @,#"
+                    self.errorMessage = String(\ShowBookStrings.errorSignupPassword)
                     self.showAlert = true
                     self.isLoading = false
                 }
@@ -55,7 +56,7 @@ class SignUpViewModel: ObservableObject {
             }
         } else {
             DispatchQueue.main.async {
-                self.errorMessage = "Fields cannot be empty"
+                self.errorMessage = String(\ShowBookStrings.errorEmptyFields)
                 self.showAlert = true
                 self.isLoading = false
             }
@@ -74,7 +75,7 @@ class SignUpViewModel: ObservableObject {
                 withAnimation(.easeInOut) { userViewModel.isLoggedIn = true }
             case .failure(let error):
                 self.errorMessage = (error as? CredentialError)?.localizedDescription
-                    ?? "Unable to save account. Please try again."
+                    ?? String(\ShowBookStrings.errorSaveAccount)
                 self.showAlert = true
             }
         }
@@ -101,7 +102,7 @@ class SignUpViewModel: ObservableObject {
             DispatchQueue.main.async {
                 guard let self else { return }
                 guard let fetchedCountries, error == nil else {
-                    self.errorMessage = error?.localizedDescription ?? "Unexpected error"
+                    self.errorMessage = error?.localizedDescription ?? String(\ShowBookStrings.errorUnexpected)
                     self.showAlert = true
                     self.isLoading = false
                     return
@@ -109,7 +110,7 @@ class SignUpViewModel: ObservableObject {
                 self.countries = fetchedCountries.data.map { $0.value.country }.sorted()
                 self.selectedCountryIndex = 0
                 guard let firstCountry = self.countries.first else {
-                    self.errorMessage = "No countries available"
+                    self.errorMessage = String(\ShowBookStrings.errorCountries)
                     self.showAlert = true
                     self.isLoading = false
                     return

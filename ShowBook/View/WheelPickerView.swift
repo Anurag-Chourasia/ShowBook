@@ -7,6 +7,7 @@ import DesignTokensKit
 //
 
 import SwiftUI
+import LocalizationKit
 import CoreData
 
 struct WheelPickerView: View {
@@ -18,7 +19,7 @@ struct WheelPickerView: View {
     
     var body: some View {
         VStack {
-            Picker(selection: $selectedCountryIndex, label: Text("Select an Item")) {
+            Picker(selection: $selectedCountryIndex, label: Text(String(\ShowBookStrings.countrySelect))) {
                 ForEach(0..<country.count, id: \.self) { index in
                     Text(self.country[index])
                         .tag(index)

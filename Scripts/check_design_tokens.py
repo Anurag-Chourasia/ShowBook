@@ -4,6 +4,8 @@ import re, sys
 root = Path(__file__).resolve().parents[1]
 source = root / ('myTV' if (root / 'myTV').is_dir() else 'ShowBook')
 patterns = {
+    'raw SF Symbol': r'\b(?:systemName|systemImage)\s*:\s*"',
+    'raw accessibility identifier': r'\.accessibilityIdentifier\(\s*"',
     'shorthand color': r'(?<![\w.\\])\.(?:primary|secondary|accentColor|white|black|gray|red|green|blue|yellow|orange|clear)\b',
     'inline font role': r'\.font\(\.(?:largeTitle|title|title2|title3|headline|subheadline|body|callout|footnote|caption|caption2)\b',
     'raw color': r'\b(?:Color|UIColor)\s*\(|\bColor\.(?:primary|secondary|accentColor|white|black|gray|red|green|blue|yellow|orange|clear)\b',

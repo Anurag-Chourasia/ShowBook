@@ -443,6 +443,8 @@
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				ar,
+				fr,
 				en,
 				Base,
 			);
@@ -853,7 +855,7 @@
 			repositoryURL = "https://github.com/Anurag-Chourasia/DesignTokensKit.git";
 			requirement = {
 				kind = exactVersion;
-				version = 1.18.3;
+				version = 1.19.0;
 			};
 		};
 		6A3E98F756100CE40BD38FE1 /* XCRemoteSwiftPackageReference "UIComponentsKit" */ = {
@@ -861,7 +863,7 @@
 			repositoryURL = "https://github.com/Anurag-Chourasia/UIComponentsKit.git";
 			requirement = {
 				kind = exactVersion;
-				version = 1.5.1;
+				version = 1.6.0;
 			};
 		};
 		A25000000000000000000001 /* XCRemoteSwiftPackageReference "DeveloperProfileKit" */ = {
@@ -877,7 +879,7 @@
 			repositoryURL = "https://github.com/Anurag-Chourasia/FoundationKit.git";
 			requirement = {
 				kind = exactVersion;
-				version = 0.1.1;
+				version = 0.2.0;
 			};
 		};
 		AEB2D9BC476E0F608EBF52D1 /* XCRemoteSwiftPackageReference "CommonNetworking" */ = {
@@ -885,7 +887,7 @@
 			repositoryURL = "https://github.com/Anurag-Chourasia/CommonNetworking.git";
 			requirement = {
 				kind = exactVersion;
-				version = 1.1.0;
+				version = 2.0.0;
 			};
 		};
 		C8FC995D988090DF0D402585 /* XCRemoteSwiftPackageReference "LocalizationKit" */ = {
@@ -893,10 +895,10 @@
 			repositoryURL = "https://github.com/Anurag-Chourasia/LocalizationKit.git";
 			requirement = {
 				kind = exactVersion;
-				version = 0.5.7;
+				version = 0.6.3;
 			};
 		};
-		D841594D0C2F49D7BFC541D2 /* AuthKit */ = {isa = XCRemoteSwiftPackageReference; repositoryURL = "https://github.com/Anurag-Chourasia/AuthKit.git"; requirement = {kind = exactVersion; version = 0.2.7; }; };
+		D841594D0C2F49D7BFC541D2 /* AuthKit */ = {isa = XCRemoteSwiftPackageReference; repositoryURL = "https://github.com/Anurag-Chourasia/AuthKit.git"; requirement = {kind = exactVersion; version = 0.3.0; }; };
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -913,7 +915,7 @@
 		95732E385786F6E1232BBF15 /* CommonNetworking */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = AEB2D9BC476E0F608EBF52D1 /* XCRemoteSwiftPackageReference "CommonNetworking" */;
-			productName = CommonNetworking;
+			productName = CommonNetworkingKit;
 		};
 		9E2E1528E27128C836A6B1F3 /* UIComponentsKit */ = {
 			isa = XCSwiftPackageProductDependency;

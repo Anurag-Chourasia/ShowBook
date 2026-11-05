@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import LocalizationKit
 import CoreData
 import UIComponentsKit
 import DesignTokensKit
@@ -27,9 +28,9 @@ struct BookmarkView: View {
                         viewModel.bookmarkBooks = viewModel.persistenceController.fetchBooks()
                     }
                     .alert(isPresented: $viewModel.showAlert) {
-                        Alert(title: Text("Error"),
+                        Alert(title: Text(String(\ShowBookStrings.alertError)),
                               message: Text(viewModel.errorMessage),
-                              dismissButton: .default(Text("OK")) {
+                              dismissButton: .default(Text(String(\CommonStrings.ok))) {
                             presentationMode.wrappedValue.dismiss()
                         })
                     }
@@ -39,7 +40,7 @@ struct BookmarkView: View {
             }
             
         }
-        .navigationTitle("Saved Books")
+        .navigationTitle(String(\ShowBookStrings.savedBooks))
         .navigationBarTitleDisplayMode(.inline)
         .showBookTools(includeLayout: true)
     }
@@ -56,9 +57,9 @@ struct BookmarkView: View {
     private var bookLoadingIndicator: some View {
         GeometryReader { innerGeometry in
             CenteredProgressOverlay(width: innerGeometry.size.width) {
-                Text("Loading.")
+                Text(String(\ShowBookStrings.loadingProgress))
             } background: {
-                ShowBookTheme.colors.surface.opacity(OpacityTheme.default.p0_5)
+                ColorTheme.default.groupedSecondary.opacity(OpacityTheme.default.p0_5)
             }
         }
     }

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import LocalizationKit
 import UIComponentsKit
 import DesignTokensKit
 
@@ -26,7 +27,7 @@ struct EmailTextFieldView: View {
     private var placeholderView: some View {
         HStack(spacing: \.zero) {
             Text(placeholderText)
-                .foregroundColor(ShowBookTheme.colors.foreground)
+                .foregroundColor(ColorTheme.default.primary)
                 .font(\.title2)
             if mandatoryField {
                 Text(" *")
@@ -53,5 +54,5 @@ struct EmailTextFieldView: View {
 }
 
 #Preview {
-    EmailTextFieldView(email: .constant(""), placeholderText: "Email", mandatoryField: true)
+    EmailTextFieldView(email: .constant(""), placeholderText: String(\CommonStrings.authFieldEmail), mandatoryField: true)
 }

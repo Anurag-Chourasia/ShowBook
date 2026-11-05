@@ -10,6 +10,8 @@ import DesignTokensKit
 import LocalizationKit
 import UIComponentsKit
 
+public typealias AppAppearance = UIComponentsKit.AppAppearance
+
 struct ContentView: View {
     @EnvironmentObject var userViewModel: UserViewModel
     var body: some View {
@@ -32,80 +34,6 @@ struct ContentView_Previews: PreviewProvider {
     }
 }
 
-enum AppAppearance: String, CaseIterable, Identifiable {
-    case system, light, dark
-    var id: String { rawValue }
-}
-
-struct AppearanceMenu: View {
-    var iconOnly = false
-    @AppStorage("appAppearance") private var appearance: AppAppearance = .system
-
-    var body: some View {
-        Group {
-            if iconOnly {
-                Menu {
-                    appearancePicker.pickerStyle(.inline)
-                } label: {
-                    Image(\.circleLefthalfFilled)
-                }
-                .accessibilityLabel(\.appearance)
-                .accessibilityIdentifier(.appearanceMenu)
-            } else {
-                appearancePicker.pickerStyle(.menu)
-            }
-        }
-        .tint(\.primary)
-        .foregroundColor(\.primary)
-    }
-
-    private var appearancePicker: some View {
-        Picker(selection: $appearance) {
-            Text("System").tag(AppAppearance.system)
-            Text("Light").tag(AppAppearance.light)
-            Text("Dark").tag(AppAppearance.dark)
-        } label: { Label(Text(\.appearance), \.circleLefthalfFilled) }
-    }
-}
-
-/// Apply to this scene's window so navigation destinations and sheets inherit it.
-/// `.unspecified` restores the current system style, including after an override.
-private struct WindowAppearance: UIViewRepresentable {
-    let style: UIUserInterfaceStyle
-    func makeUIView(context: Context) -> AppearanceView { AppearanceView() }
-    func updateUIView(_ view: AppearanceView, context: Context) { view.style = style }
-
-    final class AppearanceView: UIView {
-        var style: UIUserInterfaceStyle = .unspecified { didSet { apply() } }
-        override func didMoveToWindow() { super.didMoveToWindow(); apply() }
-        private func apply() {
-            guard let window, window.overrideUserInterfaceStyle != style else { return }
-            window.overrideUserInterfaceStyle = style
-        }
-    }
-}
-
-private struct AppAppearanceModifier: ViewModifier {
-    @AppStorage("appAppearance") private var selection: AppAppearance = .system
-    func body(content: Content) -> some View {
-        content.background(WindowAppearance(style: selection.interfaceStyle).allowsHitTesting(false))
-    }
-}
-
-extension AppAppearance {
-    var interfaceStyle: UIUserInterfaceStyle {
-        switch self {
-        case .system: return .unspecified
-        case .light: return .light
-        case .dark: return .dark
-        }
-    }
-}
-
-extension View {
-    func appAppearance() -> some View { modifier(AppAppearanceModifier()) }
-}
-
 private struct ShowBookTools: ViewModifier {
     var includeDeveloper: Bool
     var includeLayout: Bool
@@ -123,7 +51,7 @@ private struct ShowBookTools: ViewModifier {
                             }
                             .accessibilityIdentifier(.bookmarkButton)
                         }
-                        AppearanceMenu()
+                        AppearanceMenu(title: String(\ShowBookStrings.appearance), systemTitle: String(\ShowBookStrings.appearanceSystem), lightTitle: String(\ShowBookStrings.light), darkTitle: String(\ShowBookStrings.dark))
                         if includeLayout { BookLayoutPicker() }
                         if includeDeveloper {
                             Button { developerPresented = true } label: {
@@ -138,6 +66,7 @@ private struct ShowBookTools: ViewModifier {
                             }
                         }
                     } label: { Label(Text(\.appOptions), \.line3Horizontal) }
+                    .labelStyle(.iconOnly)
                     .tint(\.primary)
                     .accessibilityIdentifier(.screenTools)
                 }

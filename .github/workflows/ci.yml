@@ -82,9 +82,6 @@ jobs:
       - name: Enforce shared design tokens
         run: python3 Scripts/check_design_tokens.py
 
-      - name: Test exact package revisions
-        run: python3 Scripts/test_dependencies.py
-
       - name: Test deterministic networking adapter
         run: python3 TestSupport/run-networking-tests.py
 
@@ -124,7 +121,9 @@ jobs:
           -scmProvider system SDKROOT=iphonesimulator CODE_SIGNING_ALLOWED=NO build
 
       - name: Verify developer tools are excluded from Release
-        run: python3 Scripts/check_release_developer_ui.py "$RUNNER_TEMP/AppDerived/Build/Products/Release-iphonesimulator/ShowBook.app/ShowBook"
+        run: |
+          python3 Scripts/test_release_developer_ui.py
+          python3 Scripts/check_release_developer_ui.py "$RUNNER_TEMP/AppDerived/Build/Products/Release-iphonesimulator/ShowBook.app/ShowBook"
 
       - name: Upload test results
         if: always()

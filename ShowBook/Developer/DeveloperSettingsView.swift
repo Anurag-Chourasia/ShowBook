@@ -20,24 +20,21 @@ struct AppLaunchView<Content: View>: View {
         Group {
             if showingLaunchSettings {
                 NavigationStack {
-                    DeveloperSettingsView(buttonTitle: "Open ShowBook") {
+                    DeveloperSettingsView(buttonTitle: String(\CommonStrings.developerOpenApp)) {
                         authenticationEnabled = AppRuntime.authenticationEnabled
                         showingLaunchSettings = false
                     }
                 }
             } else {
-                content(authenticationEnabled)
-                    .id(configurationID)
-                    .safeAreaInset(edge: .top) {
-                        if AppRuntime.isShowcaseMode {
-                            ShowcaseBadgeView {
-                                showingSettingsSheet = true
-                            }
-                        }
+                VStack(spacing: \.zero) {
+                    if AppRuntime.isShowcaseMode {
+                        ShowcaseBadgeView { showingSettingsSheet = true }
                     }
+                    content(authenticationEnabled).id(configurationID)
+                }
                     .sheet(isPresented: $showingSettingsSheet) {
                         NavigationStack {
-                            DeveloperSettingsView(buttonTitle: "Close") {
+                            DeveloperSettingsView(buttonTitle: String(\CommonStrings.close)) {
                                 showingSettingsSheet = false
                                 authenticationEnabled = AppRuntime.authenticationEnabled
                                 configurationID = UUID()
@@ -75,14 +72,15 @@ struct ShowcaseBadgeView: View {
             .padding(.horizontal, \.ten)
             .padding(.vertical, \.four)
             .background(.ultraThinMaterial)
-            .foregroundColor(ShowBookTheme.colors.action)
+            .foregroundColor(ColorTheme.default.oceanAction)
             .clipShape(Capsule())
             .overlay(
                 Capsule()
-                    .stroke(ShowBookTheme.colors.action.opacity(OpacityTheme.default.p0_35), lineWidth: DesignMetricTheme.default.p1)
+                    .stroke(ColorTheme.default.oceanAction.opacity(OpacityTheme.default.p0_35), lineWidth: DesignMetricTheme.default.p1)
             )
         }
         .padding(.top, \.four)
+        .padding(.horizontal, \.sixteen)
         .accessibilityIdentifier(.showcaseDemoIndicator)
         .accessibilityLabel(\.showcaseDemoA11y)
     }
@@ -236,22 +234,22 @@ struct DeveloperSettingsView: View {
                     Text(\.developerAuthentication)
                 }
                 .accessibilityIdentifier(.developerAuthentication)
-                Text("New feature, off by default. Enable to use cloud sign-in. Apply settings to activate changes; disabling it preserves the saved cloud session.")
+                Text(String(\ShowBookStrings.developerAuthNote))
 
-                Toggle("Discover", isOn: $discover)
-                Toggle("Cover preview", isOn: $preview)
-                Toggle("Ratings", isOn: $ratings)
+                Toggle(String(\ShowBookStrings.discover), isOn: $discover)
+                Toggle(String(\ShowBookStrings.detailsCoverPreview), isOn: $preview)
+                Toggle(String(\ShowBookStrings.developerRatings), isOn: $ratings)
             }
             Section {
                 Toggle(isOn: $logs) {
                     Text(\.developerHttpLogs)
                 }
-                Text("Full redacted request and response bodies. Large logs can slow debugging. Release builds never enable this.")
+                Text(String(\ShowBookStrings.developerLogsNote))
             } header: { Text(\.developerDebugLogs) }
             Section {
                 Picker(String(\.developerDataSource), selection: $source) {
-                    Text("Live · Open Library").tag("live")
-                    Text("Stub · local fixtures").tag("stub")
+                    Text(String(\ShowBookStrings.developerLive)).tag("live")
+                    Text(String(\CommonStrings.developerSourceStub)).tag("stub")
                 }
                 if source == "stub" {
                     Picker(String(\.developerScenario), selection: $scenario) {
@@ -260,15 +258,15 @@ struct DeveloperSettingsView: View {
                         Text(\.developerScenarioOffline).tag("offline")
                     }
                 }
-                Text("Live uses the production APIs. Stub replaces API responses and disables remote cover loading. Local accounts and bookmarks remain on this device.")
+                Text(String(\ShowBookStrings.developerStubNote))
             } header: { Text(\.developerEnvironment) }
             Section {
-                Picker("Discover layout", selection: $variant) {
-                    Text("A · List").tag("A")
-                    Text("B · Grid").tag("B")
+                Picker(String(\ShowBookStrings.developerLayout), selection: $variant) {
+                    Text(String(\ShowBookStrings.developerLayoutA)).tag("A")
+                    Text(String(\ShowBookStrings.developerLayoutB)).tag("B")
                 }
-                Text("Local experiment override for visual testing. No remote assignment, analytics, or experiment results are collected.")
-            } header: { Text("A/B testing") }
+                Text(String(\ShowBookStrings.developerExperimentNote))
+            } header: { Text(String(\ShowBookStrings.developerExperiment)) }
             Section {
                 LabeledContent(String(\.developerInstalledVersion), value: AppRuntime.actualVersion)
                 LabeledContent(String(\.developerInstalledBuild), value: AppRuntime.actualBuild)
@@ -276,9 +274,9 @@ struct DeveloperSettingsView: View {
                     .textInputAutocapitalization(.never).autocorrectionDisabled()
                 TextField(String(\.developerSimulatedBuild), text: $build)
                     .textInputAutocapitalization(.never).autocorrectionDisabled()
-                Text("Overrides the version shown in Know Your Developer. The signed bundle and App Store version stay unchanged; change those in Xcode.")
+                Text(String(\ShowBookStrings.developerVersionNote))
             } header: { Text(\.developerVersionSimulation) }
-            Section("Appearance") { AppearanceMenu() }
+            Section(String(\ShowBookStrings.appearance)) { AppearanceMenu(title: String(\ShowBookStrings.appearance), systemTitle: String(\ShowBookStrings.appearanceSystem), lightTitle: String(\ShowBookStrings.light), darkTitle: String(\ShowBookStrings.dark)) }
             Section(header: Text(\.developerPrivacySupport)) {
                 Link(destination: URL(string: "https://github.com/Anurag-Chourasia/ShowBook/blob/main/Docs/PrivacyInventory.md")!) {
                     Label(Text(\.developerPrivacyPolicy), \.handRaised)
@@ -290,7 +288,7 @@ struct DeveloperSettingsView: View {
                 }
                 .accessibilityIdentifier(.developerSupport)
 
-                Text("ShowBook stores user bookmarks locally on device or securely in Supabase when cloud authentication is enabled. No personal data is tracked or sold to third parties.")
+                Text(String(\ShowBookStrings.developerPrivacy))
                     .font(\.caption)
                     .foregroundColor(\.secondary)
             }

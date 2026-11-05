@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import LocalizationKit
 import UIComponentsKit
 import DesignTokensKit
 
@@ -23,7 +24,7 @@ struct SignUpView: View {
             }
         }
         .onAppear(perform: viewModel.loadData)
-        .navigationTitle("Sign Up")
+        .navigationTitle(String(\CommonStrings.authTitleCreateAccount))
         .navigationBarTitleDisplayMode(.inline)
         .showBookTools()
     }
@@ -49,7 +50,7 @@ struct SignUpView: View {
 
     private var welcomeText: some View {
         HStack(spacing: \.zero) {
-            Text("Welcome,\nSign up to continue")
+            Text(String(\ShowBookStrings.authSignupWelcome))
                 .font(\.title)
                 .padding(.leading, \.thirty)
             Spacer()
@@ -61,12 +62,12 @@ struct SignUpView: View {
     private var emailField: some View {
         HStack(spacing: \.zero) {
             EmailTextFieldView(email: $viewModel.email,
-                               placeholderText: "Email",
+                               placeholderText: String(\CommonStrings.authFieldEmail),
                                mandatoryField: true)
         }
         .background(
-            RoundedRectangle(cornerRadius: ShowBookTheme.fieldCornerRadius)
-                .stroke(ShowBookTheme.colors.border, lineWidth: StrokeWidth.one)
+            RoundedRectangle(cornerRadius: DesignMetricTheme.default.p26_5)
+                .stroke(ColorTheme.default.secondary, lineWidth: StrokeWidth.one)
         )
         .padding(.bottom, \.twenty)
         .padding(.horizontal, \.p34)
@@ -75,12 +76,12 @@ struct SignUpView: View {
     private var passwordField: some View {
         HStack(spacing: \.zero) {
             PasswordTextFieldView(text: $viewModel.password,
-                                  placeholderText: "Password",
+                                  placeholderText: String(\CommonStrings.authFieldPassword),
                                   mandatoryField: true)
         }
         .background(
-            RoundedRectangle(cornerRadius: ShowBookTheme.fieldCornerRadius)
-                .stroke(ShowBookTheme.colors.border, lineWidth: StrokeWidth.one)
+            RoundedRectangle(cornerRadius: DesignMetricTheme.default.p26_5)
+                .stroke(ColorTheme.default.secondary, lineWidth: StrokeWidth.one)
         )
         .padding(.bottom, \.twenty)
         .padding(.horizontal, \.p34)
@@ -88,19 +89,19 @@ struct SignUpView: View {
 
     private var passwordRequirements: some View {
         VStack(alignment: .leading) {
-            requirementItem(isValidEmail(viewModel.email), text: "Must be a valid email")
-            requirementItem(viewModel.password.hasUppercaseCharacter, text: "Must contain an uppercase")
-            requirementItem(viewModel.password.hasLowercaseCharacter, text: "Must contain a lowercase")
-            requirementItem(viewModel.password.hasSpecialCharacter, text: "Must contain a special character")
-            requirementItem(viewModel.password.hasNumberCharacter, text: "Must contain a number character")
-            requirementItem(viewModel.password.count >= 8, text: "At least 8 characters")
+            requirementItem(isValidEmail(viewModel.email), text: String(\ShowBookStrings.authValidEmail))
+            requirementItem(viewModel.password.hasUppercaseCharacter, text: String(\ShowBookStrings.authUppercase))
+            requirementItem(viewModel.password.hasLowercaseCharacter, text: String(\ShowBookStrings.authLowercase))
+            requirementItem(viewModel.password.hasSpecialCharacter, text: String(\ShowBookStrings.authSpecial))
+            requirementItem(viewModel.password.hasNumberCharacter, text: String(\ShowBookStrings.authNumber))
+            requirementItem(viewModel.password.count >= 8, text: String(\ShowBookStrings.authLength))
         }
         .padding(.horizontal, \.twenty)
     }
 
     private func requirementItem(_ isValid: Bool, text: String) -> some View {
         HStack {
-            Image(systemName: isValid ? "checkmark.square" : "square")
+            Image(isValid ? \.checkmarkSquare : \.square)
             Text(text)
             Spacer()
         }
@@ -112,17 +113,17 @@ struct SignUpView: View {
             Button(action:{ 
                 viewModel.handleSignUp(userViewModel: userViewModel)
             }) {
-                Text("Sign Up")
+                Text(String(\CommonStrings.authTitleCreateAccount))
                     .font(\.headline)
                     .frame(height: \.p55)
                     .frame(maxWidth: .infinity)
                     .foregroundColor(\.white)
-                    .background(RoundedRectangle(cornerRadius: ShowBookTheme.fieldCornerRadius))
+                    .background(RoundedRectangle(cornerRadius: DesignMetricTheme.default.p26_5))
             }
             .alert(isPresented: $viewModel.showAlert) {
-                Alert(title: Text("Error"),
+                Alert(title: Text(String(\ShowBookStrings.alertError)),
                       message: Text("\(viewModel.errorMessage)"),
-                      dismissButton: .default(Text("OK"), action: {
+                      dismissButton: .default(Text(String(\CommonStrings.ok)), action: {
                     viewModel.isLoading = false
                 }))
             }
@@ -134,16 +135,16 @@ struct SignUpView: View {
             
         
         }
-        .foregroundColor(ShowBookTheme.colors.action)
+        .foregroundColor(ColorTheme.default.oceanAction)
         .padding(.vertical, \.p18)
         .padding(.horizontal, \.p33)
     }
 
     private var loadingOverlay: some View {
         CenteredProgressOverlay(width: UIScreen.main.bounds.width) {
-            Text("Loading.")
+            Text(String(\ShowBookStrings.loadingProgress))
         } background: {
-            ShowBookTheme.colors.surface.opacity(OpacityTheme.default.p0_5)
+            ColorTheme.default.groupedSecondary.opacity(OpacityTheme.default.p0_5)
         }
     }
 }
