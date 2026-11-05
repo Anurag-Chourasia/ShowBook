@@ -11,6 +11,17 @@ import CommonCrypto
 import Security
 
 class PersistenceController: ObservableObject {
+    struct BookmarkOwner: Equatable {
+        let email: String
+        let uuid: UUID?
+        let session: UUID
+    }
+    private static var bookmarkSession = UUID()
+    // Called at host login/logout transitions, including a return to the same account.
+    static func invalidateBookmarkSession() { bookmarkSession = UUID() }
+    var bookmarkOwner: BookmarkOwner {
+        BookmarkOwner(email: currentUserEmail, uuid: currentUserUUID, session: Self.bookmarkSession)
+    }
     static let shared = PersistenceController()
     private let credentialQueue = DispatchQueue(label: "ShowBook.credentials", qos: .userInitiated)
     @Published var updatedBooks: [Book]?

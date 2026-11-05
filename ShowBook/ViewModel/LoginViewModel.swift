@@ -48,6 +48,7 @@ class LoginViewModel: ObservableObject {
             self.isLoading = false
             switch result {
             case .success:
+                PersistenceController.invalidateBookmarkSession()
                 UserDefaults.standard.setValue(loginEmail, forKey: "LoggedInUserEmail")
                 self.password = ""
                 withAnimation(.easeInOut) { userViewModel.isLoggedIn = true }
