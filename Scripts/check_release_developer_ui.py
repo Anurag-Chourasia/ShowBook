@@ -11,6 +11,8 @@ for marker in [b'Developer settings', b'developer.source', b'developer.httpLogs'
     if re.search(pattern, binary):
         raise SystemExit(f'Debug-only marker in Release: {marker.decode()}')
 for marker in [b'DeveloperSettingsView', b'DeveloperStubProtocol']:
-    if marker in binary:
+    # Coverage metadata can retain the source filename after #if DEBUG exclusion.
+    # Match the actual Swift type symbol, not a filename substring.
+    if re.search(rb'\$s8ShowBook[0-9]+' + marker + rb'[VC]', binary):
         raise SystemExit(f'Debug-only type in Release: {marker.decode()}')
 print('Release executable excludes developer UI, fixtures and preference keys.')

@@ -16,6 +16,9 @@ class ReleaseGuardTests(unittest.TestCase):
             with self.subTest(marker=marker):
                 self.check(b'\0' + marker + b'\0', False)
 
+    def test_compiled_out_source_filename_is_allowed(self):
+        self.check(b'DeveloperSettingsView.swift:$s8ShowBook13AppLaunchViewV', True)
+
     def test_debug_ui_types_are_rejected(self):
         self.check(b'_$s8ShowBook21DeveloperSettingsViewV', False)
 
