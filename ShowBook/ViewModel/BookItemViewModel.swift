@@ -118,7 +118,10 @@ final class BookmarkSaveRequest {
                 controller.saveBook(book, imageData: (data?.count ?? 0) > 100 ? data : nil)
             }
         }
-        if let imageURL { download(imageURL, receive) }
-        else { receive(nil) }
+        if let imageURL {
+            download(imageURL, receive)
+        } else {
+            receive(nil)
+        }
     }
 }

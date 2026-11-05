@@ -452,10 +452,10 @@ final class BookmarkSaveLifetimeTests: XCTestCase {
         XCTAssertEqual(persistence.fetchBooks().first?.image, Data(repeating: 2, count: 200))
     }
 
-    func testTeardownReleasesModelAndRejectsOutstandingResponse() async {
+    func testTeardownReleasesModelAndRejectsOutstandingResponse() async throws {
         var vm: DelayedCoverBookItemViewModel? = model()
-        vm!.toggleBookmark()
-        let response = vm!.responses[0]
+        vm?.toggleBookmark()
+        let response = try XCTUnwrap(vm?.responses.first)
         weak var released = vm
         vm = nil
         XCTAssertNil(released)
