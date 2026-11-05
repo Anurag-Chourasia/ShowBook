@@ -8,6 +8,7 @@ import DesignTokensKit
 
 import Combine
 import SwiftUI
+import LocalizationKit
 import UIComponentsKit
 
 class TextFieldObserver: ObservableObject {
@@ -37,8 +38,8 @@ struct TextFieldWithDebounce: View {
                 .padding(.trailing, \.p21)
                 .fieldPlaceholder(when: textObserver.searchText.isEmpty) {
                     HStack {
-                        Text("Search for Books")
-                            .foregroundColor(ShowBookTheme.colors.foreground)
+                        Text(String(\ShowBookStrings.searchForBooks))
+                            .foregroundColor(ColorTheme.default.primary)
                             .font(\.title3)
                     }
                 }

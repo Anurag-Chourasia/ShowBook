@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import LocalizationKit
 import UIComponentsKit
 import DesignTokensKit
 
@@ -40,7 +41,7 @@ struct PasswordTextFieldView: View {
     private var placeholderView: some View {
         HStack(spacing: \.zero) {
             Text(placeholderText)
-                .foregroundColor(ShowBookTheme.colors.foreground)
+                .foregroundColor(ColorTheme.default.primary)
                 .font(\.title2)
             if mandatoryField {
                 Text(" *")
@@ -54,7 +55,7 @@ struct PasswordTextFieldView: View {
         Button(action: {
             isSecured.toggle()
         }) {
-            Image(systemName: isSecured ? "eye" : "eye.slash")
+            Image(isSecured ? \.eye : \.eyeSlash)
                 .renderingMode(.template)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
@@ -76,5 +77,5 @@ struct PasswordTextFieldView: View {
 }
 
 #Preview {
-    PasswordTextFieldView(text: .constant(""), placeholderText: "Password", mandatoryField: true)
+    PasswordTextFieldView(text: .constant(""), placeholderText: String(\CommonStrings.authFieldPassword), mandatoryField: true)
 }

@@ -1,4 +1,5 @@
 import SwiftUI
+import LocalizationKit
 import DesignTokensKit
 import UIComponentsKit
 
@@ -8,6 +9,15 @@ struct DiscoverView: View {
     @State private var reload = 0
     @State private var layout: CatalogLayout = AppRuntime.discoverGrid ? .grid : .list
     @State private var sort = ""
+
+    private func sortTitle(_ value: String) -> String {
+        switch value {
+        case "Title": String(\ShowBookStrings.discoverSortTitle)
+        case "Average": String(\ShowBookStrings.discoverSortAverage)
+        case "Hits": String(\ShowBookStrings.discoverSortHits)
+        default: value
+        }
+    }
 
     private var displayedBooks: [Book] {
         switch sort {
@@ -22,29 +32,29 @@ struct DiscoverView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: \.sixteen) {
                 VStack(alignment: .leading, spacing: \.eight) {
-                    Text("Discover").font(\.title).accessibilityAddTraits(.isHeader)
-                    Text("Find your next read. Browse a category or search above.")
+                    Text(String(\ShowBookStrings.discover)).font(\.title).accessibilityAddTraits(.isHeader)
+                    Text(String(\ShowBookStrings.discoverSubtitle))
                         .font(\.body).foregroundColor(\.secondary)
-                    Picker("Category", selection: $category) {
+                    Picker(String(\ShowBookStrings.discoverCategory), selection: $category) {
                         ForEach(DiscoverCategory.allCases) { Text($0.title).tag($0) }
                     }.pickerStyle(.menu)
                     .accessibilityIdentifier(.discoverCategory)
                     if let date = model.cachedAt {
-                        Text("Saved titles · \(date.formatted(date: .abbreviated, time: .omitted)). Covers may need a connection.")
+                        Text(String(format: String(\ShowBookStrings.discoverCached), locale: LocalizationController.shared.locale, date.formatted(.dateTime.year().month().day().locale(LocalizationController.shared.locale))))
                             .font(\.caption).foregroundColor(\.secondary)
                     }
                 }.padding(.horizontal, \.sixteen)
                 if model.loading {
-                    ProgressView("Finding books…").frame(maxWidth: .infinity)
+                    ProgressView(String(\ShowBookStrings.discoverFinding)).frame(maxWidth: .infinity)
                 } else if let message = model.message {
                     StateMessage {
                         Image(\.wifiExclamationmark)
-                    } title: { Text("Discover is unavailable") }
+                    } title: { Text(String(\ShowBookStrings.discoverUnavailable)) }
                     detail: { Text(message) }
-                    actions: { Button("Retry") { reload += 1 } }
+                    actions: { Button(String(\CommonStrings.retry)) { reload += 1 } }
                     .padding(\.sixteen)
                 } else if model.books.isEmpty {
-                    Text("No books available in this category yet.")
+                    Text(String(\ShowBookStrings.noBooksCategory))
                         .font(\.body).padding(\.sixteen)
                 } else {
                     HStack {
@@ -52,16 +62,15 @@ struct DiscoverView: View {
                             Section {
                                 ForEach(["Title", "Average", "Hits"], id: \.self) { option in
                                     Button { sort = option } label: {
-                                        if sort == option { Label(option, \.checkmark) }
-                                        else { Text(option) }
+                                        if sort == option { Label(sortTitle(option), \.checkmark) } else { Text(sortTitle(option)) }
                                     }
                                 }
                             }
                             Section {
-                                Button("Clear", role: .destructive) { sort = "" }
+                                Button(String(\ShowBookStrings.actionClear), role: .destructive) { sort = "" }
                             }
                         } label: {
-                            Label(sort.isEmpty ? "Sort by" : sort, \.arrowUpArrowDown)
+                            Label(sort.isEmpty ? String(\ShowBookStrings.sortBy) : sortTitle(sort), \.arrowUpArrowDown)
                         }
                         .accessibilityIdentifier(.discoverSortMenu)
                         Spacer()

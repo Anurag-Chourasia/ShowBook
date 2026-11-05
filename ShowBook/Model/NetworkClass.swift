@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import CommonNetworking
+import CommonNetworkingKit
 import Combine
 
 // MARK: - NetworkClass

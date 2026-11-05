@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import LocalizationKit
 import UIComponentsKit
 import DesignTokensKit
 
@@ -33,14 +34,14 @@ struct LoginView: View {
                 }
             }
         }
-        .navigationTitle("Login")
+        .navigationTitle(String(\CommonStrings.authTitleSignIn))
         .navigationBarTitleDisplayMode(.inline)
         .showBookTools()
     }
 
     private var welcomeText: some View {
         HStack(spacing: \.zero) {
-            Text("Welcome,\nlog in to continue")
+            Text(String(\ShowBookStrings.authLoginWelcome))
                 .font(\.title)
                 .padding(.leading, \.thirty)
             Spacer()
@@ -52,12 +53,12 @@ struct LoginView: View {
     private var emailField: some View {
         HStack(spacing: \.zero) {
             EmailTextFieldView(email: $viewModel.email,
-                               placeholderText: "Email",
+                               placeholderText: String(\CommonStrings.authFieldEmail),
                                mandatoryField: true)
         }
         .overlay(
-            RoundedRectangle(cornerRadius: ShowBookTheme.fieldCornerRadius)
-                .stroke(ShowBookTheme.colors.border, lineWidth: StrokeWidth.one)
+            RoundedRectangle(cornerRadius: DesignMetricTheme.default.p26_5)
+                .stroke(ColorTheme.default.secondary, lineWidth: StrokeWidth.one)
         )
         .padding(.bottom, \.fourteen)
         .padding(.horizontal, \.p34)
@@ -66,12 +67,12 @@ struct LoginView: View {
     private var passwordField: some View {
         HStack(spacing: \.zero) {
             PasswordTextFieldView(text: $viewModel.password,
-                                  placeholderText: "Password",
+                                  placeholderText: String(\CommonStrings.authFieldPassword),
                                   mandatoryField: true)
         }
         .overlay(
-            RoundedRectangle(cornerRadius: ShowBookTheme.fieldCornerRadius)
-                .stroke(ShowBookTheme.colors.border, lineWidth: StrokeWidth.one)
+            RoundedRectangle(cornerRadius: DesignMetricTheme.default.p26_5)
+                .stroke(ColorTheme.default.secondary, lineWidth: StrokeWidth.one)
         )
         .padding(.bottom, \.twenty)
         .padding(.horizontal, \.p34)
@@ -82,17 +83,17 @@ struct LoginView: View {
             Button(action: {
                 viewModel.handleLogin(userViewModel: userViewModel)
             }) {
-                Text("Login")
+                Text(String(\CommonStrings.authTitleSignIn))
                     .font(\.headline)
                     .frame(height: \.p55)
                     .frame(maxWidth: .infinity)
                     .foregroundColor(\.white)
-                    .background(RoundedRectangle(cornerRadius: ShowBookTheme.fieldCornerRadius))
+                    .background(RoundedRectangle(cornerRadius: DesignMetricTheme.default.p26_5))
             }
             .alert(isPresented: $viewModel.showAlert) {
-                Alert(title: Text("Error"),
+                Alert(title: Text(String(\ShowBookStrings.alertError)),
                       message: Text(viewModel.errorMessage),
-                      dismissButton: .default(Text("OK"), action: {
+                      dismissButton: .default(Text(String(\CommonStrings.ok)), action: {
                     viewModel.isLoading = false
                 }))
             }
@@ -102,7 +103,7 @@ struct LoginView: View {
                 }
             }
         }
-        .foregroundStyle(ShowBookTheme.colors.action)
+        .foregroundStyle(ColorTheme.default.oceanAction)
         .padding(.bottom, \.p18)
         .padding(.leading, \.p33)
         .padding(.trailing, \.p33)
@@ -110,9 +111,9 @@ struct LoginView: View {
 
     private var loadingView: some View {
         CenteredProgressOverlay(width: UIScreen.main.bounds.width) {
-            Text("Loading.")
+            Text(String(\ShowBookStrings.loadingProgress))
         } background: {
-            ShowBookTheme.colors.surface.opacity(OpacityTheme.default.p0_5)
+            ColorTheme.default.groupedSecondary.opacity(OpacityTheme.default.p0_5)
         }
     }
 }

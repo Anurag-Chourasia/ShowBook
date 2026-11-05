@@ -1,3 +1,4 @@
+import LocalizationKit
 //
 //  LoginViewModel.swift
 //  ShowBook
@@ -26,17 +27,17 @@ class LoginViewModel: ObservableObject {
         showAlert = false
         errorMessage = ""
         guard !email.isEmpty, !password.isEmpty else {
-            errorMessage = "Fields cannot be empty"
+            errorMessage = String(\ShowBookStrings.errorEmptyFields)
             showAlert = true
             return
         }
         guard isValidEmail(email) else {
-            errorMessage = "Enter a valid email"
+            errorMessage = String(\ShowBookStrings.errorInvalidEmail)
             showAlert = true
             return
         }
         guard isValidPassword(password) else {
-            errorMessage = "Password Must contain 8 characters minimum including 1 alphabet, 1 number, and 1 special character like @,#"
+            errorMessage = String(\ShowBookStrings.errorLoginPassword)
             showAlert = true
             return
         }
@@ -52,7 +53,7 @@ class LoginViewModel: ObservableObject {
                 withAnimation(.easeInOut) { userViewModel.isLoggedIn = true }
             case .failure(let error):
                 self.errorMessage = (error as? CredentialError)?.localizedDescription
-                    ?? "Unable to save login. Please try again."
+                    ?? String(\ShowBookStrings.errorSaveLogin)
                 self.showAlert = true
             }
         }

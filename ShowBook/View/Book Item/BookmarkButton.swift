@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UIComponentsKit
 import DesignTokensKit
 import LocalizationKit
 
@@ -15,11 +16,14 @@ struct BookmarkButton: View {
     var imageUrl: URL?
     
     var body: some View {
-        Button(action: viewModel.toggleBookmark) {
+        SelectionToggleButton(
+            isSelected: viewModel.isBookmarked,
+            selectedLabel: String(\ShowBookStrings.bookmarkRemove),
+            unselectedLabel: String(\ShowBookStrings.bookmarkAdd),
+            action: viewModel.toggleBookmark
+        ) {
             bookmarkImage
         }
-        .buttonStyle(.plain)
-        .accessibilityLabel(viewModel.isBookmarked ? \.bookmarkRemove : \.bookmarkAdd)
         .accessibilityValue(book.title)
         .onAppear {
             viewModel.configure(book: book, imageUrl: imageUrl)

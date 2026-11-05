@@ -1,11 +1,12 @@
 import Foundation
+import LocalizationKit
 import Combine
-import CommonNetworking
+import CommonNetworkingKit
 
 enum DiscoverCategory: String, CaseIterable, Identifiable, Codable, Sendable {
     case fiction, mystery, science, history
     var id: String { rawValue }
-    var title: String { rawValue.capitalized }
+    var title: String { LocalizedContext<ShowBookDomain>.shared.string("showbook.category." + rawValue) }
 }
 
 struct DiscoverResult {
@@ -90,7 +91,7 @@ final class DiscoverViewModel: ObservableObject {
             cachedAt = result.cached ? result.savedAt : nil
         } catch {
             guard requestID == id, !Task.isCancelled else { return }
-            message = "Couldn’t load this category. Check your connection and try again."
+            message = String(\ShowBookStrings.errorCategoryFailed)
         }
     }
 }

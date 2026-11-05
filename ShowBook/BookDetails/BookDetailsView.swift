@@ -23,18 +23,18 @@ struct BookDetailsView: View {
                     Text(authors.joined(separator: ", ")).font(\.body).foregroundColor(\.secondary)
                 }
                 BookmarkButton(book: book, imageUrl: LibraryCover.url(book.coverI))
-                if model.loading && model.work == nil { ProgressView("Loading book details…") }
+                if model.loading && model.work == nil { ProgressView(String(\ShowBookStrings.loadingBookDetails)) }
                 if let error = model.error {
                     Text(error).foregroundColor(\.secondary)
-                    if book.key != nil { Button("Retry") { reload += 1 } }
+                    if book.key != nil { Button(String(\CommonStrings.retry)) { reload += 1 } }
                 }
                 if let work = model.work {
-                    detailSection("Description", text: work.description?.value ?? "No description available.")
-                    if let date = work.first_publish_date { detailSection("First published", text: date) }
+                    detailSection(String(\ShowBookStrings.description), text: work.description?.value ?? String(\ShowBookStrings.noDescription))
+                    if let date = work.first_publish_date { detailSection(String(\ShowBookStrings.firstPublished), text: date) }
                     if let subjects = work.subjects, !subjects.isEmpty {
-                        detailSection("Subjects", text: subjects.joined(separator: " · "))
+                        detailSection(String(\ShowBookStrings.subjects), text: subjects.joined(separator: " · "))
                     }
-                    Text("Editions").font(\.title2).accessibilityAddTraits(.isHeader)
+                    Text(String(\ShowBookStrings.editions)).font(\.title2).accessibilityAddTraits(.isHeader)
                     ForEach(model.editions) { edition in
                         NavigationLink { EditionDetailsView(key: edition.key, title: edition.title) } label: {
                             SurfaceCard {
@@ -48,14 +48,13 @@ struct BookDetailsView: View {
                         }.buttonStyle(.plain)
                     }
                     if let error = model.editionsError { Text(error).foregroundColor(\.secondary) }
-                    if model.loadingEditions { ProgressView("Loading editions…") }
-                    else if model.hasMoreEditions {
-                        Button(model.editionsError == nil ? "Load more editions" : "Retry editions") { more += 1 }
-                    } else if model.editions.isEmpty { Text("No editions available.") }
+                    if model.loadingEditions { ProgressView(String(\ShowBookStrings.loadingEditions)) } else if model.hasMoreEditions {
+                        Button(model.editionsError == nil ? String(\ShowBookStrings.loadMoreEditions) : String(\ShowBookStrings.retryEditions)) { more += 1 }
+                    } else if model.editions.isEmpty { Text(String(\ShowBookStrings.noEditions)) }
                 }
             }.padding(\.twenty)
         }
-        .navigationTitle("Book details")
+        .navigationTitle(String(\ShowBookStrings.bookDetailsTitle))
         .navigationBarTitleDisplayMode(.inline)
         .showBookTools()
         .task(id: reload) { await model.load() }
@@ -80,24 +79,24 @@ struct EditionDetailsView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: \.sixteen) {
                 Text(edition?.title ?? title).font(\.title).accessibilityAddTraits(.isHeader)
-                if loading { ProgressView("Loading edition…") }
-                if let error { Text(error); Button("Retry") { reload += 1 } }
+                if loading { ProgressView(String(\ShowBookStrings.loadingEdition)) }
+                if let error { Text(error); Button(String(\CommonStrings.retry)) { reload += 1 } }
                 if let edition {
                     LibraryCover(coverID: edition.covers?.first(where: { $0 > 0 }), savedImage: nil)
-                    field("Published", edition.publish_date)
-                    field("Publisher", edition.publishers?.joined(separator: ", "))
-                    field("Format", edition.physical_format)
-                    field("Pages", edition.number_of_pages.map(String.init))
-                    field("ISBN-13", edition.isbn_13?.joined(separator: ", "))
-                    field("ISBN-10", edition.isbn_10?.joined(separator: ", "))
-                    field("Languages", edition.languages?.map { reference in
+                    field(String(\ShowBookStrings.published), edition.publish_date)
+                    field(String(\ShowBookStrings.publisher), edition.publishers?.joined(separator: ", "))
+                    field(String(\ShowBookStrings.format), edition.physical_format)
+                    field(String(\ShowBookStrings.pages), edition.number_of_pages.map(String.init))
+                    field(String(\ShowBookStrings.isbn13), edition.isbn_13?.joined(separator: ", "))
+                    field(String(\ShowBookStrings.isbn10), edition.isbn_10?.joined(separator: ", "))
+                    field(String(\ShowBookStrings.languages), edition.languages?.map { reference in
                         let code = reference.key.components(separatedBy: "/").last ?? ""
                         return Locale.current.localizedString(forLanguageCode: code) ?? code
                     }.joined(separator: ", "))
                 }
             }.frame(maxWidth: .infinity, alignment: .leading).padding(\.twenty)
         }
-        .navigationTitle("Edition details").navigationBarTitleDisplayMode(.inline)
+        .navigationTitle(String(\ShowBookStrings.editionDetailsTitle)).navigationBarTitleDisplayMode(.inline)
         .showBookTools()
         .task(id: reload) {
             loading = true; error = nil
@@ -113,7 +112,7 @@ struct EditionDetailsView: View {
     private func field(_ title: String, _ value: String?) -> some View {
         VStack(alignment: .leading, spacing: \.four) {
             Text(title).font(\.headline)
-            Text(value?.isEmpty == false ? value! : "Not available").font(\.body).textSelection(.enabled)
+            Text(value.flatMap { $0.isEmpty ? nil : $0 } ?? String(\ShowBookStrings.detailsNotAvailable)).font(\.body).textSelection(.enabled)
         }
     }
 }
@@ -133,9 +132,7 @@ struct LibraryCover: View {
                 Image(uiImage: image).resizable().scaledToFit()
             } else if let url = Self.url(coverID) {
                 AsyncImage(url: url) { phase in
-                    if let image = phase.image { image.resizable().scaledToFit() }
-                    else if phase.error != nil { placeholder }
-                    else { ProgressView() }
+                    if let image = phase.image { image.resizable().scaledToFit() } else if phase.error != nil { placeholder } else { ProgressView() }
                 }
             } else { placeholder }
         }
@@ -143,12 +140,12 @@ struct LibraryCover: View {
         .contentShape(Rectangle())
         .onLongPressGesture { if AppRuntime.coverPreviewEnabled { previewPresented = true } }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Book cover")
+        .accessibilityLabel(String(\ShowBookStrings.detailsBookCover))
         .accessibilityActions {
-            if AppRuntime.coverPreviewEnabled { Button("Preview cover") { previewPresented = true } }
+            if AppRuntime.coverPreviewEnabled { Button(String(\ShowBookStrings.previewCover)) { previewPresented = true } }
         }
         .sheet(isPresented: $previewPresented) {
-            BookCoverPreview(coverID: coverID, savedImage: savedImage, title: "Book cover")
+            BookCoverPreview(coverID: coverID, savedImage: savedImage, title: String(\ShowBookStrings.detailsBookCover))
         }
     }
     private var placeholder: some View { Image(\.bookClosed).font(\.largeTitle).foregroundColor(\.secondary) }
@@ -170,14 +167,13 @@ struct BookCoverPreview: View {
             Group {
                 if let image {
                     Image(uiImage: image).resizable().scaledToFit().accessibilityLabel(title)
-                } else if loading { ProgressView("Loading cover…") }
-                else { unavailable }
+                } else if loading { ProgressView(String(\ShowBookStrings.loadingCover)) } else { unavailable }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .padding(\.sixteen)
             .background(\.grouped)
             .accessibilityIdentifier(.bookCoverPreview)
-            .navigationTitle("Cover preview")
+            .navigationTitle(String(\ShowBookStrings.detailsCoverPreview))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
@@ -200,7 +196,7 @@ struct BookCoverPreview: View {
                     }
                 }
             }
-            .alert("Couldn’t share cover", isPresented: Binding(
+            .alert(String(\ShowBookStrings.detailsShareFailed), isPresented: Binding(
                 get: { shareError != nil }, set: { if !$0 { shareError = nil } }
             )) { Button(\.ok, role: .cancel) {} } message: { Text(shareError ?? "") }
             .task {

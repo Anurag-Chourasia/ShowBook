@@ -1,6 +1,7 @@
+import LocalizationKit
 import Foundation
 import Combine
-import CommonNetworking
+import CommonNetworkingKit
 
 @MainActor final class BookDetailsViewModel: ObservableObject {
     @Published private(set) var work: LibraryWork?
@@ -53,12 +54,12 @@ import CommonNetworking
         if let error = error as? BookDetailsError { return error.localizedDescription }
         if case HTTPClientError.unsuccessfulStatus(let response) = error {
             switch response.statusCode {
-            case 404: return "This record is no longer available on Open Library."
-            case 429: return "Open Library is busy. Please wait a moment and retry."
-            default: return "Open Library could not load this record. Please try again."
+            case 404: return String(\ShowBookStrings.errorNotFound)
+            case 429: return String(\ShowBookStrings.errorBusy)
+            default: return String(\ShowBookStrings.errorRecordFailed)
             }
         }
-        if error is DecodingError { return "This record could not be read. Please try again later." }
-        return "Unable to load details. Check your connection and retry."
+        if error is DecodingError { return String(\ShowBookStrings.errorUnreadable) }
+        return String(\ShowBookStrings.errorDetailsFailed)
     }
 }

@@ -1,5 +1,5 @@
 import Foundation
-import CommonNetworking
+import CommonNetworkingKit
 
 struct LibraryText: Decodable, Sendable {
     let value: String
@@ -47,7 +47,7 @@ enum BookDetailsError: LocalizedError {
     var errorDescription: String? { "This book has no valid Open Library identifier. Search for it again to open online details." }
 }
 
-/// App-owned endpoints. HTTP transport stays in CommonNetworking.
+/// App-owned endpoints. HTTP transport stays in CommonNetworkingKit.
 actor BookDetailsService: BookDetailsServing {
     static let shared = BookDetailsService()
     private let session: URLSession?

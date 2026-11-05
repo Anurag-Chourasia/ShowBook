@@ -17,7 +17,7 @@ extension LocalizationController: AuthLocalizing {}
 struct ShowBookApp: App {
     @ObservedObject private var persistenceController = PersistenceController.shared
     @StateObject private var userViewModel = UserViewModel()
-    private let localization = LocalizationController()
+    private let localization = LocalizationController(initialLocale: .current)
     
     var body: some Scene {
         WindowGroup {
@@ -50,7 +50,7 @@ private struct CloudBookRoot: View {
     @State private var ready = false
     var body: some View {
         Group {
-            if ready { ContentView() } else { ProgressView("Opening library") }
+            if ready { ContentView() } else { ProgressView(String(\ShowBookStrings.loadingLibrary)) }
         }
         .task {
             // Bind stable UUID identity and migrate existing email bookmarks
@@ -68,7 +68,7 @@ private struct LocalBookRoot: View {
     @State private var ready = false
     var body: some View {
         Group {
-            if ready { ContentView() } else { ProgressView("Opening library") }
+            if ready { ContentView() } else { ProgressView(String(\ShowBookStrings.loadingLibrary)) }
         }
         .task {
             if userViewModel.cloudSignOut != nil { userViewModel.clearCloudAccount() }
@@ -81,12 +81,12 @@ private struct LocalBookRoot: View {
 /// Present recoverable store-load failures without automatic data deletion.
 struct StoreLoadErrorRecoveryView: View {
     let error: Error
-    var localization: LocalizationProviding = LocalizationController()
+    var localization: LocalizationProviding = LocalizationController(initialLocale: .current)
     let retryAction: () -> Void
 
     var body: some View {
         VStack(spacing: \.sixteen) {
-            Image(systemName: "exclamationmark.triangle.fill")
+            Image(\.exclamationmarkTriangleFill)
                 .foregroundColor(\.yellow)
             Text(L10n.Errors.storeLoadFailed(using: localization))
                 .font(\.headline)
