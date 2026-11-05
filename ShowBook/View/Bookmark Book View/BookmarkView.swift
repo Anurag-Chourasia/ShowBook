@@ -40,7 +40,7 @@ struct BookmarkView: View {
             }
             
         }
-        .navigationTitle("Saved Books")
+        .navigationTitle(String(\ShowBookStrings.savedBooks))
         .navigationBarTitleDisplayMode(.inline)
         .showBookTools(includeLayout: true)
     }

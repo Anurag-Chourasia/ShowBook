@@ -240,7 +240,7 @@ struct DeveloperSettingsView: View {
 
                 Toggle(String(\ShowBookStrings.discover), isOn: $discover)
                 Toggle(String(\ShowBookStrings.detailsCoverPreview), isOn: $preview)
-                Toggle("Ratings", isOn: $ratings)
+                Toggle(String(\ShowBookStrings.developerRatings), isOn: $ratings)
             }
             Section {
                 Toggle(isOn: $logs) {
