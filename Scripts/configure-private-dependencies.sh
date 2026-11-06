@@ -32,6 +32,7 @@ CONFIG
         "https://github.com/Anurag-Chourasia/$package.git"
 done <<'PACKAGES'
 AuthKit AUTHKIT_DEPLOY_KEY
+AppStubData APPSTUBDATA_DEPLOY_KEY
 FoundationKit FOUNDATIONKIT_DEPLOY_KEY
 LocalizationKit LOCALIZATIONKIT_DEPLOY_KEY
 DeveloperProfileKit DEVELOPERPROFILEKIT_DEPLOY_KEY

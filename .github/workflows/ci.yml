@@ -63,6 +63,7 @@ jobs:
 
       - name: Configure read-only private dependency access
         env:
+          APPSTUBDATA_DEPLOY_KEY: ${{ secrets.APPSTUBDATA_DEPLOY_KEY }}
           AUTHKIT_DEPLOY_KEY: ${{ secrets.AUTHKIT_DEPLOY_KEY }}
           DEVELOPERPROFILEKIT_DEPLOY_KEY: ${{ secrets.DEVELOPERPROFILEKIT_DEPLOY_KEY }}
           FOUNDATIONKIT_DEPLOY_KEY: ${{ secrets.FOUNDATIONKIT_DEPLOY_KEY }}
@@ -72,6 +73,11 @@ jobs:
           UICOMPONENTSKIT_DEPLOY_KEY: ${{ secrets.UICOMPONENTSKIT_DEPLOY_KEY }}
           SNAPSHOTTESTKIT_DEPLOY_KEY: ${{ secrets.SNAPSHOTTESTKIT_DEPLOY_KEY }}
         run: bash Scripts/configure-private-dependencies.sh
+
+      - name: Fetch and verify pinned private submodules
+        run: |
+          git submodule update --init --recursive
+          python3 Scripts/verify-submodules.py
 
       - name: Verify and resolve exact package pins
         run: |
