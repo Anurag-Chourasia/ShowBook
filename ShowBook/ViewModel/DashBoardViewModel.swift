@@ -25,6 +25,17 @@ class DashboardViewModel: ObservableObject {
     var cache: BookCatalogCache = .shared
     var offset: Int = 0
     private var requestID = UUID()
+    private var requestTask: Task<Void, Never>?
+
+    deinit { requestTask?.cancel() }
+
+    func cancelRequests() {
+        requestTask?.cancel()
+        requestTask = nil
+        requestID = UUID()
+        isBookLoading = false
+        isLoadingMore = false
+    }
     private var loadedTitle: String?
 
     private struct FilterCache {
@@ -83,7 +94,7 @@ class DashboardViewModel: ObservableObject {
     }
 
     func performSearch() {
-        requestID = UUID()
+        cancelRequests()
         books = []
         loadedTitle = nil
         offset = 0
@@ -98,13 +109,15 @@ class DashboardViewModel: ObservableObject {
     }
 
     func fetchBooks(title: String, offset: Int, completion: @escaping () -> Void) {
+        requestTask?.cancel()
         let id = UUID()
         requestID = id
         isLoadingMore = true
-        api.fetchBooks(title: title, offset: offset) { [weak self] result in
+        requestTask = api.fetchBooks(title: title, offset: offset) { [weak self] result in
             DispatchQueue.main.async {
                 defer { completion() }
                 guard let self, self.requestID == id else { return }
+                self.requestTask = nil
                 self.isBookLoading = false
                 self.isLoadingMore = false
                 switch result {
