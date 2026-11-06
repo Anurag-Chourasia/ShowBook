@@ -27,7 +27,7 @@ class BookmarkViewModel: ObservableObject {
     func setUpPersitenceController(controller: PersistenceController) {
         setUpPersistenceController(controller: controller)
     }
-    
+
     func loadBookmarks() {
         if persistenceController.storeLoadError != nil {
             showAlert = true

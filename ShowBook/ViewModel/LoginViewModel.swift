@@ -17,15 +17,15 @@ class LoginViewModel: ObservableObject {
     @Published var isLoading = false
 
     var persistenceController: PersistenceController
-    
+
     init(persistenceController: PersistenceController = .shared) {
         self.persistenceController = persistenceController
     }
-    
+
     func setUpPersistenceController(controller : PersistenceController){
         persistenceController = controller
     }
-    
+
     func handleLogin(userViewModel: UserViewModel) {
         guard !isLoading else { return }
         showAlert = false
