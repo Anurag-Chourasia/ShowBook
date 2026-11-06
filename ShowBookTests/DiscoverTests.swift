@@ -1,5 +1,6 @@
 import XCTest
 import SwiftUI
+import SnapshotTestKit
 @testable import ShowBook
 
 private final class SubjectFixtureProtocol: URLProtocol {
@@ -72,28 +73,22 @@ final class DiscoverServiceTests: XCTestCase {
         defer { for (key, value) in zip(keys, originals) { defaults.set(value, forKey: key) } }
         defaults.set("stub", forKey: "developer.source")
         defaults.set("success", forKey: "developer.scenario")
-        try await capture(AppLaunchView { _ in ContentView() }.environmentObject(UserViewModel()), name: "developer-launch")
-        try await capture(AppLaunchView { _ in ContentView() }.environmentObject(UserViewModel()).environment(\.colorScheme, .dark), name: "developer-launch-dark")
+        try await capture(NavigationStack { DeveloperSettingsView(onContinue: {}, cacheSummaryOverride: "0 queries (0 KB)") }, name: "developer-launch")
         defaults.set("A", forKey: "developer.discoverVariant")
-        try await capture(NavigationStack { DiscoverView() }.environment(\.colorScheme, .dark), name: "discover-list-dark")
+        try await capture(NavigationStack { DiscoverView(model: DiscoverViewModel(service: GoldenDiscoverFixture())) }, name: "discover-list")
         defaults.set("B", forKey: "developer.discoverVariant")
-        try await capture(NavigationStack { DiscoverView() }, name: "discover-grid")
-        try await capture(NavigationStack { DiscoverView() }.environment(\.dynamicTypeSize, .accessibility3), name: "discover-grid-accessibility-fallback")
+        try await capture(NavigationStack { DiscoverView(model: DiscoverViewModel(service: GoldenDiscoverFixture())) }, name: "discover-grid")
     }
     private func capture<V: View>(_ view: V, name: String) async throws {
-        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
-        let previous = scene.windows.first(where: \.isKeyWindow)
-        let window = UIWindow(windowScene: scene)
-        window.frame = CGRect(x: 0, y: 0, width: 390, height: 844)
-        window.rootViewController = UIHostingController(rootView: view)
-        window.makeKeyAndVisible()
-        defer { window.isHidden = true; previous?.makeKeyAndVisible() }
-        try await Task.sleep(nanoseconds: 800_000_000)
-        let image = UIGraphicsImageRenderer(size: window.bounds.size).image { _ in
-            XCTAssertTrue(window.drawHierarchy(in: window.bounds, afterScreenUpdates: true))
-        }
-        let attachment = XCTAttachment(image: image); attachment.name = name
-        attachment.lifetime = .keepAlways; add(attachment)
+        try await PortfolioSnapshot.assertVariants(view, named: name, file: #filePath)
+    }
+}
+private actor GoldenDiscoverFixture: DiscoverServing {
+    func load(_ category: DiscoverCategory, refresh: Bool) async throws -> DiscoverResult {
+        let url = try XCTUnwrap(URL(string: "https://openlibrary.org/search.json"))
+        let body = try XCTUnwrap(DeveloperStubProtocol.body(for: url))
+        let response = try JSONDecoder().decode(BooksResponse.self, from: Data(body.utf8))
+        return DiscoverResult(books: response.docs, cached: false, savedAt: Date(timeIntervalSince1970: 0))
     }
 }
 #endif

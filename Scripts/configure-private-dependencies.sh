@@ -38,6 +38,7 @@ DeveloperProfileKit DEVELOPERPROFILEKIT_DEPLOY_KEY
 CommonNetworking COMMONNETWORKING_DEPLOY_KEY
 DesignTokensKit DESIGNTOKENSKIT_DEPLOY_KEY
 UIComponentsKit UICOMPONENTSKIT_DEPLOY_KEY
+SnapshotTestKit SNAPSHOTTESTKIT_DEPLOY_KEY
 PACKAGES
 printf 'GIT_CONFIG_GLOBAL=%s\n' "$credential_dir/gitconfig" >> "$GITHUB_ENV"
 printf 'GIT_SSH_COMMAND=ssh -F "%s"\n' "$credential_dir/ssh_config" >> "$GITHUB_ENV"

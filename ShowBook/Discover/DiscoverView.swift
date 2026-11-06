@@ -4,11 +4,15 @@ import DesignTokensKit
 import UIComponentsKit
 
 struct DiscoverView: View {
-    @StateObject private var model = DiscoverViewModel()
+    @StateObject private var model: DiscoverViewModel
     @State private var category: DiscoverCategory = .fiction
     @State private var reload = 0
     @State private var layout: CatalogLayout = AppRuntime.discoverGrid ? .grid : .list
     @State private var sort = ""
+
+    init(model: DiscoverViewModel? = nil) {
+        _model = StateObject(wrappedValue: model ?? DiscoverViewModel())
+    }
 
     private func sortTitle(_ value: String) -> String {
         switch value {

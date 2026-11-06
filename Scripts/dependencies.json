@@ -23,6 +23,10 @@
     "revision": "4f7f71df1ded8b6f46b90e7bc6e64206502ebcd8",
     "version": "0.6.4"
   },
+  "snapshottestkit": {
+    "revision": "cfe8362e50e57275299ef3e8b4711455c1227394",
+    "version": "1.0.4"
+  },
   "supabase-swift": {
     "revision": "63fa5a8c650fad12a14543186024bd3214a65d9c",
     "version": "2.55.6"

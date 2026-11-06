@@ -67,6 +67,8 @@
 		707CB511A5E94204B16E979D /* AuthKit in Frameworks */ = {isa = PBXBuildFile; productRef = A8552F2E4DE54001882E6C45; };
 		64747A8F205843C0AD4DFD3D /* AuthKitUI in Frameworks */ = {isa = PBXBuildFile; productRef = 770F1841516640DAB1D9DF87; };
 		40D1C4ABED7D49BDAE931CD7 /* DeveloperFixtureResourceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81AE220383BB4E2580143336 /* DeveloperFixtureResourceTests.swift */; };
+		36B4C88104B74B2EA6718218 /* SnapshotTestKit in Frameworks */ = {isa = PBXBuildFile; productRef = CBCF43FD400C414BAA2BE746 /* SnapshotTestKit */; };
+		F146194A44E9492F9A7B35B6 /* PortfolioSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87BB901AB8D24E8BA8B959B9 /* PortfolioSnapshot.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -139,6 +141,7 @@
 		C8122A766F8C4BE99DF91003 /* ShowBookV4.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ShowBookV4.xcdatamodel; sourceTree = "<group>"; };
 		C8122A766F8C4BE99DF91004 /* ShowBookV5.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ShowBookV5.xcdatamodel; sourceTree = "<group>"; };
 		81AE220383BB4E2580143336 /* DeveloperFixtureResourceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperFixtureResourceTests.swift; sourceTree = "<group>"; };
+		87BB901AB8D24E8BA8B959B9 /* PortfolioSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortfolioSnapshot.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -161,6 +164,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				36B4C88104B74B2EA6718218 /* SnapshotTestKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -353,6 +357,7 @@
 		3493640E2C7111C8008A99F8 /* ShowBookTests */ = {
 			isa = PBXGroup;
 			children = (
+				87BB901AB8D24E8BA8B959B9 /* PortfolioSnapshot.swift */,
 				81AE220383BB4E2580143336 /* DeveloperFixtureResourceTests.swift */,
 				342B8A892C71F97500EC41C8 /* UserViewModelTests.swift */,
 				342B8A7F2C71B98100EC41C8 /* LoginViewTests.swift */,
@@ -418,6 +423,7 @@
 			);
 			name = ShowBookTests;
 			packageProductDependencies = (
+				CBCF43FD400C414BAA2BE746 /* SnapshotTestKit */,
 			);
 			productName = ShowBookTests;
 			productReference = 3493640D2C7111C8008A99F8 /* ShowBookTests.xctest */;
@@ -454,6 +460,7 @@
 			);
 			mainGroup = 3403E2652C7064310063E7D0;
 			packageReferences = (
+				E897403581594480A9A6F2C3 /* XCRemoteSwiftPackageReference "SnapshotTestKit" */,
 				D841594D0C2F49D7BFC541D2 /* AuthKit */,
 				A25000000000000000000001 /* XCRemoteSwiftPackageReference "DeveloperProfileKit" */,
 				AEB2D9BC476E0F608EBF52D1 /* XCRemoteSwiftPackageReference "CommonNetworking" */,
@@ -557,6 +564,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F146194A44E9492F9A7B35B6 /* PortfolioSnapshot.swift in Sources */,
 				40D1C4ABED7D49BDAE931CD7 /* DeveloperFixtureResourceTests.swift in Sources */,
 				342B8A9E2C7279B300EC41C8 /* PrivacyManifestTests.swift in Sources */,
 				342B8AA02C7279B300EC41C8 /* PerformanceTests.swift in Sources */,
@@ -923,6 +931,11 @@
 			};
 		};
 		D841594D0C2F49D7BFC541D2 /* AuthKit */ = {isa = XCRemoteSwiftPackageReference; repositoryURL = "https://github.com/Anurag-Chourasia/AuthKit.git"; requirement = {kind = exactVersion; version = 0.3.0; }; };
+		E897403581594480A9A6F2C3 /* XCRemoteSwiftPackageReference "SnapshotTestKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Anurag-Chourasia/SnapshotTestKit.git";
+			requirement = {kind = exactVersion; version = 1.0.4; };
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -958,6 +971,11 @@
 		};
 		A8552F2E4DE54001882E6C45 /* AuthKit */ = {isa = XCSwiftPackageProductDependency; package = D841594D0C2F49D7BFC541D2; productName = AuthKit; };
 		770F1841516640DAB1D9DF87 /* AuthKitUI */ = {isa = XCSwiftPackageProductDependency; package = D841594D0C2F49D7BFC541D2; productName = AuthKitUI; };
+		CBCF43FD400C414BAA2BE746 /* SnapshotTestKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E897403581594480A9A6F2C3 /* XCRemoteSwiftPackageReference "SnapshotTestKit" */;
+			productName = SnapshotTestKit;
+		};
 /* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */

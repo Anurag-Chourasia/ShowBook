@@ -70,6 +70,7 @@ jobs:
           COMMONNETWORKING_DEPLOY_KEY: ${{ secrets.COMMONNETWORKING_DEPLOY_KEY }}
           DESIGNTOKENSKIT_DEPLOY_KEY: ${{ secrets.DESIGNTOKENSKIT_DEPLOY_KEY }}
           UICOMPONENTSKIT_DEPLOY_KEY: ${{ secrets.UICOMPONENTSKIT_DEPLOY_KEY }}
+          SNAPSHOTTESTKIT_DEPLOY_KEY: ${{ secrets.SNAPSHOTTESTKIT_DEPLOY_KEY }}
         run: bash Scripts/configure-private-dependencies.sh
 
       - name: Verify and resolve exact package pins
@@ -106,6 +107,9 @@ jobs:
       - name: Run UI Smoke test lane (PR and Push)
         run: bash Scripts/test-smoke.sh
 
+      - name: Compare reviewed snapshots on pinned iPhone 11 runtime
+        run: bash Scripts/test-snapshots.sh
+
       - name: Run Integration & Performance test lanes (Merge to main & Scheduled)
         if: github.event_name != 'pull_request'
         run: |
@@ -125,6 +129,9 @@ jobs:
           python3 Scripts/test_release_developer_ui.py
           python3 Scripts/check_release_developer_ui.py "$RUNNER_TEMP/AppDerived/Build/Products/Release-iphonesimulator/ShowBook.app/ShowBook"
 
+      - name: Verify snapshot and XCTest exclusion from Release
+        run: python3 Scripts/verify-snapshot-boundary.py "$RUNNER_TEMP/AppDerived/Build/Products/Release-iphonesimulator/ShowBook.app/ShowBook"
+
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
@@ -133,6 +140,7 @@ jobs:
           path: |
             ${{ runner.temp }}/*.xcresult
             /tmp/*.xcresult
+            ShowBookTests/__Snapshots__/**/*.diff.png
 
       - name: Remove dependency credentials
         if: always()

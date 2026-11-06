@@ -161,6 +161,7 @@ private struct DebugSettingsPresenter: UIViewControllerRepresentable {
 struct DeveloperSettingsView: View {
     var buttonTitle = "Apply and close"
     var onContinue: () -> Void
+    var cacheSummaryOverride: String?
     @AppStorage("developer.authentication") private var authentication = false
     @AppStorage("developer.discover") private var discover = true
     @AppStorage("developer.coverPreview") private var preview = true
@@ -313,6 +314,10 @@ struct DeveloperSettingsView: View {
     }
 
     private func refreshCacheSummary() {
+        if let cacheSummaryOverride {
+            cacheSummary = cacheSummaryOverride
+            return
+        }
         let count = diskCache.cachedQueriesCount
         if count == 0 {
             cacheSummary = "0 queries (0 KB)"

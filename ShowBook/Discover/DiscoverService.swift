@@ -16,7 +16,11 @@ struct DiscoverResult {
 }
 
 /// Bounded to four subject files per environment. Cache data never crosses live/stub boundaries.
-actor DiscoverService {
+protocol DiscoverServing: Sendable {
+    func load(_ category: DiscoverCategory, refresh: Bool) async throws -> DiscoverResult
+}
+
+actor DiscoverService: DiscoverServing {
     static let shared = DiscoverService()
     private let session: URLSession?
     private let directory: URL
@@ -78,8 +82,8 @@ final class DiscoverViewModel: ObservableObject {
     @Published private(set) var message: String?
     @Published private(set) var cachedAt: Date?
     private var requestID = UUID()
-    private let service: DiscoverService
-    init(service: DiscoverService = .shared) { self.service = service }
+    private let service: any DiscoverServing
+    init(service: any DiscoverServing = DiscoverService.shared) { self.service = service }
     func load(_ category: DiscoverCategory, refresh: Bool = false) async {
         let id = UUID(); requestID = id
         loading = true; message = nil; cachedAt = nil; books = []
