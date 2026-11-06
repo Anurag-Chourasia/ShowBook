@@ -11,8 +11,16 @@ import UIComponentsKit
 import DesignTokensKit
 
 struct SignUpView: View {
-    @StateObject private var viewModel = SignUpViewModel()
+    @StateObject private var viewModel: SignUpViewModel
     @EnvironmentObject var userViewModel: UserViewModel
+
+    init(persistenceController: PersistenceController = .shared) {
+        _viewModel = StateObject(wrappedValue: SignUpViewModel(persistenceController: persistenceController))
+    }
+
+    init(viewModel: @autoclosure @escaping () -> SignUpViewModel) {
+        _viewModel = StateObject(wrappedValue: viewModel())
+    }
 
     var body: some View {
         GeometryReader { geometry in
@@ -39,7 +47,11 @@ struct SignUpView: View {
                 passwordField
                 passwordRequirements
                 if !viewModel.countries.isEmpty && !viewModel.isLoading {
-                    WheelPickerView(selectedCountryIndex: $viewModel.selectedCountryIndex, country: viewModel.countries)
+                    WheelPickerView(
+                        selectedCountryIndex: $viewModel.selectedCountryIndex,
+                        country: viewModel.countries,
+                        persistenceController: viewModel.persistenceController
+                    )
                         .padding(.vertical, \.sixteen)
                 }
                 signUpButton

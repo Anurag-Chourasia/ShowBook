@@ -66,7 +66,7 @@ struct LandingView: View {
         HStack {
             Spacer()
 
-            NavigationLink(destination: SignUpView()) {
+            NavigationLink(destination: SignUpView(persistenceController: userViewModel.persistenceController)) {
                 Text(String(\CommonStrings.authTitleCreateAccount))
                     .font(\.headline)
                     .frame(minWidth: \.p80)
@@ -78,7 +78,7 @@ struct LandingView: View {
 
             Spacer()
 
-            NavigationLink(destination: LoginView()) {
+            NavigationLink(destination: LoginView(persistenceController: userViewModel.persistenceController)) {
                 Text(String(\CommonStrings.authTitleSignIn))
                     .font(\.headline)
                     .frame(minWidth: \.p80)

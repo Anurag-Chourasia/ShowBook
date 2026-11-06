@@ -9,6 +9,7 @@ struct BookItem: View {
     var showsRatings = true
     @State private var previewPresented = false
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.persistenceController) private var persistenceController
 
     init(item: Book, fromBookMark: Bool = false, layout: CatalogLayout = .list, showsRatings: Bool = true) {
         self.item = item
@@ -66,13 +67,13 @@ struct BookItem: View {
                 }.buttonStyle(.plain)
                 .accessibilityHint(String(\ShowBookStrings.detailsOpens))
                 if dynamicTypeSize.isAccessibilitySize {
-                    BookmarkButton(book: item, imageUrl: imageURL)
+                    BookmarkButton(book: item, imageUrl: imageURL, persistenceController: persistenceController)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         } accessory: {
             if !dynamicTypeSize.isAccessibilitySize {
-                BookmarkButton(book: item, imageUrl: imageURL)
+                BookmarkButton(book: item, imageUrl: imageURL, persistenceController: persistenceController)
             }
         }
         .accessibilityIdentifier(.bookTile(layout.rawValue))

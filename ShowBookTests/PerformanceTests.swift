@@ -37,8 +37,7 @@ final class PerformanceTests: XCTestCase {
 
     func testBookmarkBatchPersistenceThroughput() {
         let container = PersistenceController.createInMemoryPersistentContainer()
-        let controller = PersistenceController.shared
-        controller.container = container
+        let controller = PersistenceController(container: container)
 
         measure {
             controller.deleteAllBooks()

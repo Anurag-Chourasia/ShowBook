@@ -22,18 +22,13 @@ class BookItemViewModelTests: XCTestCase {
     
     override func setUpWithError() throws {
         try super.setUpWithError()
-        mockPersistenceController = PersistenceController.shared
-        mockPersistenceController.container = PersistenceController.createInMemoryPersistentContainer()
+        mockPersistenceController = PersistenceController.inMemory()
     }
-    
     
     override func setUp() {
         super.setUp()
         mockBook = Book(title: "Test Book", ratingsAverage: 4.5, ratingsCount: 100, authorName: ["Anurag"], coverI: 12345, image: nil)
-        //        let mockContainer = createInMemoryPersistentContainer()
-        //        mockPersistenceController = PersistenceController(container: mockContainer)
-        viewModel = BookItemViewModel(item: mockBook)
-        viewModel.setUpPersistenceController(controller: mockPersistenceController)
+        viewModel = BookItemViewModel(item: mockBook, persistenceController: mockPersistenceController)
     }
     
     override func tearDown() {
@@ -70,12 +65,12 @@ class BookItemViewModelTests: XCTestCase {
     
     func testFetchInitialStateWhenBookExists() {
         mockPersistenceController.saveBook(mockBook, imageData: mockBook.image)
-        viewModel = BookItemViewModel(item: mockBook)
+        viewModel = BookItemViewModel(item: mockBook, persistenceController: mockPersistenceController)
         XCTAssertTrue(viewModel.isBookmarked)
     }
     
     func testFetchInitialStateWhenBookDoesNotExist() {
-        viewModel = BookItemViewModel(item: mockBook)
+        viewModel = BookItemViewModel(item: mockBook, persistenceController: mockPersistenceController)
         viewModel.fetchInitialState()
         XCTAssertFalse(viewModel.isBookmarked)
     }
@@ -89,7 +84,7 @@ class BookItemViewModelTests: XCTestCase {
     func testHandleBookmarkAddedSavesBookWith_ImageData() {
         let expectation = XCTestExpectation(description: "Download and save the image data")
         let imageUrl = URL(string: "https://covers.openlibrary.org/b/id/\(12345)-M.jpg")!
-        viewModel = FixtureCoverBookItemViewModel(item: mockBook)
+        viewModel = FixtureCoverBookItemViewModel(item: mockBook, persistenceController: mockPersistenceController)
         viewModel.configure(imageUrl: imageUrl)
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             self.viewModel.handleBookmarkAdded{
@@ -104,7 +99,7 @@ class BookItemViewModelTests: XCTestCase {
     func testHandleBookmarkAddedSavesBookWith_NoImageData() {
         let expectation = XCTestExpectation(description: "Download and save the image data")
         let imageUrl = URL(string: "https://covers.openlibrary.org/b/id/\(-1)-M.jpg")!
-        viewModel = FixtureCoverBookItemViewModel(item: mockBook)
+        viewModel = FixtureCoverBookItemViewModel(item: mockBook, persistenceController: mockPersistenceController)
         viewModel.configure(imageUrl: imageUrl)
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             self.viewModel.handleBookmarkAdded{

@@ -17,21 +17,15 @@ final class LoginViewModelTests: XCTestCase {
     var mockPersistenceController: PersistenceController!
     
     override func setUpWithError() throws {
-            try super.setUpWithError()
-        mockPersistenceController = PersistenceController.shared
-        mockPersistenceController.container = PersistenceController.createInMemoryPersistentContainer()
-        }
+        try super.setUpWithError()
+        mockPersistenceController = PersistenceController.inMemory()
+    }
     
     override func setUp() {
         super.setUp()
-//        let mockContainer = createInMemoryPersistentContainer()
-//        mockPersistenceController = PersistenceController(container: mockContainer)
-        userViewModel = UserViewModel()
-        userViewModel.setUpPersistenceController(controller: mockPersistenceController)
+        userViewModel = UserViewModel(persistenceController: mockPersistenceController)
         mockPersistenceController.deleteUser(email: "test@example.com")
-        loginViewModel = LoginViewModel()
-        loginViewModel.setUpPersistenceController(controller: mockPersistenceController)
-        
+        loginViewModel = LoginViewModel(persistenceController: mockPersistenceController)
     }
     
     override func tearDown() {

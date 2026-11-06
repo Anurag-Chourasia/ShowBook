@@ -18,20 +18,15 @@ final class SignUpViewModelTests: XCTestCase {
     var cancellables: Set<AnyCancellable>!
 
     override func setUpWithError() throws {
-            try super.setUpWithError()
-        mockPersistenceController = PersistenceController.shared
-        mockPersistenceController.container = PersistenceController.createInMemoryPersistentContainer()
-        }
+        try super.setUpWithError()
+        mockPersistenceController = PersistenceController.inMemory()
+    }
     override func setUp() {
         super.setUp()
-//        let mockContainer = createInMemoryPersistentContainer()
-//        mockPersistenceController = PersistenceController(container: mockContainer)
         mockPersistenceController.deleteUser(email: "test@example.com")
         
-        userViewModel = UserViewModel()
-        userViewModel.setUpPersistenceController(controller: mockPersistenceController)
-        signUpViewModel = SignUpViewModel()
-        signUpViewModel.setUpPersistenceController(controller: mockPersistenceController)
+        userViewModel = UserViewModel(persistenceController: mockPersistenceController)
+        signUpViewModel = SignUpViewModel(persistenceController: mockPersistenceController)
         cancellables = Set<AnyCancellable>()
     }
 
@@ -58,8 +53,7 @@ final class SignUpViewModelTests: XCTestCase {
     private func checkCountryLoading(empty: Bool, region: String?, expected: String?) {
         let api = CountryLoadingNetwork()
         api.empty = empty
-        signUpViewModel = SignUpViewModel(api: api, regionCode: region)
-        signUpViewModel.setUpPersistenceController(controller: mockPersistenceController)
+        signUpViewModel = SignUpViewModel(api: api, regionCode: region, persistenceController: mockPersistenceController)
         let finished = expectation(description: "country loading finishes")
         signUpViewModel.$isLoading.dropFirst().filter { !$0 }.sink { _ in
             finished.fulfill()

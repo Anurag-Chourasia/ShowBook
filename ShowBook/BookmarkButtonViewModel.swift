@@ -19,9 +19,13 @@ class BookmarkButtonViewModel: ObservableObject {
     var book: Book?
     var imageUrl: URL?
     
-    func setUpPersitenceController(controller : PersistenceController){
+    func setUpPersistenceController(controller: PersistenceController) {
         bookmarkSave.cancel()
         persistenceController = controller
+    }
+
+    func setUpPersitenceController(controller: PersistenceController) {
+        setUpPersistenceController(controller: controller)
     }
     
     func configure(book: Book, imageUrl: URL?) {

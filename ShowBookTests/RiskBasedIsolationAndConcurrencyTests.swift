@@ -20,11 +20,9 @@ final class RiskBasedIsolationAndConcurrencyTests: XCTestCase {
         UserDefaults.standard.removeObject(forKey: "LoggedInUserEmail")
         UserDefaults.standard.removeObject(forKey: "developer.authentication")
 
-        persistence = PersistenceController(container: PersistenceController.createInMemoryPersistentContainer())
-        userViewModel = UserViewModel()
-        userViewModel.setUpPersistenceController(controller: persistence)
-        bookmarkViewModel = BookmarkViewModel()
-        bookmarkViewModel.setUpPersitenceController(controller: persistence)
+        persistence = PersistenceController.inMemory()
+        userViewModel = UserViewModel(persistenceController: persistence)
+        bookmarkViewModel = BookmarkViewModel(persistenceController: persistence)
     }
 
     override func tearDown() {
