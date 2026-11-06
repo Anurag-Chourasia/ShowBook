@@ -18,7 +18,7 @@ struct ShowBookApp: App {
     @ObservedObject private var persistenceController = PersistenceController.shared
     @StateObject private var userViewModel = UserViewModel()
     private let localization = LocalizationController(initialLocale: .current)
-    
+
     var body: some Scene {
         WindowGroup {
             AppLaunchView { authenticationEnabled in
@@ -35,6 +35,7 @@ struct ShowBookApp: App {
                 }
             }
                 .appAppearance()
+                .environment(\.designTokens, DesignTokensTheme(brand: .showBook))
                 .environmentObject(userViewModel)
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
                 .environment(\.layoutDirection, localization.isRightToLeft ? .rightToLeft : .leftToRight)

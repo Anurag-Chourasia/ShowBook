@@ -890,7 +890,7 @@
 			repositoryURL = "https://github.com/Anurag-Chourasia/DesignTokensKit.git";
 			requirement = {
 				kind = exactVersion;
-				version = 1.19.0;
+				version = 1.22.1;
 			};
 		};
 		6A3E98F756100CE40BD38FE1 /* XCRemoteSwiftPackageReference "UIComponentsKit" */ = {
@@ -933,7 +933,7 @@
 				version = 0.7.0;
 			};
 		};
-		D841594D0C2F49D7BFC541D2 /* AuthKit */ = {isa = XCRemoteSwiftPackageReference; repositoryURL = "https://github.com/Anurag-Chourasia/AuthKit.git"; requirement = {kind = exactVersion; version = 0.4.0; }; };
+		D841594D0C2F49D7BFC541D2 /* AuthKit */ = {isa = XCRemoteSwiftPackageReference; repositoryURL = "https://github.com/Anurag-Chourasia/AuthKit.git"; requirement = {kind = exactVersion; version = 0.7.0; }; };
 		E897403581594480A9A6F2C3 /* XCRemoteSwiftPackageReference "SnapshotTestKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Anurag-Chourasia/SnapshotTestKit.git";
