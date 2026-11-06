@@ -1,5 +1,7 @@
 # ShowBook
 
+Architecture and ownership: [portfolio master document](https://app.notion.com/p/40ffa5f855b98192ad2ede66a5d36fe7).
+
 ## Reproduce the simulator build
 
 On a Mac with Xcode 27, its iOS Simulator SDK, Python 3, and GitHub access to the private dependencies, run `bash Scripts/bootstrap.sh` from a fresh checkout. Set `DEVELOPER_DIR` to your Xcode installation if needed. The command initializes submodules, verifies the checked-in dependency revisions, resolves those revisions and builds Debug. Use `BUILD_CONFIGURATION=Release bash Scripts/bootstrap.sh` for Release. The build uses unsigned simulator compilation. Runtime authentication verification requires a signed test host.
