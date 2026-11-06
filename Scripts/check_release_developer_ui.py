@@ -3,7 +3,10 @@ from pathlib import Path
 import re
 import sys
 
-binary = Path(sys.argv[1]).read_bytes()
+executable = Path(sys.argv[1])
+if list(executable.parent.rglob('showbook-developer-responses.json')) or (executable.parent / 'DeveloperFixtures').exists():
+    raise SystemExit('Debug fixture resources found in Release app')
+binary = executable.read_bytes()
 # Preference keys are complete tokens. Localization keys such as
 # developer.source.stub belong to the shared string API and are valid in Release.
 for marker in [b'Developer settings', b'developer.source', b'developer.httpLogs', b'Demo: A journey through books']:

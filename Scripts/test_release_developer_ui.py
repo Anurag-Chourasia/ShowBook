@@ -22,6 +22,17 @@ class ReleaseGuardTests(unittest.TestCase):
     def test_debug_ui_types_are_rejected(self):
         self.check(b'_$s8ShowBook21DeveloperSettingsViewV', False)
 
+    def test_copied_fixture_resource_is_rejected(self):
+        with tempfile.TemporaryDirectory() as folder:
+            app = Path(folder)
+            executable = app / 'App'
+            executable.write_bytes(b'clean executable')
+            fixture = app / 'DeveloperFixtures'
+            fixture.mkdir()
+            (fixture / 'showbook-developer-responses.json').write_text('{}')
+            result = subprocess.run([sys.executable, str(GUARD), str(executable)], capture_output=True)
+            self.assertNotEqual(result.returncode, 0)
+
     def check(self, content, allowed):
         with tempfile.TemporaryDirectory() as folder:
             executable = Path(folder) / 'App'

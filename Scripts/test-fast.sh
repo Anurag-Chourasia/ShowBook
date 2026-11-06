@@ -36,6 +36,7 @@ xcrun xcodebuild test -project ShowBook.xcodeproj -scheme ShowBook \
     -onlyUsePackageVersionsFromResolvedFile \
     -disableAutomaticPackageResolution \
     -scmProvider system CODE_SIGNING_ALLOWED=NO \
+    -only-testing:ShowBookTests/DeveloperFixtureResourceTests \
     -only-testing:ShowBookTests/BookItemViewModelTests \
     -only-testing:ShowBookTests/BookmarkSaveLifetimeTests \
     -only-testing:ShowBookTests/BookmarkButtonViewModelTests \

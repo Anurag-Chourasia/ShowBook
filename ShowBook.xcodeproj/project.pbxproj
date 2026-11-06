@@ -66,6 +66,7 @@
 		B589ADFBBB0E3489C7804265 /* UIComponentsKit in Frameworks */ = {isa = PBXBuildFile; productRef = 9E2E1528E27128C836A6B1F3 /* UIComponentsKit */; };
 		707CB511A5E94204B16E979D /* AuthKit in Frameworks */ = {isa = PBXBuildFile; productRef = A8552F2E4DE54001882E6C45; };
 		64747A8F205843C0AD4DFD3D /* AuthKitUI in Frameworks */ = {isa = PBXBuildFile; productRef = 770F1841516640DAB1D9DF87; };
+		40D1C4ABED7D49BDAE931CD7 /* DeveloperFixtureResourceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81AE220383BB4E2580143336 /* DeveloperFixtureResourceTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -137,6 +138,7 @@
 		C8122A766F8C4BE99DF91002 /* ShowBookV3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ShowBookV3.xcdatamodel; sourceTree = "<group>"; };
 		C8122A766F8C4BE99DF91003 /* ShowBookV4.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ShowBookV4.xcdatamodel; sourceTree = "<group>"; };
 		C8122A766F8C4BE99DF91004 /* ShowBookV5.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ShowBookV5.xcdatamodel; sourceTree = "<group>"; };
+		81AE220383BB4E2580143336 /* DeveloperFixtureResourceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperFixtureResourceTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -351,6 +353,7 @@
 		3493640E2C7111C8008A99F8 /* ShowBookTests */ = {
 			isa = PBXGroup;
 			children = (
+				81AE220383BB4E2580143336 /* DeveloperFixtureResourceTests.swift */,
 				342B8A892C71F97500EC41C8 /* UserViewModelTests.swift */,
 				342B8A7F2C71B98100EC41C8 /* LoginViewTests.swift */,
 				342B8A812C71C40E00EC41C8 /* SignUpViewTests.swift */,
@@ -379,6 +382,7 @@
 				3403E26A2C7064310063E7D0 /* Sources */,
 				3403E26B2C7064310063E7D0 /* Frameworks */,
 				3403E26C2C7064310063E7D0 /* Resources */,
+				41471CEAF9964906BBA7DD88 /* Copy Debug fixture resources */,
 			);
 			buildRules = (
 			);
@@ -489,6 +493,25 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		41471CEAF9964906BBA7DD88 /* Copy Debug fixture resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = ();
+			inputPaths = (
+				"$(SRCROOT)/Scripts/copy-developer-fixtures.sh",
+				"$(SRCROOT)/Submodules/AppStubData/Sources/AppStubData/Resources/showbook-developer-responses.json",
+			);
+			name = "Copy Debug fixture resources";
+			outputPaths = ("$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/DeveloperFixtures",);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "sh \"${SRCROOT}/Scripts/copy-developer-fixtures.sh\"";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		3403E26A2C7064310063E7D0 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -534,6 +557,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				40D1C4ABED7D49BDAE931CD7 /* DeveloperFixtureResourceTests.swift in Sources */,
 				342B8A9E2C7279B300EC41C8 /* PrivacyManifestTests.swift in Sources */,
 				342B8AA02C7279B300EC41C8 /* PerformanceTests.swift in Sources */,
 				342B8AA22C7279B300EC41C8 /* RiskBasedIsolationAndConcurrencyTests.swift in Sources */,

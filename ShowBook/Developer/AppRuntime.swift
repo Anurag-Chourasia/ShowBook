@@ -142,66 +142,33 @@ class DeveloperStubProtocol: URLProtocol {
         client?.urlProtocolDidFinishLoading(self)
     }
     class func body(for url: URL) -> String? {
-        let empty = scenario == "empty"
+        let route: String
+        var payloadScenario = scenario
         if url.host == "openlibrary.org" {
-            if url.path.hasPrefix("/subjects/") {
-                return empty ? #"{"works":[]}"# : #"{"works":[{"key":"/works/OL45804W","title":"Demo: A journey through books","authors":[{"name":"Fixture Author"}]},{"key":"/works/OL45805W","title":"Demo: The second chapter","authors":[]}]}"#
-            }
-            if url.path == "/search.json" {
-                let offset = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems?.first { $0.name == "offset" }?.value ?? "0"
-                return empty || offset != "0" ? #"{"docs":[]}"# : #"{"docs":[{"key":"/works/OL45804W","title":"Demo: A journey through books","author_name":["Fixture Author"],"ratings_average":4.2,"ratings_count":10}]}"#
-            }
-            if url.path.hasSuffix("/editions.json") { return #"{"size":0,"entries":[]}"# }
-            if url.path.hasPrefix("/works/") {
-                return #"{"key":"/works/OL45804W","title":"Demo: A journey through books","description":"This is local stub data for testing. No book API request was sent.","subjects":["Demo"]}"#
-            }
-            if url.path.hasPrefix("/books/") { return #"{"key":"/books/OL1M","title":"Demo edition"}"# }
-        }
-        if url.host == "api.first.org" {
-            return #"{"status":"OK","status-code":200,"version":"1.0","access":"public","total":1,"offset":0,"limit":1,"data":{"IN":{"country":"India","region":"Asia"}}}"#
-        }
-        return nil
+            if url.path.hasPrefix("/subjects/") { route = "subjects" } else if url.path == "/search.json" {
+                route = "search"
+                let offset = URLComponents(url: url, resolvingAgainstBaseURL: false)?
+                    .queryItems?.first { $0.name == "offset" }?.value ?? "0"
+                if scenario != "showcase", offset != "0" { payloadScenario = "empty" }
+            } else if url.path.hasSuffix("/editions.json") { route = "editions" } else if url.path.hasPrefix("/works/") { route = "work" } else if url.path.hasPrefix("/books/") { route = "edition" } else { return nil }
+        } else if url.host == "api.first.org" { route = "countries" } else { return nil }
+        #if SWIFT_PACKAGE
+        let bundle = Bundle.module
+        let directory: String? = nil
+        #else
+        let bundle = Bundle.main
+        let directory: String? = "DeveloperFixtures"
+        #endif
+        guard let file = bundle.url(forResource: "showbook-developer-responses", withExtension: "json", subdirectory: directory),
+              let data = try? Data(contentsOf: file),
+              let catalog = try? JSONSerialization.jsonObject(with: data) as? [String: [String: Any]],
+              let payload = catalog[payloadScenario]?[route],
+              let body = try? JSONSerialization.data(withJSONObject: payload, options: [.sortedKeys]) else { return nil }
+        return String(data: body, encoding: .utf8)
     }
 }
 final class EmptyStubProtocol: DeveloperStubProtocol { override class var scenario: String { "empty" } }
 final class OfflineStubProtocol: DeveloperStubProtocol { override class var scenario: String { "offline" } }
-final class ShowcaseStubProtocol: DeveloperStubProtocol {
-    override class var scenario: String { "showcase" }
-    override class func body(for url: URL) -> String? {
-        if url.host == "openlibrary.org" {
-            if url.path.hasPrefix("/subjects/") {
-                return """
-                {"works":[
-                    {"key":"/works/OL1001W","title":"The Design of Everyday Things","authors":[{"name":"Don Norman"}]},
-                    {"key":"/works/OL1002W","title":"Clean Code: A Handbook of Agile Software Craftsmanship","authors":[{"name":"Robert C. Martin"}]},
-                    {"key":"/works/OL1003W","title":"Refactoring: Improving the Design of Existing Code","authors":[{"name":"Martin Fowler"}]},
-                    {"key":"/works/OL1004W","title":"Designing Data-Intensive Applications","authors":[{"name":"Martin Kleppmann"}]},
-                    {"key":"/works/OL1005W","title":"Site Reliability Engineering","authors":[{"name":"Betsy Beyer"}]}
-                ]}
-                """
-            }
-            if url.path == "/search.json" {
-                return """
-                {"docs":[
-                    {"key":"/works/OL1001W","title":"The Design of Everyday Things","author_name":["Don Norman"],"ratings_average":4.7,"ratings_count":420},
-                    {"key":"/works/OL1002W","title":"Clean Code","author_name":["Robert C. Martin"],"ratings_average":4.5,"ratings_count":380},
-                    {"key":"/works/OL1003W","title":"Refactoring","author_name":["Martin Fowler"],"ratings_average":4.6,"ratings_count":290},
-                    {"key":"/works/OL1004W","title":"Designing Data-Intensive Applications","author_name":["Martin Kleppmann"],"ratings_average":4.9,"ratings_count":512}
-                ]}
-                """
-            }
-            if url.path.hasSuffix("/editions.json") { return #"{"size":1,"entries":[{"title":"Revised and Expanded Edition"}]}"# }
-            if url.path.hasPrefix("/works/") {
-                return """
-                {"key":"/works/OL1001W","title":"The Design of Everyday Things","description":"Fundamental principles of design, usability, and cognitive human-computer interaction.","subjects":["Design","Engineering","Cognitive Science"]}
-                """
-            }
-            if url.path.hasPrefix("/books/") { return #"{"key":"/books/OL1001M","title":"The Design of Everyday Things"}"# }
-        }
-        if url.host == "api.first.org" {
-            return #"{"status":"OK","status-code":200,"version":"1.0","access":"public","total":1,"offset":0,"limit":1,"data":{"US":{"country":"United States","region":"North America"}}}"#
-        }
-        return super.body(for: url)
-    }
-}
+final class ShowcaseStubProtocol: DeveloperStubProtocol { override class var scenario: String { "showcase" } }
+
 #endif
