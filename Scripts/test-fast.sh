@@ -45,6 +45,7 @@ xcrun xcodebuild test -project ShowBook.xcodeproj -scheme ShowBook \
     -only-testing:ShowBookTests/CredentialStorageTests \
     -only-testing:ShowBookTests/SignUpViewModelTests \
     -only-testing:ShowBookTests/UserViewModelTests \
+    -only-testing:ShowBookTests/IdentityActivationRecoveryTests \
     -only-testing:ShowBookTests/AuthenticationFlagTests
 
 END_TIME=$(date +%s)

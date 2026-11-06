@@ -14,6 +14,11 @@ import AuthKit
 class UserViewModel: ObservableObject {
     @Published var isLoggedIn: Bool = false
     @Published var currentUserUUID: UUID?
+    @Published private(set) var activationError: Error?
+    private var pendingActivation: (email: String, uuid: UUID, signOut: () -> Void)?
+    var migrateIdentity: (PersistenceController, String, UUID) throws -> Void = { controller, email, uuid in
+        try controller.activateCloudIdentity(email: email, uuid: uuid)
+    }
     var cloudSignOut: (() -> Void)?
     var persistenceController = PersistenceController.shared
     
@@ -27,6 +32,7 @@ class UserViewModel: ObservableObject {
     }
     
     func checkLoginStatus() {
+        guard pendingActivation == nil else { isLoggedIn = false; return }
         if let uuidString = UserDefaults.standard.string(forKey: "LoggedInUserUUID"),
            let uuid = UUID(uuidString: uuidString) {
             currentUserUUID = uuid
@@ -54,36 +60,50 @@ class UserViewModel: ObservableObject {
 
     #if canImport(AuthKit)
     func activateCloudAccount(user: AuthUser, signOut: @escaping () -> Void) {
-        PersistenceController.invalidateBookmarkSession()
-        cloudSignOut = signOut
-        currentUserUUID = user.id
-        UserDefaults.standard.set(user.id.uuidString, forKey: "LoggedInUserUUID")
-        let email = user.email?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() ?? ""
-        if !email.isEmpty {
-            UserDefaults.standard.set(email, forKey: "LoggedInUserEmail")
-            _ = try? PersistenceController.linkLocalAccount(email: email, toUUID: user.id, in: persistenceController.container.viewContext)
-            _ = try? PersistenceController.migrateBookmarks(fromEmail: email, toUUID: user.id, in: persistenceController.container.viewContext)
-        } else {
-            UserDefaults.standard.removeObject(forKey: "LoggedInUserEmail")
-        }
-        isLoggedIn = true
+        activateCloudAccount(email: user.email ?? "", uuid: user.id, signOut: signOut)
     }
     #endif
 
-    func activateCloudAccount(email: String, uuid: UUID? = nil, signOut: @escaping () -> Void) {
+    func activateCloudAccount(email: String, uuid: UUID, signOut: @escaping () -> Void) {
         PersistenceController.invalidateBookmarkSession()
-        cloudSignOut = signOut
-        let resolvedUUID = uuid ?? UUID()
-        currentUserUUID = resolvedUUID
-        UserDefaults.standard.set(resolvedUUID.uuidString, forKey: "LoggedInUserUUID")
+        isLoggedIn = false
+        activationError = nil
         let cleanEmail = email.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-        UserDefaults.standard.set(cleanEmail, forKey: "LoggedInUserEmail")
-        _ = try? PersistenceController.linkLocalAccount(email: cleanEmail, toUUID: resolvedUUID, in: persistenceController.container.viewContext)
-        _ = try? PersistenceController.migrateBookmarks(fromEmail: cleanEmail, toUUID: resolvedUUID, in: persistenceController.container.viewContext)
-        isLoggedIn = true
+        pendingActivation = (cleanEmail, uuid, signOut)
+        do {
+            try migrateIdentity(persistenceController, cleanEmail, uuid)
+            // Publish a stable owner only after both migration steps commit.
+            UserDefaults.standard.set(uuid.uuidString, forKey: "LoggedInUserUUID")
+            if cleanEmail.isEmpty {
+                UserDefaults.standard.removeObject(forKey: "LoggedInUserEmail")
+            } else {
+                UserDefaults.standard.set(cleanEmail, forKey: "LoggedInUserEmail")
+            }
+            currentUserUUID = uuid
+            cloudSignOut = signOut
+            isLoggedIn = true
+            pendingActivation = nil
+        } catch {
+            activationError = error
+        }
+    }
+
+    func retryCloudActivation() {
+        guard let pendingActivation else { return }
+        activateCloudAccount(email: pendingActivation.email, uuid: pendingActivation.uuid,
+                             signOut: pendingActivation.signOut)
+    }
+
+    func abandonCloudActivation() {
+        let signOut = pendingActivation?.signOut
+        pendingActivation = nil
+        activationError = nil
+        signOut?()
     }
 
     func clearCloudAccount() {
+        pendingActivation = nil
+        activationError = nil
         PersistenceController.invalidateBookmarkSession()
         cloudSignOut = nil
         currentUserUUID = nil
