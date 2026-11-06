@@ -118,7 +118,11 @@ class SignUpViewModel: ObservableObject {
                 guard let self, self.countryRequestID == id else { return }
                 self.countryTask = nil
                 guard let fetchedCountries, error == nil else {
-                    self.errorMessage = error?.localizedDescription ?? String(\ShowBookStrings.errorUnexpected)
+                    if let error {
+                        self.errorMessage = DashboardViewModel.localizedErrorMessage(for: error)
+                    } else {
+                        self.errorMessage = String(\ShowBookStrings.errorUnexpected)
+                    }
                     self.showAlert = true
                     self.isLoading = false
                     return

@@ -9,6 +9,14 @@ import Foundation
 import CommonNetworkingKit
 import Combine
 
+// MARK: - NetworkSemanticError
+enum NetworkSemanticError: String, Error, Equatable, Sendable {
+    case invalidURL = "showbook.error.invalid_url"
+    case noDataReceived = "showbook.error.no_data_received"
+
+    var localizationKey: String { rawValue }
+}
+
 // MARK: - NetworkClass
 class NetworkClass: ObservableObject {
     private let session: URLSession?
@@ -35,10 +43,7 @@ class NetworkClass: ObservableObject {
     @discardableResult
     func fetchCountries(completion: @escaping (CountryModel?, Error?) -> Void) -> Task<Void, Never>? {
         guard let url = URL(string: "https://api.first.org/data/v1/countries") else {
-            #if DEBUG
-            print("Invalid URL")
-            #endif
-            completion(nil,NSError(domain: "URLCreationError", code: 0, userInfo: [NSLocalizedDescriptionKey : "Invalid URL"]))
+            completion(nil, NetworkSemanticError.invalidURL)
             return nil
         }
         
@@ -48,10 +53,7 @@ class NetworkClass: ObservableObject {
                 return
             }
             guard let data = data else {
-                #if DEBUG
-                print("Failed to fetch data: \(error?.localizedDescription ?? "Unknown error")")
-                #endif
-                completion(nil,NSError(domain: "DataError", code: 0, userInfo: [NSLocalizedDescriptionKey : "No data received"]))
+                completion(nil, NetworkSemanticError.noDataReceived)
                 return
             }
             do {
@@ -82,7 +84,7 @@ class NetworkClass: ObservableObject {
         components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
         fetchBooksCalledCount += 1
         guard let url = components.url else {
-            completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])))
+            completion(.failure(NetworkSemanticError.invalidURL))
             return nil
         }
         
@@ -93,7 +95,7 @@ class NetworkClass: ObservableObject {
             }
             
             guard let data = data else {
-                completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "No data received"])))
+                completion(.failure(NetworkSemanticError.noDataReceived))
                 return
             }
             

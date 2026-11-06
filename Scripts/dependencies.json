@@ -1,7 +1,7 @@
 {
   "authkit": {
-    "version": "0.3.0",
-    "revision": "ae7f69147c55c52660172831c083c391d2221b54"
+    "version": "0.4.0",
+    "revision": "73c5142158d49d49a4ef2be2eb7235d1b16374e0"
   },
   "commonnetworking": {
     "revision": "699c989ab88f4620da388e99cb94c47a7dec69e6",
@@ -20,8 +20,8 @@
     "version": "0.2.0"
   },
   "localizationkit": {
-    "revision": "4f7f71df1ded8b6f46b90e7bc6e64206502ebcd8",
-    "version": "0.6.4"
+    "revision": "63fe8af7024d38706cb95667d2cec65d1432873a",
+    "version": "0.7.0"
   },
   "snapshottestkit": {
     "revision": "cfe8362e50e57275299ef3e8b4711455c1227394",
@@ -56,8 +56,8 @@
     "version": "2.1.2"
   },
   "uicomponentskit": {
-    "revision": "6821ab92d761c56e527e7c36ab277536f87df449",
-    "version": "1.6.0"
+    "revision": "f693c59d0c6affbe77a5fb41242d0ce3d92f0e89",
+    "version": "1.7.0"
   },
   "xctest-dynamic-overlay": {
     "revision": "d9308ad679143c26a30dec52daefe82f54af2b82",

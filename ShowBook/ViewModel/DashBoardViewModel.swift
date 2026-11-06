@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Combine
+import LocalizationKit
 
 class DashboardViewModel: ObservableObject {
     @Published var searchBook: String = ""
@@ -134,12 +135,27 @@ class DashboardViewModel: ObservableObject {
                         self.loadedTitle = title
                         self.loadingMoreBookNotPossible = cached.isEmpty
                     } else {
-                        self.errorMessage = error.localizedDescription
+                        self.errorMessage = Self.localizedErrorMessage(for: error)
                         self.showAlert = true
                     }
                 }
             }
         }
+    }
+
+    static func localizedErrorMessage(
+        for error: Error,
+        in context: LocalizedContext<ShowBookDomain> = .shared
+    ) -> String {
+        if let semanticError = error as? NetworkSemanticError {
+            switch semanticError {
+            case .invalidURL:
+                return context[\.errorInvalidUrl]
+            case .noDataReceived:
+                return context[\.errorNoDataReceived]
+            }
+        }
+        return error.localizedDescription
     }
 
     func loadMoreBooksIfNeeded(completion: @escaping () -> Void) {

@@ -7,6 +7,7 @@
 
 import XCTest
 import SwiftUI
+import LocalizationKit
 import SnapshotTestKit
 @testable import ShowBook
 
@@ -281,6 +282,25 @@ final class DashboardViewModelTests: XCTestCase {
         model = nil
         XCTAssertNil(released)
         XCTAssertTrue(api.handles[0].isCancelled)
+    }
+
+    func testSemanticNetworkErrorsLocalizeAcrossSupportedLocales() {
+        for (localeId, expectedURL, expectedNoData) in [
+            ("en", "Invalid URL", "No data received"),
+            ("fr", "URL invalide", "Aucune donnée reçue"),
+            ("ar", "عنوان URL غير صالح", "لم يتم استلام أي بيانات")
+        ] {
+            let controller = LocalizationController(initialLocale: Locale(identifier: localeId))
+            let context = LocalizedContext<ShowBookDomain>(provider: controller)
+            XCTAssertEqual(
+                DashboardViewModel.localizedErrorMessage(for: NetworkSemanticError.invalidURL, in: context),
+                expectedURL
+            )
+            XCTAssertEqual(
+                DashboardViewModel.localizedErrorMessage(for: NetworkSemanticError.noDataReceived, in: context),
+                expectedNoData
+            )
+        }
     }
 
 }
