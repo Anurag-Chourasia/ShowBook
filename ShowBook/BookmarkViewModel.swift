@@ -14,12 +14,20 @@ class BookmarkViewModel: ObservableObject {
     @Published var showAlert = false
     @Published var isLoading = false
     
-    var persistenceController = PersistenceController.shared
+    var persistenceController: PersistenceController
     
-    func setUpPersitenceController(controller : PersistenceController){
-        persistenceController = controller
+    init(persistenceController: PersistenceController = .shared) {
+        self.persistenceController = persistenceController
     }
     
+    func setUpPersistenceController(controller: PersistenceController) {
+        persistenceController = controller
+    }
+
+    func setUpPersitenceController(controller: PersistenceController) {
+        setUpPersistenceController(controller: controller)
+    }
+
     func loadBookmarks() {
         if persistenceController.storeLoadError != nil {
             showAlert = true

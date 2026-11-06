@@ -38,6 +38,7 @@ private struct ShowBookTools: ViewModifier {
     var includeDeveloper: Bool
     var includeLayout: Bool
     var onLogout: (() -> Void)?
+    @Environment(\.persistenceController) private var persistenceController
     @State private var savedPresented = false
     @State private var developerPresented = false
     func body(content: Content) -> some View {
@@ -71,7 +72,7 @@ private struct ShowBookTools: ViewModifier {
                     .accessibilityIdentifier(.screenTools)
                 }
             }
-            .navigationDestination(isPresented: $savedPresented) { BookmarkView() }
+            .navigationDestination(isPresented: $savedPresented) { BookmarkView(persistenceController: persistenceController) }
             .sheet(isPresented: $developerPresented) {
                 NavigationStack {
                     ShowBookDeveloperView()

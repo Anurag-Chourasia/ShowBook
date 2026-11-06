@@ -12,7 +12,15 @@ import DesignTokensKit
 
 struct LoginView: View {
     @EnvironmentObject var userViewModel: UserViewModel
-    @StateObject private var viewModel = LoginViewModel()
+    @StateObject private var viewModel: LoginViewModel
+
+    init(persistenceController: PersistenceController = .shared) {
+        _viewModel = StateObject(wrappedValue: LoginViewModel(persistenceController: persistenceController))
+    }
+
+    init(viewModel: @autoclosure @escaping () -> LoginViewModel) {
+        _viewModel = StateObject(wrappedValue: viewModel())
+    }
 
     var body: some View {
         GeometryReader { geometry in

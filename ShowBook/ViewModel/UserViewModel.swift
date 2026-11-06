@@ -20,9 +20,10 @@ class UserViewModel: ObservableObject {
         try controller.activateCloudIdentity(email: email, uuid: uuid)
     }
     var cloudSignOut: (() -> Void)?
-    var persistenceController = PersistenceController.shared
+    var persistenceController: PersistenceController
     
-    init() {
+    init(persistenceController: PersistenceController = .shared) {
+        self.persistenceController = persistenceController
         checkLoginStatus()
     }
     

@@ -15,7 +15,15 @@ struct BookmarkView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @Environment(\.presentationMode) var presentationMode
     
-    @StateObject private var viewModel = BookmarkViewModel()
+    @StateObject private var viewModel: BookmarkViewModel
+
+    init(persistenceController: PersistenceController = .shared) {
+        _viewModel = StateObject(wrappedValue: BookmarkViewModel(persistenceController: persistenceController))
+    }
+
+    init(viewModel: @autoclosure @escaping () -> BookmarkViewModel) {
+        _viewModel = StateObject(wrappedValue: viewModel())
+    }
     
     var body: some View {
         VStack(spacing: \.zero) {

@@ -13,9 +13,9 @@ import CoreData
 struct WheelPickerView: View {
     @Binding var selectedCountryIndex: Int
     var country: [String]
+    var persistenceController: PersistenceController = .shared
     
     @Environment(\.managedObjectContext) private var viewContext
-    let persistenceController = PersistenceController.shared
     
     var body: some View {
         VStack {

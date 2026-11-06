@@ -15,19 +15,14 @@ class BookmarkViewModelTests: XCTestCase {
     var mockPersistenceController: PersistenceController!
     
     override func setUpWithError() throws {
-            try super.setUpWithError()
-        mockPersistenceController = PersistenceController.shared
-        mockPersistenceController.container = PersistenceController.createInMemoryPersistentContainer()
-        }
+        try super.setUpWithError()
+        mockPersistenceController = PersistenceController.inMemory()
+    }
     
     override func setUp() {
         super.setUp()
-//        let mockContainer = createInMemoryPersistentContainer()
-//        mockPersistenceController = PersistenceController(container: mockContainer)
         mockPersistenceController.deleteAllBooks()
-        viewModel = BookmarkViewModel()
-        viewModel.setUpPersitenceController(controller: mockPersistenceController)
-        
+        viewModel = BookmarkViewModel(persistenceController: mockPersistenceController)
     }
     
     func testLoadBookmarksSuccess() {
@@ -188,11 +183,9 @@ final class BookmarkUUIDMigrationTests: XCTestCase {
         UserDefaults.standard.removeObject(forKey: "LoggedInUserEmail")
         UserDefaults.standard.removeObject(forKey: "developer.authentication")
 
-        persistence = PersistenceController(container: PersistenceController.createInMemoryPersistentContainer())
-        userViewModel = UserViewModel()
-        userViewModel.setUpPersistenceController(controller: persistence)
-        bookmarkViewModel = BookmarkViewModel()
-        bookmarkViewModel.setUpPersitenceController(controller: persistence)
+        persistence = PersistenceController.inMemory()
+        userViewModel = UserViewModel(persistenceController: persistence)
+        bookmarkViewModel = BookmarkViewModel(persistenceController: persistence)
     }
 
     override func tearDown() {

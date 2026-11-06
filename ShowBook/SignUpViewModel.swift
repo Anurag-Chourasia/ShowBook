@@ -33,12 +33,18 @@ class SignUpViewModel: ObservableObject {
     }
 
     private let regionCode: String?
-    init(api: NetworkClass = NetworkClass(), regionCode: String? = Locale.current.region?.identifier) {
+    var persistenceController: PersistenceController
+    private var cancellables = Set<AnyCancellable>()
+
+    init(
+        api: NetworkClass = NetworkClass(),
+        regionCode: String? = Locale.current.region?.identifier,
+        persistenceController: PersistenceController = .shared
+    ) {
         self.api = api
         self.regionCode = regionCode
+        self.persistenceController = persistenceController
     }
-    var persistenceController = PersistenceController.shared
-    private var cancellables = Set<AnyCancellable>()
     
     func setUpPersistenceController(controller : PersistenceController){
         persistenceController = controller

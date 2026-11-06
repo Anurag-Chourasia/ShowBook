@@ -11,9 +11,21 @@ import DesignTokensKit
 import LocalizationKit
 
 struct BookmarkButton: View {
-    @StateObject private var viewModel = BookmarkButtonViewModel()
+    @StateObject private var viewModel: BookmarkButtonViewModel
     var book: Book
     var imageUrl: URL?
+
+    init(book: Book, imageUrl: URL? = nil, persistenceController: PersistenceController = .shared) {
+        self.book = book
+        self.imageUrl = imageUrl
+        _viewModel = StateObject(wrappedValue: BookmarkButtonViewModel(persistenceController: persistenceController))
+    }
+
+    init(book: Book, imageUrl: URL? = nil, viewModel: @autoclosure @escaping () -> BookmarkButtonViewModel) {
+        self.book = book
+        self.imageUrl = imageUrl
+        _viewModel = StateObject(wrappedValue: viewModel())
+    }
     
     var body: some View {
         SelectionToggleButton(

@@ -17,17 +17,13 @@ final class UserViewModelTests: XCTestCase {
     var mockPersistenceController: PersistenceController!
     
     override func setUpWithError() throws {
-            try super.setUpWithError()
-        mockPersistenceController = PersistenceController.shared
-        mockPersistenceController.container = PersistenceController.createInMemoryPersistentContainer()
-        }
+        try super.setUpWithError()
+        mockPersistenceController = PersistenceController.inMemory()
+    }
     
     override func setUp() {
         super.setUp()
-        //        let mockContainer = createInMemoryPersistentContainer()
-        //        mockPersistenceController = PersistenceController(container: mockContainer)
-        viewModel = UserViewModel()
-        viewModel.setUpPersistenceController(controller: mockPersistenceController)
+        viewModel = UserViewModel(persistenceController: mockPersistenceController)
     }
     
     override func tearDown() {
@@ -209,9 +205,8 @@ final class IdentityActivationRecoveryTests: XCTestCase {
         previousUUID = UserDefaults.standard.object(forKey: "LoggedInUserUUID")
         UserDefaults.standard.removeObject(forKey: "LoggedInUserEmail")
         UserDefaults.standard.removeObject(forKey: "LoggedInUserUUID")
-        persistence = PersistenceController(container: PersistenceController.createInMemoryPersistentContainer())
-        model = UserViewModel()
-        model.setUpPersistenceController(controller: persistence)
+        persistence = PersistenceController.inMemory()
+        model = UserViewModel(persistenceController: persistence)
     }
 
     override func tearDownWithError() throws {
@@ -305,8 +300,7 @@ final class IdentityActivationRecoveryTests: XCTestCase {
         model.activateCloudAccount(email: email, uuid: uuid) {}
         XCTAssertTrue(model.isLoggedIn)
         XCTAssertEqual(try owners().1, [uuid])
-        let restored = UserViewModel()
-        restored.setUpPersistenceController(controller: persistence)
+        let restored = UserViewModel(persistenceController: persistence)
         restored.activateCloudAccount(email: email, uuid: uuid) {}
         XCTAssertTrue(restored.isLoggedIn)
         XCTAssertEqual(restored.currentUserUUID, uuid)

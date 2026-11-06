@@ -13,11 +13,31 @@ import LocalizationKit
 
 extension LocalizationController: AuthLocalizing {}
 
+private struct PersistenceControllerEnvironmentKey: EnvironmentKey {
+    static let defaultValue: PersistenceController = .shared
+}
+
+extension EnvironmentValues {
+    var persistenceController: PersistenceController {
+        get { self[PersistenceControllerEnvironmentKey.self] }
+        set { self[PersistenceControllerEnvironmentKey.self] = newValue }
+    }
+}
+
 @main
 struct ShowBookApp: App {
-    @ObservedObject private var persistenceController = PersistenceController.shared
-    @StateObject private var userViewModel = UserViewModel()
+    @ObservedObject private var persistenceController: PersistenceController
+    @StateObject private var userViewModel: UserViewModel
     private let localization = LocalizationController(initialLocale: .current)
+
+    init() {
+        self.init(persistenceController: .shared)
+    }
+
+    init(persistenceController: PersistenceController) {
+        self.persistenceController = persistenceController
+        _userViewModel = StateObject(wrappedValue: UserViewModel(persistenceController: persistenceController))
+    }
 
     var body: some Scene {
         WindowGroup {
@@ -38,6 +58,7 @@ struct ShowBookApp: App {
                 .environment(\.designTokens, DesignTokensTheme(brand: .showBook))
                 .environmentObject(userViewModel)
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
+                .environment(\.persistenceController, persistenceController)
                 .environment(\.layoutDirection, localization.isRightToLeft ? .rightToLeft : .leftToRight)
         }
     }

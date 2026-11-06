@@ -17,18 +17,16 @@ class BookmarkButtonViewModelTests: XCTestCase {
     var mockImageUrl: URL!
     
     override func setUpWithError() throws {
-            try super.setUpWithError()
-        mockPersistenceController = PersistenceController.shared
-        mockPersistenceController.container = PersistenceController.createInMemoryPersistentContainer()
-        }
+        try super.setUpWithError()
+        mockPersistenceController = PersistenceController.inMemory()
+    }
     
     override func setUp() {
         super.setUp()
-        viewModel = MockBookmarkButtonViewModel()
+        viewModel = MockBookmarkButtonViewModel(persistenceController: mockPersistenceController)
         mockBook = Book(title: "Test Book", ratingsAverage: 4.5, ratingsCount: 10, authorName: ["Anurag"], coverI: 12345, image: nil)
         mockImageUrl = URL(string: "https://example.com/image.jpg")!
         viewModel.configure(book: mockBook, imageUrl: mockImageUrl)
-        viewModel.setUpPersitenceController(controller: mockPersistenceController)
     }
     
     override func tearDown() {

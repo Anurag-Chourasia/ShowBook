@@ -34,7 +34,7 @@ class BookItemViewModel: ObservableObject {
         fetchInitialState()
     }
     
-    func setUpPersistenceController(controller : PersistenceController){
+    func setUpPersistenceController(controller: PersistenceController) {
         bookmarkSave.cancel()
         self.persistenceController = controller
         fetchInitialState()

@@ -16,12 +16,20 @@ class PersistenceController: ObservableObject {
         let uuid: UUID?
         let session: UUID
     }
+    /// Deliberate session token bumped during account transitions to prevent cross-account writes.
     private static var bookmarkSession = UUID()
     // Called at host login/logout transitions, including a return to the same account.
     static func invalidateBookmarkSession() { bookmarkSession = UUID() }
     var bookmarkOwner: BookmarkOwner {
         BookmarkOwner(email: currentUserEmail, uuid: currentUserUUID, session: Self.bookmarkSession)
     }
+
+    /// The application-lifetime persistent store coordinator for live app runs.
+    ///
+    /// Lifetime: Bound to the application lifecycle at `ShowBookApp` composition root.
+    /// In production, `ShowBookApp` supplies this instance to `UserViewModel` and downstream views.
+    /// In tests or previews, callers should construct independent instances (e.g. `PersistenceController.inMemory()`)
+    /// instead of mutating `PersistenceController.shared`.
     static let shared = PersistenceController()
     private let credentialQueue = DispatchQueue(label: "ShowBook.credentials", qos: .userInitiated)
     @Published var updatedBooks: [Book]?
@@ -116,6 +124,11 @@ class PersistenceController: ObservableObject {
             }
         }
         return container
+    }
+
+    /// Creates an independent, in-memory `PersistenceController` isolated from the live store.
+    static func inMemory(onLoadError: ((Error) -> Void)? = nil) -> PersistenceController {
+        PersistenceController(container: createInMemoryPersistentContainer(onLoadError: onLoadError))
     }
 
     func saveCountryModel(_ countryModel: CountryModel) {
