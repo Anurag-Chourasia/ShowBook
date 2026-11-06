@@ -44,4 +44,16 @@ class TextFieldObserverTests: XCTestCase {
 
         wait(for: [expectation], timeout: 1.0)
     }
+    func testRestoredQueryIsNotReplacedByAnEmptyInitialDebounce() {
+        let observer = TextFieldObserver(initialText: "No matching book")
+        XCTAssertEqual(observer.searchText, "No matching book")
+        XCTAssertEqual(observer.debouncedText, "No matching book")
+        let delivered = expectation(description: "Restored query survives debounce")
+        observer.$debouncedText.dropFirst().sink { text in
+            XCTAssertEqual(text, "No matching book")
+            delivered.fulfill()
+        }.store(in: &cancellables)
+        wait(for: [delivered], timeout: 1)
+    }
+
 }

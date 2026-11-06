@@ -6,6 +6,7 @@
 //
 
 import XCTest
+import SnapshotTestKit
 import Combine
 import CoreData
 import SwiftUI
@@ -151,10 +152,8 @@ class BookItemViewModelTests: XCTestCase {
             renderer.scale = 2
             let image = try XCTUnwrap(renderer.uiImage)
             XCTAssertGreaterThan(image.size.height, 0)
-            let attachment = XCTAttachment(image: image)
-            attachment.name = name
-            attachment.lifetime = .keepAlways
-            add(attachment)
+            SnapshotEngine.compare(image: image, file: #filePath, testName: #function,
+                                   snapshotName: name, precision: 0.995, perceptualPrecision: 1, line: #line)
         }
     }
 }

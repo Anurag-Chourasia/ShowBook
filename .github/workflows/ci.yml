@@ -63,6 +63,7 @@ jobs:
 
       - name: Configure read-only private dependency access
         env:
+          APPSTUBDATA_DEPLOY_KEY: ${{ secrets.APPSTUBDATA_DEPLOY_KEY }}
           AUTHKIT_DEPLOY_KEY: ${{ secrets.AUTHKIT_DEPLOY_KEY }}
           DEVELOPERPROFILEKIT_DEPLOY_KEY: ${{ secrets.DEVELOPERPROFILEKIT_DEPLOY_KEY }}
           FOUNDATIONKIT_DEPLOY_KEY: ${{ secrets.FOUNDATIONKIT_DEPLOY_KEY }}
@@ -70,7 +71,13 @@ jobs:
           COMMONNETWORKING_DEPLOY_KEY: ${{ secrets.COMMONNETWORKING_DEPLOY_KEY }}
           DESIGNTOKENSKIT_DEPLOY_KEY: ${{ secrets.DESIGNTOKENSKIT_DEPLOY_KEY }}
           UICOMPONENTSKIT_DEPLOY_KEY: ${{ secrets.UICOMPONENTSKIT_DEPLOY_KEY }}
+          SNAPSHOTTESTKIT_DEPLOY_KEY: ${{ secrets.SNAPSHOTTESTKIT_DEPLOY_KEY }}
         run: bash Scripts/configure-private-dependencies.sh
+
+      - name: Fetch and verify pinned private submodules
+        run: |
+          git submodule update --init --recursive
+          python3 Scripts/verify-submodules.py
 
       - name: Verify and resolve exact package pins
         run: |
@@ -95,16 +102,20 @@ jobs:
 
       - name: Select or boot iOS Simulator
         run: |
-          simulator_id=$(xcrun simctl list devices available -j | python3 -c 'import json,sys; d=json.load(sys.stdin); print(next(x["udid"] for k,v in d["devices"].items() if "iOS" in k for x in v if "iPhone" in x["name"]))')
+          simulator_id=$(xcrun simctl create "ShowBook CI iPhone 11" com.apple.CoreSimulator.SimDeviceType.iPhone-11 com.apple.CoreSimulator.SimRuntime.iOS-27-0 || xcrun simctl list devices available -j | python3 -c 'import json,sys; d=json.load(sys.stdin); print(next(x["udid"] for k,v in d["devices"].items() if "iOS" in k for x in v if "iPhone" in x["name"]))')
           xcrun simctl boot "$simulator_id" || true
           xcrun simctl bootstatus "$simulator_id" -b || true
           echo "TEST_DESTINATION=platform=iOS Simulator,id=$simulator_id" >> "$GITHUB_ENV"
+          echo "SNAPSHOT_DESTINATION=platform=iOS Simulator,id=$simulator_id" >> "$GITHUB_ENV"
 
       - name: Run Fast test lane (PR and Push)
         run: bash Scripts/test-fast.sh
 
       - name: Run UI Smoke test lane (PR and Push)
         run: bash Scripts/test-smoke.sh
+
+      - name: Compare reviewed snapshots on pinned iPhone 11 runtime
+        run: bash Scripts/test-snapshots.sh
 
       - name: Run Integration & Performance test lanes (Merge to main & Scheduled)
         if: github.event_name != 'pull_request'
@@ -125,6 +136,9 @@ jobs:
           python3 Scripts/test_release_developer_ui.py
           python3 Scripts/check_release_developer_ui.py "$RUNNER_TEMP/AppDerived/Build/Products/Release-iphonesimulator/ShowBook.app/ShowBook"
 
+      - name: Verify snapshot and XCTest exclusion from Release
+        run: python3 Scripts/verify-snapshot-boundary.py "$RUNNER_TEMP/AppDerived/Build/Products/Release-iphonesimulator/ShowBook.app/ShowBook"
+
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
@@ -133,6 +147,7 @@ jobs:
           path: |
             ${{ runner.temp }}/*.xcresult
             /tmp/*.xcresult
+            ShowBookTests/__Snapshots__/**/*.diff.png
 
       - name: Remove dependency credentials
         if: always()

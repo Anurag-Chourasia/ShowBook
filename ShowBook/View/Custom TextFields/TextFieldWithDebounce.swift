@@ -17,7 +17,9 @@ class TextFieldObserver: ObservableObject {
     
     private var cancellables = Set<AnyCancellable>()
     
-    init() {
+    init(initialText: String = "") {
+        searchText = initialText
+        debouncedText = initialText
         $searchText
             .debounce(for: .seconds(0.5), scheduler: DispatchQueue.main)
             .sink { [weak self] text in
@@ -29,8 +31,13 @@ class TextFieldObserver: ObservableObject {
 
 struct TextFieldWithDebounce: View {
     @Binding var debouncedText: String
-    @StateObject private var textObserver = TextFieldObserver()
+    @StateObject private var textObserver: TextFieldObserver
     @State private var books: [Book] = []
+
+    init(debouncedText: Binding<String>) {
+        _debouncedText = debouncedText
+        _textObserver = StateObject(wrappedValue: TextFieldObserver(initialText: debouncedText.wrappedValue))
+    }
 
     var body: some View {
         VStack {

@@ -7,6 +7,7 @@
 
 import XCTest
 import SwiftUI
+import SnapshotTestKit
 @testable import ShowBook
 
 final class DashboardViewModelTests: XCTestCase {
@@ -310,16 +311,22 @@ final class SearchNavigationRenderingTests: XCTestCase {
         UserDefaults.standard.set(false, forKey: "developer.discover")
         defer { UserDefaults.standard.set(originalDiscover, forKey: "developer.discover") }
         let user = UserViewModel()
+        user.isLoggedIn = false
         let model = DashboardViewModel()
         let api = MockNetworkClass()
         model.api = api
         try await capture(DashboardView(viewModel: model).environmentObject(user), name: "search-start")
-        model.searchBook = "No matching book"
-        api.result = .success([])
-        model.performSearch()
-        await Task.yield()
-        try await capture(DashboardView(viewModel: model).environmentObject(user)
-            .environment(\.dynamicTypeSize, .accessibility3), name: "search-empty-accessibility")
+        let empty = DashboardViewModel()
+        let emptyAPI = MockNetworkClass()
+        emptyAPI.result = .success([])
+        empty.api = emptyAPI
+        empty.searchBook = "No matching book"
+        await withCheckedContinuation { continuation in
+            empty.fetchBooks(title: empty.searchBook, offset: 0) { continuation.resume() }
+        }
+        XCTAssertEqual(empty.searchState, .empty)
+        try await capture(DashboardView(viewModel: empty).environmentObject(user), name: "search-empty")
+        XCTAssertEqual(empty.searchState, .empty)
         try await capture(NavigationStack(path: .constant(["login"])) {
             Text("Welcome").navigationTitle("Welcome")
                 .navigationDestination(for: String.self) { _ in LoginView() }
@@ -328,9 +335,6 @@ final class SearchNavigationRenderingTests: XCTestCase {
 
     func testDeveloperScreenResourcesAndAccessibilityRender() async throws {
         try await capture(NavigationStack { ShowBookDeveloperView() }, name: "developer-profile")
-        try await capture(NavigationStack { ShowBookDeveloperView() }
-            .environment(\.dynamicTypeSize, .accessibility3)
-            .environment(\.colorScheme, .dark), name: "developer-profile-accessibility")
     }
 
     func testAppearanceSwitchesBothDirectionsAndReturnsToSystem() async throws {
@@ -366,28 +370,28 @@ final class SearchNavigationRenderingTests: XCTestCase {
             context.fill(CGRect(x: 0, y: 0, width: 200, height: 300))
         }
         try await capture(BookCoverPreview(coverID: nil, savedImage: image.pngData(), title: "Saved book cover")
-            .environment(\.colorScheme, .dark), name: "cover-preview-saved-dark")
+            , name: "cover-preview-saved")
         try await capture(BookCoverPreview(coverID: nil, savedImage: nil, title: "Missing cover")
-            .environment(\.dynamicTypeSize, .accessibility3), name: "cover-preview-missing-accessibility")
+            , name: "cover-preview-missing")
     }
 
     private func capture<V: View>(_ view: V, name: String) async throws {
-        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
-        let previous = scene.windows.first(where: \.isKeyWindow)
-        let window = UIWindow(windowScene: scene)
-        window.frame = CGRect(x: 0, y: 0, width: 390, height: 844)
-        window.rootViewController = UIHostingController(rootView: view)
-        window.makeKeyAndVisible()
-        defer { window.isHidden = true; previous?.makeKeyAndVisible() }
-        try await Task.sleep(nanoseconds: 400_000_000)
-        let image = UIGraphicsImageRenderer(size: window.bounds.size).image { _ in
-            XCTAssertTrue(window.drawHierarchy(in: window.bounds, afterScreenUpdates: true))
-        }
-        let attachment = XCTAttachment(image: image)
-        attachment.name = name
-        attachment.lifetime = .keepAlways
-        add(attachment)
+        try await PortfolioSnapshot.assertVariants(view, named: name, file: #filePath)
     }
+
+    #if DEBUG
+    func testBookDetailsSnapshot() async throws {
+        let model = BookDetailsViewModel(key: "/works/OL1001W", service: GoldenBookDetailsFixture())
+        await model.load()
+        XCTAssertNotNil(model.work)
+        XCTAssertNil(model.editionsError)
+        XCTAssertFalse(model.loadingEditions)
+        XCTAssertFalse(model.hasMoreEditions)
+        let book = Book(title: "The Design of Everyday Things", ratingsAverage: nil, ratingsCount: nil,
+                        authorName: ["Don Norman"], coverI: nil, image: nil, key: "/works/OL1001W")
+        try await capture(NavigationStack { BookDetailsView(book: book, model: model) }, name: "book-details")
+    }
+    #endif
 
     func testBookCatalogCacheSavesAndLoadsOffline() {
         let cache = BookCatalogCache.shared
@@ -419,3 +423,22 @@ final class SearchNavigationRenderingTests: XCTestCase {
         XCTAssertEqual(cache.formattedFileSize, "0 KB")
     }
 }
+
+#if DEBUG
+private struct GoldenBookDetailsFixture: BookDetailsServing {
+    func work(key: String) async throws -> LibraryWork {
+        try decode(LibraryWork.self, path: key + ".json")
+    }
+    func editions(key: String, offset: Int) async throws -> LibraryEditions {
+        try decode(LibraryEditions.self, path: key + "/editions.json")
+    }
+    func edition(key: String) async throws -> LibraryEdition {
+        try decode(LibraryEdition.self, path: key + ".json")
+    }
+    private func decode<T: Decodable>(_ type: T.Type, path: String) throws -> T {
+        let url = try XCTUnwrap(URL(string: "https://openlibrary.org" + path))
+        let body = try XCTUnwrap(DeveloperStubProtocol.body(for: url))
+        return try JSONDecoder().decode(type, from: Data(body.utf8))
+    }
+}
+#endif
