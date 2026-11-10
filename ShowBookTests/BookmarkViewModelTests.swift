@@ -412,4 +412,58 @@ final class BookmarkUUIDMigrationTests: XCTestCase {
         XCTAssertNil(controller.storeLoadError)
         #endif
     }
+
+    func testModelV6ContainsUserPreferenceAndBookmarkOwnerID() throws {
+        let model = PersistenceController.managedObjectModel()
+        guard let bookEntity = model.entitiesByName["BookEntity"] else {
+            XCTFail("BookEntity not found in model")
+            return
+        }
+        XCTAssertNotNil(bookEntity.attributesByName["ownerID"], "BookEntity must contain ownerID attribute in V6")
+
+        guard let userPreferenceEntity = model.entitiesByName["UserPreference"] else {
+            XCTFail("UserPreference entity not found in model V6")
+            return
+        }
+        XCTAssertNotNil(userPreferenceEntity.attributesByName["ownerID"])
+        XCTAssertNotNil(userPreferenceEntity.attributesByName["selectedCountryName"])
+        XCTAssertNotNil(userPreferenceEntity.attributesByName["userUUID"])
+    }
+
+    func testUserPreferenceSavesAndFetchesCountry() throws {
+        let testCountry = "Germany"
+        persistence.saveDefaultCountryName(selectedCountryName: testCountry)
+        XCTAssertEqual(persistence.fetchSelectedCountryName(), testCountry)
+
+        // Verify UserPreference managed object
+        let context = persistence.container.viewContext
+        let request: NSFetchRequest<UserPreference> = UserPreference.fetchRequest()
+        let prefs = try context.fetch(request)
+        XCTAssertFalse(prefs.isEmpty)
+        XCTAssertEqual(prefs.first?.selectedCountryName, testCountry)
+    }
+
+    func testBookmarkOwnerIDSavedAndMigrated() throws {
+        let email = "v6owner@example.com"
+        let uuid = UUID()
+        let context = persistence.container.viewContext
+
+        createBookEntity(in: context, title: "V6 Book", email: email, userUUID: nil)
+        try context.save()
+
+        let migrated = try PersistenceController.migrateBookmarks(fromEmail: email, toUUID: uuid, in: context)
+        XCTAssertEqual(migrated, 1)
+
+        let request: NSFetchRequest<BookEntity> = BookEntity.fetchRequest()
+        request.predicate = NSPredicate(format: "title == %@", "V6 Book")
+        let book = try context.fetch(request).first
+        XCTAssertNotNil(book)
+        XCTAssertEqual(book?.userUUID, uuid)
+        XCTAssertEqual(book?.ownerID, uuid.uuidString.lowercased())
+
+        let rolledBack = try PersistenceController.rollbackBookmarkMigration(forUUID: uuid, in: context)
+        XCTAssertEqual(rolledBack, 1)
+        XCTAssertNil(book?.userUUID)
+        XCTAssertNil(book?.ownerID)
+    }
 }

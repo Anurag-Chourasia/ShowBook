@@ -150,6 +150,7 @@
 		C8122A766F8C4BE99DF91002 /* ShowBookV3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ShowBookV3.xcdatamodel; sourceTree = "<group>"; };
 		C8122A766F8C4BE99DF91003 /* ShowBookV4.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ShowBookV4.xcdatamodel; sourceTree = "<group>"; };
 		C8122A766F8C4BE99DF91004 /* ShowBookV5.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ShowBookV5.xcdatamodel; sourceTree = "<group>"; };
+		C8122A766F8C4BE99DF91005 /* ShowBookV6.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ShowBookV6.xcdatamodel; sourceTree = "<group>"; };
 		81AE220383BB4E2580143336 /* DeveloperFixtureResourceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperFixtureResourceTests.swift; sourceTree = "<group>"; };
 		87BB901AB8D24E8BA8B959B9 /* PortfolioSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortfolioSnapshot.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -1098,8 +1099,9 @@
 				C8122A766F8C4BE99DF91002 /* ShowBookV3.xcdatamodel */,
 				C8122A766F8C4BE99DF91003 /* ShowBookV4.xcdatamodel */,
 				C8122A766F8C4BE99DF91004 /* ShowBookV5.xcdatamodel */,
+				C8122A766F8C4BE99DF91005 /* ShowBookV6.xcdatamodel */,
 			);
-			currentVersion = C8122A766F8C4BE99DF91004 /* ShowBookV5.xcdatamodel */;
+			currentVersion = C8122A766F8C4BE99DF91005 /* ShowBookV6.xcdatamodel */;
 			path = ShowBook.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

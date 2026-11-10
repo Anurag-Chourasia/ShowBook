@@ -171,6 +171,15 @@ class PersistenceController: ObservableObject {
                 let newCountryEntity = CountryEntity(context: context)
                 newCountryEntity.selectedCountryName = selectedCountryName
             }
+
+            let prefRequest: NSFetchRequest<UserPreference> = UserPreference.fetchRequest()
+            let prefEntities = try context.fetch(prefRequest)
+            let pref = prefEntities.first ?? UserPreference(context: context)
+            pref.selectedCountryName = selectedCountryName
+            if let uuid = currentUserUUID {
+                pref.userUUID = uuid
+                pref.ownerID = uuid.uuidString.lowercased()
+            }
             
             saveContext()
         } catch {
@@ -182,6 +191,12 @@ class PersistenceController: ObservableObject {
         let context = container.viewContext
         
         do {
+            let prefRequest: NSFetchRequest<UserPreference> = UserPreference.fetchRequest()
+            if let pref = try context.fetch(prefRequest).first,
+               let country = pref.selectedCountryName, !country.isEmpty {
+                return country
+            }
+
             let fetchRequest: NSFetchRequest<CountryEntity> = CountryEntity.fetchRequest()
             let countryEntities = try context.fetch(fetchRequest)
             
@@ -478,6 +493,7 @@ class PersistenceController: ObservableObject {
             bookEntity.coverI = Int32(book.coverI ?? 0)
             bookEntity.email = userEmail
             bookEntity.userUUID = userUUID
+            bookEntity.ownerID = userUUID?.uuidString.lowercased()
 
             if let authorNames = book.authorName {
                 bookEntity.authorNames = authorNames as NSObject
@@ -641,10 +657,11 @@ class PersistenceController: ObservableObject {
     func userScopePredicate() -> NSPredicate {
         if let currentUUID = currentUserUUID {
             let email = currentUserEmail.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+            let uuidString = currentUUID.uuidString.lowercased()
             if !email.isEmpty {
-                return NSPredicate(format: "userUUID == %@ OR (userUUID == nil AND email ==[c] %@)", currentUUID as CVarArg, email)
+                return NSPredicate(format: "userUUID == %@ OR ownerID ==[c] %@ OR (userUUID == nil AND ownerID == nil AND email ==[c] %@)", currentUUID as CVarArg, uuidString, email)
             } else {
-                return NSPredicate(format: "userUUID == %@", currentUUID as CVarArg)
+                return NSPredicate(format: "userUUID == %@ OR ownerID ==[c] %@", currentUUID as CVarArg, uuidString)
             }
         } else {
             let email = currentUserEmail.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
@@ -698,6 +715,7 @@ class PersistenceController: ObservableObject {
         do {
             for book in booksToMigrate {
                 book.userUUID = toUUID
+                book.ownerID = toUUID.uuidString.lowercased()
             }
             try save(context)
             return booksToMigrate.count
@@ -722,6 +740,7 @@ class PersistenceController: ObservableObject {
         do {
             for book in books {
                 book.userUUID = nil
+                book.ownerID = nil
             }
             try save(context)
             return books.count
@@ -840,6 +859,8 @@ enum PasswordCredential {
 }
 
 // MARK: - BookmarkRepositoryProtocol & UserPreferenceRepositoryProtocol Conformance
+typealias UserPreferenceEntity = UserPreference
+
 extension PersistenceController: BookmarkRepositoryProtocol, UserPreferenceRepositoryProtocol {
     var updatedBooksPublisher: AnyPublisher<[Book]?, Never> {
         $updatedBooks.eraseToAnyPublisher()
