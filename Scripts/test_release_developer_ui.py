@@ -21,6 +21,7 @@ class ReleaseGuardTests(unittest.TestCase):
 
     def test_debug_ui_types_are_rejected(self):
         self.check(b'_$s8ShowBook21DeveloperSettingsViewV', False)
+        self.check(b'_$s8ShowBook22ShowBookDeveloperViewV', False)
 
     def test_copied_fixture_resource_is_rejected(self):
         with tempfile.TemporaryDirectory() as folder:

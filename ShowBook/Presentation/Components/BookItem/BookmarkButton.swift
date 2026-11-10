@@ -67,14 +67,7 @@ struct BookmarkButton: View {
 
 #Preview {
     BookmarkButton(
-        book: Book(
-            title: "Sample Book Title",
-            ratingsAverage: 4.5,
-            ratingsCount: 123,
-            authorName: ["Author Name"],
-            coverI: 12345,
-            image: nil
-        ),
+        book: ShowBookStubProvider.stubBook(),
         imageUrl: nil
     )
 }

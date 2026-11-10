@@ -10,7 +10,9 @@ import LocalizationKit
 import CoreData
 import UIComponentsKit
 import DesignTokensKit
+#if DEBUG
 import DeveloperProfileKit
+#endif
 
 @MainActor
 struct DashboardView: View {
@@ -229,6 +231,7 @@ struct DashboardView_Previews: PreviewProvider {
     }
 }
 
+#if DEBUG
 struct ShowBookDeveloperView: View {
     @AppStorage("bookCatalogLayout") private var storedLayout = CatalogLayout.list.rawValue
 
@@ -245,3 +248,4 @@ struct ShowBookDeveloperView: View {
         .navigationBarTitleDisplayMode(.inline)
     }
 }
+#endif

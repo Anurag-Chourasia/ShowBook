@@ -188,4 +188,41 @@ final class EmptyStubProtocol: DeveloperStubProtocol { override class var scenar
 final class OfflineStubProtocol: DeveloperStubProtocol { override class var scenario: String { "offline" } }
 final class ShowcaseStubProtocol: DeveloperStubProtocol { override class var scenario: String { "showcase" } }
 
+/// Structured preview and test stub data provider backed by AppStubData shared fixtures.
+enum ShowBookStubProvider {
+    enum Scenario: String, CaseIterable, Sendable {
+        case success, empty, showcase, offline
+    }
+
+    private final class BundleMarker {}
+
+    static func developerCatalogData() throws -> Data {
+        #if SWIFT_PACKAGE
+        let bundle = Bundle.module
+        let directory: String? = nil
+        #else
+        let bundle = Bundle(for: BundleMarker.self)
+        let directory: String? = "DeveloperFixtures"
+        #endif
+        if let file = bundle.url(forResource: "showbook-developer-responses", withExtension: "json", subdirectory: directory) {
+            return try Data(contentsOf: file)
+        }
+        if let file = Bundle.main.url(forResource: "showbook-developer-responses", withExtension: "json", subdirectory: "DeveloperFixtures") {
+            return try Data(contentsOf: file)
+        }
+        throw CocoaError(.fileNoSuchFile)
+    }
+
+    static func stubBook() -> Book {
+        Book(
+            title: "Fixture Book",
+            ratingsAverage: 4.5,
+            ratingsCount: 7,
+            authorName: ["Fixture Author"],
+            coverI: 123,
+            image: nil
+        )
+    }
+}
+
 #endif

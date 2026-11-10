@@ -84,5 +84,5 @@ struct BookmarkView: View {
 }
 
 #Preview {
-    NavigationStack { BookmarkView() }
+    NavigationStack { BookmarkView(persistenceController: PersistenceController.inMemory()) }
 }

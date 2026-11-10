@@ -40,7 +40,9 @@ private struct ShowBookTools: ViewModifier {
     var onLogout: (() -> Void)?
     @Environment(\.persistenceController) private var persistenceController
     @State private var savedPresented = false
+    #if DEBUG
     @State private var developerPresented = false
+    #endif
     func body(content: Content) -> some View {
         content
             .toolbar {
@@ -54,11 +56,13 @@ private struct ShowBookTools: ViewModifier {
                         }
                         AppearanceMenu(title: String(\ShowBookStrings.appearance), systemTitle: String(\ShowBookStrings.appearanceSystem), lightTitle: String(\ShowBookStrings.light), darkTitle: String(\ShowBookStrings.dark))
                         if includeLayout { BookLayoutPicker() }
+                        #if DEBUG
                         if includeDeveloper {
                             Button { developerPresented = true } label: {
                                 Label(Text(\.knowYourDeveloper), \.personCropCircle)
                             }
                         }
+                        #endif
                         if let onLogout {
                             Section {
                                 Button(role: .destructive, action: onLogout) {
@@ -73,6 +77,7 @@ private struct ShowBookTools: ViewModifier {
                 }
             }
             .navigationDestination(isPresented: $savedPresented) { BookmarkView(persistenceController: persistenceController) }
+            #if DEBUG
             .sheet(isPresented: $developerPresented) {
                 NavigationStack {
                     ShowBookDeveloperView()
@@ -84,6 +89,7 @@ private struct ShowBookTools: ViewModifier {
                         }
                 }
             }
+            #endif
     }
 }
 
