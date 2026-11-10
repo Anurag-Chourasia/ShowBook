@@ -1,4 +1,3 @@
-import DesignTokensKit
 //
 //  LandingView.swift
 //  ShowBook
@@ -7,40 +6,38 @@ import DesignTokensKit
 //
 
 import SwiftUI
+import DesignTokensKit
 import LocalizationKit
-import CoreData
+import AuthKitUI
 
 struct LandingView: View {
     @EnvironmentObject var userViewModel: UserViewModel
+    @State private var showingAuthSheet = false
 
     var body: some View {
-
         NavigationStack {
-
             VStack(alignment: .center, spacing: \.zero) {
-
                 headerView
-
                 Spacer()
-
                 logoView
-
                 Spacer()
-
                 navigationButtons
-
             }
             .navigationTitle(String(\ShowBookStrings.welcomeTitle))
             .navigationBarTitleDisplayMode(.inline)
             .showBookTools()
+            .sheet(isPresented: $showingAuthSheet) {
+                AppAuthGate(brand: .showBook) { user, _ in
+                    Text(user.email ?? "")
+                }
+            }
         }
-
     }
 
     private var headerView: some View {
         HStack {
             Spacer()
-            VStack{
+            VStack {
                 Text(String(\ShowBookStrings.appName))
                     .font(\.largeTitle)
             }
@@ -66,24 +63,14 @@ struct LandingView: View {
         HStack {
             Spacer()
 
-            NavigationLink(destination: SignUpView(persistenceController: userViewModel.persistenceController)) {
-                Text(String(\CommonStrings.authTitleCreateAccount))
-                    .font(\.headline)
-                    .frame(minWidth: \.p80)
-                    .padding(\.sixteen)
-                    .background(\.blue)
-                    .foregroundColor(\.white)
-                    .cornerRadius(\.eight)
-            }
-
-            Spacer()
-
-            NavigationLink(destination: LoginView(persistenceController: userViewModel.persistenceController)) {
+            Button {
+                showingAuthSheet = true
+            } label: {
                 Text(String(\CommonStrings.authTitleSignIn))
                     .font(\.headline)
                     .frame(minWidth: \.p80)
                     .padding(\.sixteen)
-                    .background(\.green)
+                    .background(\.blue)
                     .foregroundColor(\.white)
                     .cornerRadius(\.eight)
             }

@@ -293,43 +293,6 @@ class PersistenceController: ObservableObject {
         catch { context.delete(user); throw error }
     }
 
-    func registerUser(email: String, password: String, completion: @escaping (Result<Void, Error>) -> Void) {
-        let context = container.newBackgroundContext()
-        credentialQueue.async {
-            context.performAndWait {
-                let result = Result { try Self.createUser(in: context, email: email, password: password) }
-                DispatchQueue.main.async { completion(result) }
-            }
-        }
-    }
-
-    func authenticate(email: String, password: String, completion: @escaping (Result<Void, Error>) -> Void) {
-        let context = container.newBackgroundContext()
-        credentialQueue.async {
-            context.performAndWait {
-                let result = Result {
-                    let request: NSFetchRequest<UserEntity> = UserEntity.fetchRequest()
-                    request.predicate = NSPredicate(format: "email == %@", email.lowercased())
-                    guard let user = try context.fetch(request).first else { throw CredentialError.missingAccount }
-                    if let hash = user.passwordHash {
-                        guard try PasswordCredential.verify(password, encoded: hash) else { throw CredentialError.wrongPassword }
-                    } else {
-                        guard let legacy = user.password, legacy == password else { throw CredentialError.wrongPassword }
-                        user.passwordHash = try PasswordCredential.make(password)
-                    }
-                    if user.userUUID == nil {
-                        user.userUUID = UUID()
-                    }
-                    user.password = nil
-                    user.isSuccessfullyLoggedIn = true
-                    do { try context.save() }
-                    catch { context.rollback(); throw error }
-                }
-                DispatchQueue.main.async { completion(result) }
-            }
-        }
-    }
-
     func migrateLegacyCredentials(completion: @escaping (Result<Void, Error>) -> Void) {
         let context = container.newBackgroundContext()
         credentialQueue.async {

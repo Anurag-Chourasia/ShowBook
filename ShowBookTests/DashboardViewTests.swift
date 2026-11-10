@@ -349,7 +349,7 @@ final class SearchNavigationRenderingTests: XCTestCase {
         XCTAssertEqual(empty.searchState, .empty)
         try await capture(NavigationStack(path: .constant(["login"])) {
             Text("Welcome").navigationTitle("Welcome")
-                .navigationDestination(for: String.self) { _ in LoginView() }
+                .navigationDestination(for: String.self) { _ in LandingView() }
         }.environmentObject(user), name: "login-native-navigation")
     }
 

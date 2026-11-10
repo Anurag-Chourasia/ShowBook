@@ -90,20 +90,6 @@ final class AppDI: ObservableObject {
     func makeBookDetailsViewModel(key: String?) -> BookDetailsViewModel {
         BookDetailsViewModel(key: key, service: bookDetailsService)
     }
-
-    @MainActor
-    func makeLoginViewModel() -> LoginViewModel {
-        LoginViewModel(persistenceController: persistenceController)
-    }
-
-    @MainActor
-    func makeSignUpViewModel(regionCode: String = Locale.current.region?.identifier ?? "US") -> SignUpViewModel {
-        SignUpViewModel(
-            api: networkClass,
-            regionCode: regionCode,
-            persistenceController: persistenceController
-        )
-    }
 }
 
 private struct AppDIEnvironmentKey: EnvironmentKey {
