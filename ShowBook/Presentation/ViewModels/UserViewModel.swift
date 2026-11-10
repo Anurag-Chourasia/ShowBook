@@ -43,26 +43,11 @@ class UserViewModel: ObservableObject {
         if let uuidString = UserDefaults.standard.string(forKey: "LoggedInUserUUID"),
            let uuid = UUID(uuidString: uuidString) {
             currentUserUUID = uuid
-            if cloudSignOut != nil {
-                isLoggedIn = true
-                return
-            }
+            isLoggedIn = true
         } else {
             currentUserUUID = nil
-        }
-
-        guard let userEmail = UserDefaults.standard.string(forKey: "LoggedInUserEmail") else {
             isLoggedIn = false
-            return
         }
-        isLoggedIn = checkIfUserIsLoggedIn(email: userEmail.lowercased())
-    }
-    
-    private func checkIfUserIsLoggedIn(email: String) -> Bool {
-        if let fetchUser = persistenceController.fetchUser(email: email) {
-            return fetchUser.isSuccessfullyLoggedIn
-        }
-        return false
     }
 
     #if canImport(AuthKit)

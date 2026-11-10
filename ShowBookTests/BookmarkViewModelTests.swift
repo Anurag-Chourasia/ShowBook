@@ -198,21 +198,14 @@ final class BookmarkUUIDMigrationTests: XCTestCase {
         super.tearDown()
     }
 
-    func testExplicitLocalAccountLinking() throws {
-        let email = "localuser@example.com"
-        let uuid = UUID()
-        let context = persistence.container.viewContext
-
-        XCTAssertTrue(persistence.saveUser(email: email, password: "SecretPassword123!"))
-
-        let linkedUser = try PersistenceController.linkLocalAccount(email: email, toUUID: uuid, in: context)
-        XCTAssertNotNil(linkedUser)
-        XCTAssertEqual(linkedUser?.userUUID, uuid)
-        XCTAssertEqual(linkedUser?.email, email)
-        XCTAssertNotNil(linkedUser?.passwordHash, "Legacy passwordHash must be preserved after linking")
-
-        let nonExistent = try PersistenceController.linkLocalAccount(email: "nobody@example.com", toUUID: UUID(), in: context)
-        XCTAssertNil(nonExistent)
+    func testModelV7DropsUserEntity() throws {
+        let model = PersistenceController.managedObjectModel()
+        XCTAssertNil(model.entitiesByName["UserEntity"], "UserEntity must be removed from Core Data model V7")
+        XCTAssertNotNil(model.entitiesByName["BookEntity"])
+        XCTAssertNotNil(model.entitiesByName["CountryEntity"])
+        XCTAssertNotNil(model.entitiesByName["DatumEntity"])
+        XCTAssertNotNil(model.entitiesByName["RegionEntity"])
+        XCTAssertNotNil(model.entitiesByName["UserPreference"])
     }
 
     func testEmailToUUIDBookmarkMigration() throws {
@@ -296,42 +289,18 @@ final class BookmarkUUIDMigrationTests: XCTestCase {
         XCTAssertEqual(bookmarkViewModel.bookmarkBooks.count, 0)
     }
 
-    func testFlagTransitionsPreserveLegacyHashingAndRecords() throws {
+    func testV7ModelPreservesBookmarksAndPreferences() throws {
         let email = "hybrid@example.com"
-        let password = "HybridPassword123!"
-
-        UserDefaults.standard.set(false, forKey: "developer.authentication")
-        XCTAssertTrue(persistence.saveUser(email: email, password: password))
-
-        let localUser = try XCTUnwrap(persistence.fetchUser(email: email))
-        let initialHash = localUser.passwordHash
-        XCTAssertNotNil(initialHash)
-
-        UserDefaults.standard.set(email, forKey: "LoggedInUserEmail")
-        let localBook = Book(title: "Local Story", ratingsAverage: 4.2, ratingsCount: 3, authorName: ["Local Author"], coverI: 50, image: nil)
-        persistence.saveBook(localBook, imageData: nil)
-        XCTAssertTrue(persistence.doesBookExist(title: "Local Story", authors: ["Local Author"]))
-
-        UserDefaults.standard.set(true, forKey: "developer.authentication")
         let cloudUUID = UUID()
         userViewModel.activateCloudAccount(email: email, uuid: cloudUUID) {}
+
+        let book = Book(title: "Local Story", ratingsAverage: 4.2, ratingsCount: 3, authorName: ["Local Author"], coverI: 50, image: nil)
+        persistence.saveBook(book, imageData: nil)
+        XCTAssertTrue(persistence.doesBookExist(title: "Local Story", authors: ["Local Author"]))
 
         let migratedBooks = persistence.fetchBooks()
         XCTAssertEqual(migratedBooks.count, 1)
         XCTAssertEqual(migratedBooks.first?.title, "Local Story")
-
-        UserDefaults.standard.set(false, forKey: "developer.authentication")
-        userViewModel.clearCloudAccount()
-        UserDefaults.standard.set(email, forKey: "LoggedInUserEmail")
-
-        let preservedUser = try XCTUnwrap(persistence.fetchUser(email: email))
-        XCTAssertEqual(preservedUser.passwordHash, initialHash)
-        let hash = try XCTUnwrap(preservedUser.passwordHash)
-        XCTAssertTrue(try PasswordCredential.verify(password, encoded: hash))
-
-        let fallbackBooks = persistence.fetchBooks()
-        XCTAssertEqual(fallbackBooks.count, 1)
-        XCTAssertEqual(fallbackBooks.first?.title, "Local Story")
     }
 
     func testFailedMigrationRollbackPreservesOriginalRecords() throws {

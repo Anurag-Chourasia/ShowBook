@@ -32,7 +32,6 @@ class PersistenceController: ObservableObject {
     /// In tests or previews, callers should construct independent instances (e.g. `PersistenceController.inMemory()`)
     /// instead of mutating `PersistenceController.shared`.
     static let shared = PersistenceController()
-    private let credentialQueue = DispatchQueue(label: "ShowBook.credentials", qos: .userInitiated)
     @Published var updatedBooks: [Book]?
     @Published var storeLoadError: Error?
     var isStoreLoaded: Bool { storeLoadError == nil }
@@ -69,12 +68,6 @@ class PersistenceController: ObservableObject {
                 return
             }
             self?.storeLoadError = nil
-            self?.migrateLegacyCredentials { result in
-                if case .failure = result {
-                    // Do not log credentials or managed objects. Login/next launch can retry.
-                    print("Credential migration could not complete; it will be retried.")
-                }
-            }
         }
     }
 
@@ -269,159 +262,6 @@ class PersistenceController: ObservableObject {
             print("Error deleting data: \(error)")
         }
     }
-    
-    // Synchronous entry point retained for fixtures; app signup uses registerUser off-main.
-    func saveUser(email: String, password: String) -> Bool {
-        do {
-            try Self.createUser(in: container.viewContext, email: email, password: password)
-            return true
-        } catch { return false }
-    }
-
-    private static func createUser(in context: NSManagedObjectContext, email: String, password: String) throws {
-        let request: NSFetchRequest<UserEntity> = UserEntity.fetchRequest()
-        request.predicate = NSPredicate(format: "email == %@", email.lowercased())
-        guard try context.count(for: request) == 0 else { throw CredentialError.duplicateAccount }
-        let hash = try PasswordCredential.make(password)
-        let user = UserEntity(context: context)
-        user.email = email.lowercased()
-        user.passwordHash = hash
-        user.password = nil
-        user.isSuccessfullyLoggedIn = true
-        user.userUUID = UUID()
-        do { try context.save() }
-        catch { context.delete(user); throw error }
-    }
-
-    func migrateLegacyCredentials(completion: @escaping (Result<Void, Error>) -> Void) {
-        let context = container.newBackgroundContext()
-        credentialQueue.async {
-            context.performAndWait {
-                let result = Result { try Self.migrateLegacyCredentials(in: context) }
-                DispatchQueue.main.async { completion(result) }
-            }
-        }
-    }
-
-
-    // Separate transaction per account: failure preserves that account for a later retry.
-    static func migrateLegacyCredentials(
-        in context: NSManagedObjectContext,
-        hashPassword: (String) throws -> String = PasswordCredential.make,
-        save: (NSManagedObjectContext) throws -> Void = { try $0.save() }
-    ) throws {
-        let request: NSFetchRequest<UserEntity> = UserEntity.fetchRequest()
-        request.predicate = NSPredicate(format: "password != nil")
-        var firstFailure: Error?
-        for user in try context.fetch(request) {
-            do {
-                guard let plaintext = user.password else { continue }
-                if let existing = user.passwordHash {
-                    // Never erase the legacy value behind a corrupt or mismatched hash.
-                    guard try PasswordCredential.verify(plaintext, encoded: existing) else { throw CredentialError.invalidRecord }
-                } else {
-                    user.passwordHash = try hashPassword(plaintext)
-                }
-                user.password = nil
-                try save(context)
-            } catch {
-                context.rollback()
-                if firstFailure == nil { firstFailure = error }
-            }
-        }
-        if let firstFailure { throw firstFailure }
-    }
-
-    func fetchUser(email: String) -> UserEntity? {
-        guard storeLoadError == nil else { return nil }
-        let context = container.viewContext
-        
-        let fetchRequest: NSFetchRequest<UserEntity> = UserEntity.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "email ==[c] %@", email.lowercased())
-        
-        do {
-            let users = try context.fetch(fetchRequest)
-            return users.first
-        } catch {
-            print("Error fetching user: \(error)")
-            return nil
-        }
-    }
-
-    func fetchUser(uuid: UUID) -> UserEntity? {
-        guard storeLoadError == nil else { return nil }
-        let context = container.viewContext
-
-        let fetchRequest: NSFetchRequest<UserEntity> = UserEntity.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "userUUID == %@", uuid as CVarArg)
-
-        do {
-            let users = try context.fetch(fetchRequest)
-            return users.first
-        } catch {
-            print("Error fetching user by uuid: \(error)")
-            return nil
-        }
-    }
-    
-    func doesUserExist(email: String) -> Bool {
-            let context = container.viewContext
-            
-            let fetchRequest: NSFetchRequest<UserEntity> = UserEntity.fetchRequest()
-            fetchRequest.predicate = NSPredicate(format: "email == %@", email)
-            
-            do {
-                let users = try context.fetch(fetchRequest)
-                return !users.isEmpty
-            } catch {
-                print("Error fetching user: \(error)")
-                return false
-            }
-        }
-    
-    func logOutUser(email: String) {
-        let context = container.viewContext
-        
-        let fetchRequest: NSFetchRequest<UserEntity> = UserEntity.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "email == %@", email)
-        
-        do {
-            let users = try context.fetch(fetchRequest)
-            users.first?.isSuccessfullyLoggedIn = false
-        } catch {
-            print("Error fetching user: \(error)")
-            return
-        }
-        saveContext()
-    }
-    
-    func logInUser(email: String) {
-        let context = container.viewContext
-        
-        let fetchRequest: NSFetchRequest<UserEntity> = UserEntity.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "email == %@", email)
-        
-        do {
-            let users = try context.fetch(fetchRequest)
-            users.first?.isSuccessfullyLoggedIn = true
-        } catch {
-            print("Error fetching user: \(error)")
-            return
-        }
-        saveContext()
-    }
-    
-    func deleteUser(email: String) {
-        let context = container.viewContext
-        
-        if let user = fetchUser(email: email) {
-            context.delete(user)
-            saveContext()
-        } else {
-            print("User not found")
-        }
-    }
-    
 
     func saveBook(_ book: Book, imageData: Data?) {
         guard storeLoadError == nil else { return }
@@ -645,7 +485,18 @@ class PersistenceController: ObservableObject {
         let context = container.newBackgroundContext()
         try context.performAndWait {
             do {
-                _ = try Self.linkLocalAccount(email: email, toUUID: uuid, in: context, save: { _ in })
+                let cleanEmail = email.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+                if !cleanEmail.isEmpty {
+                    let conflictingRequest: NSFetchRequest<BookEntity> = BookEntity.fetchRequest()
+                    conflictingRequest.predicate = NSPredicate(
+                        format: "email ==[c] %@ AND userUUID != nil AND userUUID != %@",
+                        cleanEmail,
+                        uuid as CVarArg
+                    )
+                    if try context.count(for: conflictingRequest) > 0 {
+                        throw IdentityMigrationError.conflictingOwner
+                    }
+                }
                 _ = try Self.migrateBookmarks(fromEmail: email, toUUID: uuid, in: context, save: { _ in })
                 let prefRequest: NSFetchRequest<UserPreference> = UserPreference.fetchRequest()
                 if let pref = try context.fetch(prefRequest).first {
@@ -735,41 +586,6 @@ class PersistenceController: ObservableObject {
         }
     }
 
-    @discardableResult
-    static func linkLocalAccount(
-        email: String,
-        toUUID: UUID,
-        in context: NSManagedObjectContext,
-        save: (NSManagedObjectContext) throws -> Void = { try $0.save() }
-    ) throws -> UserEntity? {
-        let cleanEmail = email.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-        guard !cleanEmail.isEmpty else { return nil }
-
-        let fetchRequest: NSFetchRequest<UserEntity> = UserEntity.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "email ==[c] %@", cleanEmail)
-
-        let users = try context.fetch(fetchRequest)
-        guard let user = users.first else { return nil }
-
-        if let owner = user.userUUID, owner != toUUID {
-            // Local credential records already have a UUID before first cloud linking.
-            // Preserve that supported bridge, but never rebind an existing library owner.
-            let owned: NSFetchRequest<BookEntity> = BookEntity.fetchRequest()
-            owned.predicate = NSPredicate(format: "userUUID == %@", owner as CVarArg)
-            if try context.count(for: owned) > 0 { throw IdentityMigrationError.conflictingOwner }
-        }
-
-        do {
-            user.userUUID = toUUID
-            try save(context)
-            return user
-        } catch {
-            context.rollback()
-            throw error
-        }
-    }
-
-
     private func updateBooks(_ books: [Book]) {
         DispatchQueue.main.async {
             self.updatedBooks = books
@@ -784,63 +600,6 @@ public extension NSManagedObject {
         self.init(entity: entity, insertInto: context)
     }
 
-}
-
-// MARK: - Password credentials
-
-enum CredentialError: LocalizedError {
-    case duplicateAccount, missingAccount, wrongPassword, invalidRecord, derivationFailed
-    var errorDescription: String? {
-        switch self {
-        case .duplicateAccount: return "User with this email already exists"
-        case .missingAccount: return "Sign Up first to login"
-        case .wrongPassword: return "Wrong Password"
-        case .invalidRecord, .derivationFailed: return "Unable to verify credentials. Please try again."
-        }
-    }
-}
-
-enum PasswordCredential {
-    private static let rounds: UInt32 = 600_000
-    private static let saltSize = 16
-    private static let keySize = 32
-
-    static func make(_ password: String) throws -> String {
-        var salt = [UInt8](repeating: 0, count: saltSize)
-        guard SecRandomCopyBytes(kSecRandomDefault, salt.count, &salt) == errSecSuccess else {
-            throw CredentialError.derivationFailed
-        }
-        let key = try derive(password, salt: salt)
-        return "pbkdf2-sha256$1$600000$\(Data(salt).base64EncodedString())$\(Data(key).base64EncodedString())"
-    }
-
-    static func verify(_ password: String, encoded: String) throws -> Bool {
-        let fields = encoded.split(separator: "$", omittingEmptySubsequences: false)
-        guard fields.count == 5, fields[0] == "pbkdf2-sha256", fields[1] == "1", fields[2] == "600000",
-              let salt = Data(base64Encoded: String(fields[3])), salt.count == saltSize,
-              let expected = Data(base64Encoded: String(fields[4])), expected.count == keySize else {
-            throw CredentialError.invalidRecord
-        }
-        let actual = try derive(password, salt: Array(salt))
-        // Compare all bytes; do not return at the first mismatch.
-        var difference: UInt8 = 0
-        for (a, b) in zip(actual, expected) { difference |= a ^ b }
-        return difference == 0
-    }
-
-    private static func derive(_ password: String, salt: [UInt8]) throws -> [UInt8] {
-        var key = [UInt8](repeating: 0, count: keySize)
-        let length = password.utf8.count
-        let status = password.withCString { bytes in
-            salt.withUnsafeBufferPointer { saltBytes in
-                CCKeyDerivationPBKDF(CCPBKDFAlgorithm(kCCPBKDF2), bytes, length,
-                                    saltBytes.baseAddress, saltBytes.count,
-                                    CCPseudoRandomAlgorithm(kCCPRFHmacAlgSHA256), rounds, &key, keySize)
-            }
-        }
-        guard status == kCCSuccess else { throw CredentialError.derivationFailed }
-        return key
-    }
 }
 
 // MARK: - BookmarkRepositoryProtocol & UserPreferenceRepositoryProtocol Conformance
