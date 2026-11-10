@@ -5,7 +5,7 @@
 //  Created by Anurag Chourasia on 17/08/24.
 //
 
-import SwiftUI
+import Foundation
 import Combine
 
 class BookItemViewModel: ObservableObject {
@@ -82,9 +82,7 @@ class BookItemViewModel: ObservableObject {
     }
 
     func onTao() {
-        withAnimation(.smooth) {
-            showBookmarkButton.toggle()
-        }
+        showBookmarkButton.toggle()
     }
 }
 

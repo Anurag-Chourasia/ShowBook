@@ -32,6 +32,7 @@
 		680000000000000000000014 /* FetchBookDetailsUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 680000000000000000000013 /* FetchBookDetailsUseCase.swift */; };
 		680000000000000000000016 /* FetchBookEditionsUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 680000000000000000000015 /* FetchBookEditionsUseCase.swift */; };
 		680000000000000000000018 /* BookSearchRepositoryImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 680000000000000000000017 /* BookSearchRepositoryImpl.swift */; };
+		690000000000000000000002 /* DiscoverViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 690000000000000000000001 /* DiscoverViewModel.swift */; };
 		3403E2772C7064320063E7D0 /* ShowBook.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 3403E2752C7064320063E7D0 /* ShowBook.xcdatamodeld */; };
 		3403E2792C7064320063E7D0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3403E2782C7064320063E7D0 /* ContentView.swift */; };
 		3403E27B2C7064330063E7D0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3403E27A2C7064330063E7D0 /* Assets.xcassets */; };
@@ -123,6 +124,7 @@
 		680000000000000000000013 /* FetchBookDetailsUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchBookDetailsUseCase.swift; sourceTree = "<group>"; };
 		680000000000000000000015 /* FetchBookEditionsUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchBookEditionsUseCase.swift; sourceTree = "<group>"; };
 		680000000000000000000017 /* BookSearchRepositoryImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookSearchRepositoryImpl.swift; sourceTree = "<group>"; };
+		690000000000000000000001 /* DiscoverViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverViewModel.swift; sourceTree = "<group>"; };
 		3403E2F52C7064330063E7D0 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		3403E2A42C7065190063E7D0 /* BookItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BookItem.swift; sourceTree = "<group>"; };
 		3403E2A52C7065190063E7D0 /* BookmarkButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BookmarkButton.swift; sourceTree = "<group>"; };
@@ -410,6 +412,7 @@
 				3403E2EA2C70E93A0063E7D0 /* BookmarkViewModel.swift */,
 				3403E2EC2C70EA0F0063E7D0 /* BookmarkButtonViewModel.swift */,
 				A23000000000000000000001 /* BookDetailsViewModel.swift */,
+				690000000000000000000001 /* DiscoverViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -708,6 +711,7 @@
 				680000000000000000000014 /* FetchBookDetailsUseCase.swift in Sources */,
 				680000000000000000000016 /* FetchBookEditionsUseCase.swift in Sources */,
 				680000000000000000000018 /* BookSearchRepositoryImpl.swift in Sources */,
+				690000000000000000000002 /* DiscoverViewModel.swift in Sources */,
 				3403E2EF2C70EAD50063E7D0 /* BookItemViewModel.swift in Sources */,
 				3403E2722C7064320063E7D0 /* ShowBookApp.swift in Sources */,
 				3403E2BE2C7065190063E7D0 /* DashboardView.swift in Sources */,

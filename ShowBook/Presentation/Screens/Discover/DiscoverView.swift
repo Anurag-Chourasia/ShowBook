@@ -93,3 +93,7 @@ struct DiscoverView: View {
         .refreshable { await model.load(category, refresh: true) }
     }
 }
+
+private extension DiscoverCategory {
+    var title: String { LocalizedContext<ShowBookDomain>.shared.string("showbook.category." + rawValue) }
+}

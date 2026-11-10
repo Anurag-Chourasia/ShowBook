@@ -46,11 +46,21 @@ actor BookDetailsService: BookDetailsServing {
         request.setValue("ShowBook (anuragchourasia1999@gmail.com)", forHTTPHeaderField: "User-Agent")
         let result = try await client.send(request)
         try Task.checkCancellation()
-        guard (200..<300).contains(result.statusCode) else { throw HTTPClientError.unsuccessfulStatus(result) }
-        let decoded = try JSONDecoder().decode(T.self, from: result.data)
-        cache = cache.filter { $0.value.0 > Date() }
-        if cache.count >= 100 { cache.removeAll() }
-        cache[cacheKey] = (Date().addingTimeInterval(300), result.data)
-        return decoded
+        guard (200..<300).contains(result.statusCode) else {
+            switch result.statusCode {
+            case 404: throw BookDetailsError.notFound
+            case 429: throw BookDetailsError.rateLimited
+            default: throw BookDetailsError.serverError(statusCode: result.statusCode)
+            }
+        }
+        do {
+            let decoded = try JSONDecoder().decode(T.self, from: result.data)
+            cache = cache.filter { $0.value.0 > Date() }
+            if cache.count >= 100 { cache.removeAll() }
+            cache[cacheKey] = (Date().addingTimeInterval(300), result.data)
+            return decoded
+        } catch {
+            throw BookDetailsError.unreadable
+        }
     }
 }

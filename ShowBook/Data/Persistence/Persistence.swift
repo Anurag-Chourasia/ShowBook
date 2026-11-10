@@ -6,7 +6,6 @@
 //
 
 import CoreData
-import UIKit
 import CommonCrypto
 import Security
 import Combine

@@ -5,7 +5,7 @@
 //  Created by Anurag Chourasia on 17/08/24.
 //
 
-import SwiftUI
+import Foundation
 import Combine
 
 class BookmarkButtonViewModel: ObservableObject {

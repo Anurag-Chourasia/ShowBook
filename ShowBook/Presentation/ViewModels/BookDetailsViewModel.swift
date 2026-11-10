@@ -1,7 +1,6 @@
 import LocalizationKit
 import Foundation
 import Combine
-import CommonNetworkingKit
 
 @MainActor final class BookDetailsViewModel: ObservableObject {
     @Published private(set) var work: LibraryWork?
@@ -13,7 +12,6 @@ import CommonNetworkingKit
     @Published private(set) var hasMoreEditions = true
     private var offset = 0
     private let key: String?
-    private let service: any BookDetailsServing
     private let fetchBookDetailsUseCase: any FetchBookDetailsUseCaseProtocol
     private let fetchBookEditionsUseCase: any FetchBookEditionsUseCaseProtocol
 
@@ -21,12 +19,12 @@ import CommonNetworkingKit
         key: String?,
         fetchBookDetailsUseCase: (any FetchBookDetailsUseCaseProtocol)? = nil,
         fetchBookEditionsUseCase: (any FetchBookEditionsUseCaseProtocol)? = nil,
-        service: any BookDetailsServing = BookDetailsService()
+        service: (any BookDetailsRepositoryProtocol)? = nil
     ) {
         self.key = key
-        self.service = service
-        self.fetchBookDetailsUseCase = fetchBookDetailsUseCase ?? FetchBookDetailsUseCase(repository: service)
-        self.fetchBookEditionsUseCase = fetchBookEditionsUseCase ?? FetchBookEditionsUseCase(repository: service)
+        let repo = service ?? BookDetailsService.shared
+        self.fetchBookDetailsUseCase = fetchBookDetailsUseCase ?? FetchBookDetailsUseCase(repository: repo)
+        self.fetchBookEditionsUseCase = fetchBookEditionsUseCase ?? FetchBookEditionsUseCase(repository: repo)
     }
 
     #if DEBUG
@@ -66,14 +64,24 @@ import CommonNetworkingKit
         catch { if !Task.isCancelled { editionsError = Self.message(error) } }
     }
     static func message(_ error: Error) -> String {
-        if let error = error as? BookDetailsError { return error.localizedDescription }
-        if case HTTPClientError.unsuccessfulStatus(let response) = error {
-            switch response.statusCode {
-            case 404: return String(\ShowBookStrings.errorNotFound)
-            case 429: return String(\ShowBookStrings.errorBusy)
-            default: return String(\ShowBookStrings.errorRecordFailed)
+        if let detailsError = error as? BookDetailsError {
+            switch detailsError {
+            case .invalidKey:
+                return detailsError.localizedDescription
+            case .notFound:
+                return String(\ShowBookStrings.errorNotFound)
+            case .rateLimited:
+                return String(\ShowBookStrings.errorBusy)
+            case .serverError:
+                return String(\ShowBookStrings.errorRecordFailed)
+            case .unreadable:
+                return String(\ShowBookStrings.errorUnreadable)
             }
         }
+        let desc = String(describing: error)
+        if desc.contains("404") { return String(\ShowBookStrings.errorNotFound) }
+        if desc.contains("429") { return String(\ShowBookStrings.errorBusy) }
+        if desc.contains("unsuccessfulStatus") { return String(\ShowBookStrings.errorRecordFailed) }
         if error is DecodingError { return String(\ShowBookStrings.errorUnreadable) }
         return String(\ShowBookStrings.errorDetailsFailed)
     }
