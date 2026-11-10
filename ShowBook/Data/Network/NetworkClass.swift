@@ -8,6 +8,11 @@
 import Foundation
 import CommonNetworkingKit
 import Combine
+#if canImport(FoundationKit)
+import FoundationKit
+
+private let logger: any AppLogger = UnifiedLogger(subsystem: "com.showbook.app", category: "Network")
+#endif
 
 // MARK: - NetworkSemanticError
 enum NetworkSemanticError: String, Error, Equatable, Sendable {
@@ -61,8 +66,8 @@ class NetworkClass: ObservableObject {
                 let jsonResponse = try decoder.decode(CountryModel.self, from: data)
                 completion(jsonResponse,nil)
             } catch {
-                #if DEBUG
-                print("Failed to decode JSON: \(error.localizedDescription)")
+                #if DEBUG && canImport(FoundationKit)
+                logger.log("Failed to decode JSON: \(error.localizedDescription)", level: .error)
                 #endif
                 completion(nil,error)
             }

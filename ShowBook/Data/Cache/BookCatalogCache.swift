@@ -1,10 +1,12 @@
 import Foundation
+import FoundationKit
 
 /// Persistent disk cache for search catalog results in ShowBook.
 /// Caches search results atomically to ensure truthful offline catalog behavior.
 final class BookCatalogCache {
     static let shared = BookCatalogCache()
     private let directory: URL
+    private let byteFormatter: any ByteCountFormatting = ByteCountFormatterFactory.make(countStyle: .file)
 
     init(directory: URL? = nil) {
         self.directory = directory ?? FileManager.default.urls(
@@ -31,9 +33,7 @@ final class BookCatalogCache {
     }
 
     var formattedFileSize: String {
-        let bytes = totalSizeBytes
-        guard bytes > 0 else { return "0 KB" }
-        return ByteCountFormatter.string(fromByteCount: Int64(bytes), countStyle: .file)
+        byteFormatter.string(fromByteCount: totalSizeBytes)
     }
 
     private func cacheKey(for title: String, offset: Int) -> String {

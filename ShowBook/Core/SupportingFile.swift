@@ -94,19 +94,15 @@ extension String {
             return rangeOfCharacter(from: characterSet) != nil
         }
 }
+private let defaultDecimalFormatter: any NumberFormatting = NumberFormatterFactory.makeDecimal(maximumFractionDigits: 2)
+
 extension Double {
     func formattedString(maxFractionDigits: Int = 2) -> String {
-        let formatter = NumberFormatter()
-        formatter.maximumFractionDigits = maxFractionDigits
-        formatter.minimumFractionDigits = 0
-
+        let formatter: any NumberFormatting = maxFractionDigits == 2
+            ? defaultDecimalFormatter
+            : NumberFormatterFactory.makeDecimal(maximumFractionDigits: maxFractionDigits)
         let number = NSNumber(value: self)
-
-        if let formattedString = formatter.string(from: number) {
-            return formattedString
-        } else {
-            return "\(self)"
-        }
+        return formatter.string(from: number) ?? "\(self)"
     }
 }
 

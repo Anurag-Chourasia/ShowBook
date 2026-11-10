@@ -58,8 +58,6 @@ class BookmarkViewModel: ObservableObject {
             showAlert = true
             errorMessage = "No record found"
         }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1){
-            self.isLoading = false
-        }
+        isLoading = false
     }
 }

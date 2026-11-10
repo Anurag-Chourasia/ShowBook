@@ -9,6 +9,9 @@ import CoreData
 import CommonCrypto
 import Security
 import Combine
+import FoundationKit
+
+private let logger: any AppLogger = UnifiedLogger(subsystem: "com.showbook.app", category: "Persistence")
 
 class PersistenceController: ObservableObject {
     struct BookmarkOwner: Equatable {
@@ -63,7 +66,7 @@ class PersistenceController: ObservableObject {
             if let error = error {
                 // Present recoverable store-load failures without automatic data deletion
                 self?.storeLoadError = error
-                print("Error loading Core Data stores: \(error). Existing data files are preserved.")
+                logger.log("Error loading Core Data stores: \(error). Existing data files are preserved.", level: .error)
                 return
             }
             self?.storeLoadError = nil
@@ -113,7 +116,7 @@ class PersistenceController: ObservableObject {
         container.loadPersistentStores { (_, error) in
             if let error = error {
                 onLoadError?(error)
-                print("Error loading in-memory store: \(error)")
+                logger.log("Error loading in-memory store: \(error)", level: .error)
             }
         }
         return container
@@ -175,7 +178,7 @@ class PersistenceController: ObservableObject {
             
             saveContext()
         } catch {
-            print("Error saving default country name: \(error)")
+            logger.log("Error saving default country name: \(error)", level: .error)
         }
     }
     
@@ -193,13 +196,13 @@ class PersistenceController: ObservableObject {
             let countryEntities = try context.fetch(fetchRequest)
             
             guard let firstCountryEntity = countryEntities.first else {
-                print("No CountryEntity found")
+                logger.log("No CountryEntity found", level: .info)
                 return nil
             }
             
             return firstCountryEntity.selectedCountryName
         } catch {
-            print("Error fetching selected country name: \(error)")
+            logger.log("Error fetching selected country name: \(error)", level: .error)
             return nil
         }
     }
@@ -235,7 +238,7 @@ class PersistenceController: ObservableObject {
             
             return countryModel
         } catch {
-            print("Error fetching CountryModel: \(error)")
+            logger.log("Error fetching CountryModel: \(error)", level: .error)
             return nil
         }
     }
@@ -245,7 +248,7 @@ class PersistenceController: ObservableObject {
         do {
             try context.save()
         } catch {
-            print("Error saving context: \(error)")
+            logger.log("Error saving context: \(error)", level: .error)
         }
     }
     
@@ -258,7 +261,7 @@ class PersistenceController: ObservableObject {
             try context.execute(deleteRequest)
             try context.save()
         } catch {
-            print("Error deleting data: \(error)")
+            logger.log("Error deleting data: \(error)", level: .error)
         }
     }
 
@@ -307,7 +310,7 @@ class PersistenceController: ObservableObject {
 
             updateBooks(fetchBooks())
         } catch {
-            print("Failed to save book: \(error.localizedDescription)")
+            logger.log("Failed to save book: \(error.localizedDescription)", level: .error)
         }
     }
 
@@ -332,7 +335,7 @@ class PersistenceController: ObservableObject {
             }
             return books
         } catch {
-            print("Failed to fetch books: \(error.localizedDescription)")
+            logger.log("Failed to fetch books: \(error.localizedDescription)", level: .error)
             return []
         }
     }
@@ -354,7 +357,7 @@ class PersistenceController: ObservableObject {
             let results = try context.fetch(fetchRequest)
             return results.first
         } catch {
-            print("Failed to fetch book: \(error.localizedDescription)")
+            logger.log("Failed to fetch book: \(error.localizedDescription)", level: .error)
             return nil
         }
     }
@@ -370,10 +373,10 @@ class PersistenceController: ObservableObject {
                 try context.save()
                 updateBooks(fetchBooks())
             } catch {
-                print("Failed to delete book: \(error.localizedDescription)")
+                logger.log("Failed to delete book: \(error.localizedDescription)", level: .error)
             }
         } else {
-            print("Book does not exist in the database.")
+            logger.log("Book does not exist in the database.", level: .info)
         }
     }
 
@@ -391,7 +394,7 @@ class PersistenceController: ObservableObject {
             try context.save()
             updateBooks(fetchBooks())
         } catch {
-            print("Failed to delete all books: \(error.localizedDescription)")
+            logger.log("Failed to delete all books: \(error.localizedDescription)", level: .error)
         }
     }
 
@@ -418,7 +421,7 @@ class PersistenceController: ObservableObject {
             let results = try context.fetch(fetchRequest)
             return !results.isEmpty
         } catch {
-            print("Failed to fetch book: \(error.localizedDescription)")
+            logger.log("Failed to fetch book: \(error.localizedDescription)", level: .error)
             return false
         }
     }
@@ -449,7 +452,7 @@ class PersistenceController: ObservableObject {
             }
             return bookEntity.image != nil
         } catch {
-            print("Failed to fetch book: \(error.localizedDescription)")
+            logger.log("Failed to fetch book: \(error.localizedDescription)", level: .error)
             return false
         }
     }

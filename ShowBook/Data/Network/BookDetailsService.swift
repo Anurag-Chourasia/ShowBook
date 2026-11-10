@@ -1,5 +1,6 @@
 import Foundation
 import CommonNetworkingKit
+import FoundationKit
 
 protocol BookDetailsServing: BookDetailsRepositoryProtocol {}
 
@@ -7,11 +8,15 @@ protocol BookDetailsServing: BookDetailsRepositoryProtocol {}
 actor BookDetailsService: BookDetailsServing {
     static let shared = BookDetailsService()
     private let session: URLSession?
+    private let clock: any AppClock
     private var nextRequest = Date.distantPast
     private var cache: [String: (Date, Data)] = [:]
     static let pageSize = 20
 
-    init(session: URLSession? = nil) { self.session = session }
+    init(session: URLSession? = nil, clock: any AppClock = SystemClock()) {
+        self.session = session
+        self.clock = clock
+    }
     static func validKey(_ key: String, resource: String) -> Bool {
         let suffix = resource == "works" ? "W" : "M"
         return key.range(of: "^/\(resource)/OL[0-9]+\(suffix)$", options: .regularExpression) != nil
@@ -33,13 +38,14 @@ actor BookDetailsService: BookDetailsServing {
         let context = AppNetworking.context(session: session)
         let cacheKey = context.namespace + url.absoluteString
         let client = context.client
-        if let (expiry, data) = cache[cacheKey], expiry > Date() {
+        if let (expiry, data) = cache[cacheKey], expiry > clock.now {
             return try JSONDecoder().decode(T.self, from: data)
         }
         // Reserve slots before suspension so concurrent detail requests stay paced.
-        let slot = max(Date(), nextRequest)
+        let now = clock.now
+        let slot = max(now, nextRequest)
         nextRequest = slot.addingTimeInterval(0.4)
-        let wait = slot.timeIntervalSinceNow
+        let wait = slot.timeIntervalSince(now)
         if wait > 0 { try await Task.sleep(nanoseconds: UInt64(wait * 1_000_000_000)) }
         try Task.checkCancellation()
         var request = URLRequest(url: url)
@@ -55,9 +61,10 @@ actor BookDetailsService: BookDetailsServing {
         }
         do {
             let decoded = try JSONDecoder().decode(T.self, from: result.data)
-            cache = cache.filter { $0.value.0 > Date() }
+            let cacheNow = clock.now
+            cache = cache.filter { $0.value.0 > cacheNow }
             if cache.count >= 100 { cache.removeAll() }
-            cache[cacheKey] = (Date().addingTimeInterval(300), result.data)
+            cache[cacheKey] = (cacheNow.addingTimeInterval(300), result.data)
             return decoded
         } catch {
             throw BookDetailsError.unreadable
