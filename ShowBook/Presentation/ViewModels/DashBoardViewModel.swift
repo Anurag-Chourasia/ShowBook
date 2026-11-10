@@ -23,8 +23,16 @@ class DashboardViewModel: ObservableObject {
     @Published var loadingMoreBookNotPossible: Bool = false
     @Published var scrollOffset: CGFloat = 0
 
-    var api: NetworkClass
-    var cache: BookCatalogCache
+    var api: NetworkClass {
+        didSet {
+            searchBooksUseCase = SearchBooksUseCase(repository: BookSearchRepositoryImpl(api: api, cache: cache))
+        }
+    }
+    var cache: BookCatalogCache {
+        didSet {
+            searchBooksUseCase = SearchBooksUseCase(repository: BookSearchRepositoryImpl(api: api, cache: cache))
+        }
+    }
     var searchBooksUseCase: any SearchBooksUseCaseProtocol
 
     init(

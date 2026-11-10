@@ -38,6 +38,7 @@ xcrun xcodebuild test -project ShowBook.xcodeproj -scheme ShowBook \
     -scmProvider system CODE_SIGNING_ALLOWED=NO \
     -only-testing:ShowBookTests/DeveloperFixtureResourceTests \
     -only-testing:ShowBookTests/BookItemViewModelTests \
+    -only-testing:ShowBookTests/BookDetailsTests \
     -only-testing:ShowBookTests/BookmarkSaveLifetimeTests \
     -only-testing:ShowBookTests/BookmarkButtonViewModelTests \
     -only-testing:ShowBookTests/TextFieldObserverTests \
@@ -45,7 +46,17 @@ xcrun xcodebuild test -project ShowBook.xcodeproj -scheme ShowBook \
     -only-testing:ShowBookTests/UserViewModelTests \
     -only-testing:ShowBookTests/IdentityActivationRecoveryTests \
     -only-testing:ShowBookTests/AuthenticationFlagTests \
-    -only-testing:ShowBookTests/DomainUseCasesTests
+    -only-testing:ShowBookTests/DomainUseCasesTests \
+    -only-testing:ShowBookTests/DashboardViewModelTests \
+    -only-testing:ShowBookTests/BookmarkViewModelTests \
+    -only-testing:ShowBookTests/PersistenceRelationshipTests \
+    -only-testing:ShowBookTests/BookmarkUUIDMigrationTests \
+    -only-testing:ShowBookTests/RiskBasedIsolationAndConcurrencyTests \
+    -only-testing:ShowBookTests/DiscoverServiceTests
+
+# 4. Governance Coverage Gate
+echo "--> Verifying governance coverage thresholds (Domain/Data >= 85%, ViewModels >= 80%)..."
+python3 Scripts/check_coverage.py "$result" --governance
 
 END_TIME=$(date +%s)
 ELAPSED=$((END_TIME - START_TIME))
