@@ -94,12 +94,12 @@ private struct CloudBookRoot: View {
                         userViewModel.retryCloudActivation()
                         if userViewModel.isLoggedIn { activatedIdentity = identity }
                     }
-                    Button(L10n.Auth.signOut(using: localization)) {
+                    Button(\.logout) {
                         userViewModel.abandonCloudActivation()
                     }
                 }
             } else {
-                ProgressView(String(\ShowBookStrings.loadingLibrary))
+                ProgressView { Text(\.loadingLibrary) }
             }
         }
         .task(id: identity) {
@@ -118,7 +118,7 @@ private struct LocalBookRoot: View {
     @State private var ready = false
     var body: some View {
         Group {
-            if ready { ContentView() } else { ProgressView(String(\ShowBookStrings.loadingLibrary)) }
+            if ready { ContentView() } else { ProgressView { Text(\.loadingLibrary) } }
         }
         .task {
             if userViewModel.cloudSignOut != nil { userViewModel.clearCloudAccount() }
@@ -138,14 +138,14 @@ struct StoreLoadErrorRecoveryView: View {
         VStack(spacing: \.sixteen) {
             Image(\.exclamationmarkTriangleFill)
                 .foregroundColor(\.yellow)
-            Text(L10n.Errors.storeLoadFailed(using: localization))
+            Text(\.errorsStoreLoadFailed)
                 .font(\.headline)
                 .foregroundColor(\.primary)
-            Text(L10n.Errors.storeLoadMessage(using: localization))
+            Text(\.errorsStoreLoadMessage)
                 .font(\.subheadline)
                 .foregroundColor(\.secondary)
                 .multilineTextAlignment(.center)
-            Button(L10n.Errors.recoverableRetry(using: localization)) {
+            Button(\.retry) {
                 retryAction()
             }
             .buttonStyle(.borderedProminent)

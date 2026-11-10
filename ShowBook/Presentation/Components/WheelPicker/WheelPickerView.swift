@@ -33,11 +33,13 @@ struct WheelPickerView: View {
     
     var body: some View {
         VStack {
-            Picker(selection: $selectedCountryIndex, label: Text(String(\ShowBookStrings.countrySelect))) {
+            Picker(selection: $selectedCountryIndex) {
                 ForEach(0..<country.count, id: \.self) { index in
                     Text(self.country[index])
                         .tag(index)
                 }
+            } label: {
+                Text(\.countrySelect)
             }
             .frame(height: \.p140)
             .pickerStyle(.wheel)

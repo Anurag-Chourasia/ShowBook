@@ -7,6 +7,7 @@
 
 import Foundation
 import Combine
+import LocalizationKit
 
 class BookmarkViewModel: ObservableObject {
     @Published var bookmarkBooks: [Book] = []
@@ -49,14 +50,14 @@ class BookmarkViewModel: ObservableObject {
     func loadBookmarks() {
         if persistenceController.storeLoadError != nil {
             showAlert = true
-            errorMessage = "Library storage is temporarily unavailable. Your saved data is intact."
+            errorMessage = String(\.errorStorageUnavailable)
             return
         }
         isLoading = true
         bookmarkBooks = fetchBookmarksUseCase.execute()
         if bookmarkBooks.isEmpty {
             showAlert = true
-            errorMessage = "No record found"
+            errorMessage = String(\.errorNoRecordFound)
         }
         isLoading = false
     }

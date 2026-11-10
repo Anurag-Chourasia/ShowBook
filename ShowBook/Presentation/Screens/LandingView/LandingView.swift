@@ -23,7 +23,7 @@ struct LandingView: View {
                 Spacer()
                 navigationButtons
             }
-            .navigationTitle(String(\ShowBookStrings.welcomeTitle))
+            .navigationTitle(\.welcomeTitle)
             .navigationBarTitleDisplayMode(.inline)
             .showBookTools()
             .sheet(isPresented: $showingAuthSheet) {
@@ -38,7 +38,7 @@ struct LandingView: View {
         HStack {
             Spacer()
             VStack {
-                Text(String(\ShowBookStrings.appName))
+                Text(\ShowBookStrings.appName)
                     .font(\.largeTitle)
             }
             Spacer()
@@ -66,7 +66,7 @@ struct LandingView: View {
             Button {
                 showingAuthSheet = true
             } label: {
-                Text(String(\CommonStrings.authTitleSignIn))
+                Text(\.authTitleSignIn)
                     .font(\.headline)
                     .frame(minWidth: \.p80)
                     .padding(\.sixteen)

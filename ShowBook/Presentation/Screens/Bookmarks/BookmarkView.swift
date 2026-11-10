@@ -46,9 +46,9 @@ struct BookmarkView: View {
                         viewModel.bookmarkBooks = viewModel.persistenceController.fetchBooks()
                     }
                     .alert(isPresented: $viewModel.showAlert) {
-                        Alert(title: Text(String(\ShowBookStrings.alertError)),
+                        Alert(title: Text(\.alertError),
                               message: Text(viewModel.errorMessage),
-                              dismissButton: .default(Text(String(\CommonStrings.ok))) {
+                              dismissButton: .default(Text(\.ok)) {
                             presentationMode.wrappedValue.dismiss()
                         })
                     }
@@ -58,7 +58,7 @@ struct BookmarkView: View {
             }
             
         }
-        .navigationTitle(String(\ShowBookStrings.savedBooks))
+        .navigationTitle(\.savedBooks)
         .navigationBarTitleDisplayMode(.inline)
         .showBookTools(includeLayout: true)
     }
@@ -75,7 +75,7 @@ struct BookmarkView: View {
     private var bookLoadingIndicator: some View {
         GeometryReader { innerGeometry in
             CenteredProgressOverlay(width: innerGeometry.size.width) {
-                Text(String(\ShowBookStrings.loadingProgress))
+                Text(\.loadingProgress)
             } background: {
                 ColorTheme.default.groupedSecondary.opacity(OpacityTheme.default.p0_5)
             }

@@ -34,7 +34,7 @@ import Combine
     #endif
     func load() async {
         guard !loading else { return }
-        guard let key else { error = BookDetailsError.invalidKey.localizedDescription; return }
+        guard let key else { error = String(\.errorNoIdentifier); return }
         loading = true
         error = nil
         defer { loading = false }
@@ -67,22 +67,22 @@ import Combine
         if let detailsError = error as? BookDetailsError {
             switch detailsError {
             case .invalidKey:
-                return detailsError.localizedDescription
+                return String(\.errorNoIdentifier)
             case .notFound:
                 return String(\ShowBookStrings.errorNotFound)
             case .rateLimited:
-                return String(\ShowBookStrings.errorBusy)
+                return String(\.errorBusy)
             case .serverError:
-                return String(\ShowBookStrings.errorRecordFailed)
+                return String(\.errorRecordFailed)
             case .unreadable:
-                return String(\ShowBookStrings.errorUnreadable)
+                return String(\.errorUnreadable)
             }
         }
         let desc = String(describing: error)
         if desc.contains("404") { return String(\ShowBookStrings.errorNotFound) }
-        if desc.contains("429") { return String(\ShowBookStrings.errorBusy) }
-        if desc.contains("unsuccessfulStatus") { return String(\ShowBookStrings.errorRecordFailed) }
-        if error is DecodingError { return String(\ShowBookStrings.errorUnreadable) }
-        return String(\ShowBookStrings.errorDetailsFailed)
+        if desc.contains("429") { return String(\.errorBusy) }
+        if desc.contains("unsuccessfulStatus") { return String(\.errorRecordFailed) }
+        if error is DecodingError { return String(\.errorUnreadable) }
+        return String(\.errorDetailsFailed)
     }
 }

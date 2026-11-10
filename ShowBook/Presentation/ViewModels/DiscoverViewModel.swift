@@ -43,7 +43,7 @@ final class DiscoverViewModel: ObservableObject {
             cachedAt = result.cached ? result.savedAt : nil
         } catch {
             guard requestID == id, !Task.isCancelled else { return }
-            message = String(\ShowBookStrings.errorCategoryFailed)
+            message = String(\.errorCategoryFailed)
         }
     }
 }

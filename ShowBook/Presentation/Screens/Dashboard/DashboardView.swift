@@ -48,24 +48,24 @@ struct DashboardView: View {
                         }
                         Spacer()
                     }
-                    .navigationTitle("ShowBook")
+                    .navigationTitle(\ShowBookStrings.appName)
                     .showBookTools(onLogout: { viewModel.logOutAlert = true })
                     .navigationBarTitleDisplayMode(.inline)
                     .alert(isPresented: $viewModel.showAlert) {
-                        Alert(title: Text(String(\ShowBookStrings.alertError)),
+                        Alert(title: Text(\.alertError),
                               message: Text(viewModel.errorMessage),
-                              dismissButton: .default(Text(String(\CommonStrings.ok))) {
+                              dismissButton: .default(Text(\.ok)) {
                             viewModel.isLoading = false
                         })
                     }
                     .alert(isPresented: $viewModel.logOutAlert) {
                         Alert(
-                            title: Text(String(\ShowBookStrings.logout)),
-                            message: Text(String(\ShowBookStrings.logoutConfirmationTitle)),
-                            primaryButton: .default(Text(String(\ShowBookStrings.actionYes))) {
+                            title: Text(\.logout),
+                            message: Text(\.logoutConfirmationTitle),
+                            primaryButton: .default(Text(\.actionYes)) {
                                 userViewModel.logout()
                             },
-                            secondaryButton: .cancel(Text(String(\CommonStrings.cancel))) {
+                            secondaryButton: .cancel(Text(\.cancel)) {
                                 viewModel.isLoading = false
                             }
                         )
@@ -83,12 +83,12 @@ struct DashboardView: View {
                 StateMessage {
                     Image(viewModel.searchState == .failed ? \.wifiExclamationmark : \.magnifyingglass)
                 } title: {
-                    Text(searchStateTitle).multilineTextAlignment(.center)
+                    searchStateTitleView.multilineTextAlignment(.center)
                 } detail: {
-                    Text(searchStateDetail)
+                    searchStateDetailView
                 } actions: {
                     if viewModel.searchState == .failed {
-                        Button(String(\ShowBookStrings.actionRetry)) { viewModel.performSearch() }
+                        Button(\.actionRetry) { viewModel.performSearch() }
                     }
                 }
                 .frame(maxWidth: .infinity)
@@ -98,20 +98,22 @@ struct DashboardView: View {
         }
     }
 
-    private var searchStateTitle: String {
+    @ViewBuilder
+    private var searchStateTitleView: some View {
         switch viewModel.searchState {
-        case .empty: return String(\ShowBookStrings.searchNoBooksFound)
-        case .failed: return String(\ShowBookStrings.searchUnableToSearch)
-        case .tooShort: return String(\ShowBookStrings.searchKeepTyping)
-        default: return String(\ShowBookStrings.searchStartSearching)
+        case .empty: Text(\.searchNoBooksFound)
+        case .failed: Text(\.searchUnableToSearch)
+        case .tooShort: Text(\.searchKeepTyping)
+        default: Text(\.searchStartSearching)
         }
     }
 
-    private var searchStateDetail: String {
+    @ViewBuilder
+    private var searchStateDetailView: some View {
         switch viewModel.searchState {
-        case .empty: return String(format: String(\ShowBookStrings.searchNoMatches), locale: LocalizationController.shared.locale, viewModel.searchBook)
-        case .failed: return String(\ShowBookStrings.searchConnectionError)
-        default: return String(\ShowBookStrings.searchMinimumCharacters)
+        case .empty: Text(\.searchNoMatches, arguments: [viewModel.searchBook])
+        case .failed: Text(\.searchConnectionError)
+        default: Text(\.searchMinimumCharacters)
         }
     }
 
@@ -141,9 +143,9 @@ struct DashboardView: View {
     
     private func localizedSortTitle(_ value: String) -> String {
         switch value {
-        case "Title": String(\ShowBookStrings.discoverSortTitle)
-        case "Average": String(\ShowBookStrings.discoverSortAverage)
-        case "Hits": String(\ShowBookStrings.discoverSortHits)
+        case "Title": String(\.discoverSortTitle)
+        case "Average": String(\.discoverSortAverage)
+        case "Hits": String(\.discoverSortHits)
         default: value
         }
     }
@@ -163,10 +165,12 @@ struct DashboardView: View {
                     }
                 }
                 Section {
-                    Button(String(\ShowBookStrings.actionClear), role: .destructive) { viewModel.selectedCategoryFilter = "" }
+                    Button(role: .destructive) { viewModel.selectedCategoryFilter = "" } label: {
+                        Text(\.actionClear)
+                    }
                 }
             } label: {
-                Label(viewModel.selectedCategoryFilter.isEmpty ? String(\ShowBookStrings.sortBy) : localizedSortTitle(viewModel.selectedCategoryFilter),
+                Label(viewModel.selectedCategoryFilter.isEmpty ? String(\.sortBy) : localizedSortTitle(viewModel.selectedCategoryFilter),
                       systemImage: \.arrowUpArrowDown)
             }
             .tint(\.primary)
@@ -191,7 +195,7 @@ struct DashboardView: View {
                         .padding(\.sixteen)
                 } else if !viewModel.loadingMoreBookNotPossible {
                     HStack {
-                        Text(String(\ShowBookStrings.loadingMore))
+                        Text(\.loadingMore)
                             .padding(\.sixteen)
                             .foregroundColor(\.primary)
                     }
@@ -206,7 +210,7 @@ struct DashboardView: View {
     private var loadingIndicator: some View {
         GeometryReader { innerGeometry in
             CenteredProgressOverlay(width: innerGeometry.size.width) {
-                Text(String(\ShowBookStrings.loadingProgress))
+                Text(\.loadingProgress)
             } background: {
                 ColorTheme.default.groupedSecondary.opacity(OpacityTheme.default.p0_5)
             }
@@ -216,7 +220,7 @@ struct DashboardView: View {
     private var bookLoadingIndicator: some View {
         GeometryReader { innerGeometry in
             CenteredProgressOverlay(width: innerGeometry.size.width) {
-                Text(String(\ShowBookStrings.loadingProgress))
+                Text(\.loadingProgress)
             } background: {
                 ColorTheme.default.groupedSecondary.opacity(OpacityTheme.default.p0_5)
             }
@@ -243,7 +247,7 @@ struct ShowBookDeveloperView: View {
             disclaimer: "ShowBook is a book discovery application. Book metadata and covers are provided by Open Library. Availability and accuracy depend on the source records.\n\nSource: https://openlibrary.org\n\n[Privacy Policy](https://github.com/Anurag-Chourasia/ShowBook/blob/main/Docs/PrivacyInventory.md) • [Support](mailto:anuragchourasiaios@gmail.com)"
         ), layout: CatalogLayout(rawValue: storedLayout) ?? .list)
         .tint(\.blue)
-        .navigationTitle(String(\ShowBookStrings.knowYourDeveloper))
+        .navigationTitle(\.knowYourDeveloper)
         .showBookTools(includeDeveloper: false, includeLayout: true)
         .navigationBarTitleDisplayMode(.inline)
     }

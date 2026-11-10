@@ -25,18 +25,18 @@ struct BookDetailsView: View {
                     Text(authors.joined(separator: ", ")).font(\.body).foregroundColor(\.secondary)
                 }
                 BookmarkButton(book: book, imageUrl: LibraryCover.url(book.coverI), persistenceController: persistenceController)
-                if model.loading && model.work == nil { ProgressView(String(\ShowBookStrings.loadingBookDetails)) }
+                if model.loading && model.work == nil { ProgressView { Text(\.loadingBookDetails) } }
                 if let error = model.error {
                     Text(error).foregroundColor(\.secondary)
-                    if book.key != nil { Button(String(\CommonStrings.retry)) { reload += 1 } }
+                    if book.key != nil { Button(\.retry) { reload += 1 } }
                 }
                 if let work = model.work {
-                    detailSection(String(\ShowBookStrings.description), text: work.description?.value ?? String(\ShowBookStrings.noDescription))
-                    if let date = work.first_publish_date { detailSection(String(\ShowBookStrings.firstPublished), text: date) }
+                    detailSection(\.description, text: work.description?.value ?? String(\.noDescription))
+                    if let date = work.first_publish_date { detailSection(\.firstPublished, text: date) }
                     if let subjects = work.subjects, !subjects.isEmpty {
-                        detailSection(String(\ShowBookStrings.subjects), text: subjects.joined(separator: " · "))
+                        detailSection(\.subjects, text: subjects.joined(separator: " · "))
                     }
-                    Text(String(\ShowBookStrings.editions)).font(\.title2).accessibilityAddTraits(.isHeader)
+                    Text(\.editions).font(\.title2).accessibilityAddTraits(.isHeader)
                     ForEach(model.editions) { edition in
                         NavigationLink { EditionDetailsView(key: edition.key, title: edition.title, service: appDI.bookDetailsService) } label: {
                             SurfaceCard {
@@ -45,26 +45,27 @@ struct BookDetailsView: View {
                                     if let date = edition.publish_date { Text(date).font(\.subheadline) }
                                     if let publishers = edition.publishers { Text(publishers.joined(separator: ", ")).font(\.footnote) }
                                     Label(Text(\.editionDetails), \.chevronRight).font(\.caption)
-                                }.frame(maxWidth: .infinity, alignment: .leading)
+                                }
+                                .frame(maxWidth: .infinity, alignment: .leading)
                             }
                         }.buttonStyle(.plain)
                     }
                     if let error = model.editionsError { Text(error).foregroundColor(\.secondary) }
-                    if model.loadingEditions { ProgressView(String(\ShowBookStrings.loadingEditions)) } else if model.hasMoreEditions {
-                        Button(model.editionsError == nil ? String(\ShowBookStrings.loadMoreEditions) : String(\ShowBookStrings.retryEditions)) { more += 1 }
-                    } else if model.editions.isEmpty { Text(String(\ShowBookStrings.noEditions)) }
+                    if model.loadingEditions { ProgressView { Text(\.loadingEditions) } } else if model.hasMoreEditions {
+                        Button(model.editionsError == nil ? \.loadMoreEditions : \.retryEditions) { more += 1 }
+                    } else if model.editions.isEmpty { Text(\.noEditions) }
                 }
             }.padding(\.twenty)
         }
-        .navigationTitle(String(\ShowBookStrings.bookDetailsTitle))
+        .navigationTitle(\.bookDetailsTitle)
         .navigationBarTitleDisplayMode(.inline)
         .showBookTools()
         .task(id: reload) { await model.load() }
         .task(id: more) { if more > 0 { await model.loadMoreEditions() } }
     }
-    private func detailSection(_ title: String, text: String) -> some View {
+    private func detailSection(_ titleKeyPath: KeyPath<ShowBookStrings, String>, text: String) -> some View {
         VStack(alignment: .leading, spacing: \.eight) {
-            Text(title).font(\.title2).accessibilityAddTraits(.isHeader)
+            Text(titleKeyPath).font(\.title2).accessibilityAddTraits(.isHeader)
             Text(text).font(\.body).textSelection(.enabled)
         }
     }
@@ -88,24 +89,24 @@ struct EditionDetailsView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: \.sixteen) {
                 Text(edition?.title ?? title).font(\.title).accessibilityAddTraits(.isHeader)
-                if loading { ProgressView(String(\ShowBookStrings.loadingEdition)) }
-                if let error { Text(error); Button(String(\CommonStrings.retry)) { reload += 1 } }
+                if loading { ProgressView { Text(\.loadingEdition) } }
+                if let error { Text(error); Button(\.retry) { reload += 1 } }
                 if let edition {
                     LibraryCover(coverID: edition.covers?.first(where: { $0 > 0 }), savedImage: nil)
-                    field(String(\ShowBookStrings.published), edition.publish_date)
-                    field(String(\ShowBookStrings.publisher), edition.publishers?.joined(separator: ", "))
-                    field(String(\ShowBookStrings.format), edition.physical_format)
-                    field(String(\ShowBookStrings.pages), edition.number_of_pages.map(String.init))
-                    field(String(\ShowBookStrings.isbn13), edition.isbn_13?.joined(separator: ", "))
-                    field(String(\ShowBookStrings.isbn10), edition.isbn_10?.joined(separator: ", "))
-                    field(String(\ShowBookStrings.languages), edition.languages?.map { reference in
+                    field(\.published, edition.publish_date)
+                    field(\.publisher, edition.publishers?.joined(separator: ", "))
+                    field(\.format, edition.physical_format)
+                    field(\.pages, edition.number_of_pages.map(String.init))
+                    field(\.isbn13, edition.isbn_13?.joined(separator: ", "))
+                    field(\.isbn10, edition.isbn_10?.joined(separator: ", "))
+                    field(\.languages, edition.languages?.map { reference in
                         let code = reference.key.components(separatedBy: "/").last ?? ""
                         return Locale.current.localizedString(forLanguageCode: code) ?? code
                     }.joined(separator: ", "))
                 }
             }.frame(maxWidth: .infinity, alignment: .leading).padding(\.twenty)
         }
-        .navigationTitle(String(\ShowBookStrings.editionDetailsTitle)).navigationBarTitleDisplayMode(.inline)
+        .navigationTitle(\.editionDetailsTitle).navigationBarTitleDisplayMode(.inline)
         .showBookTools()
         .task(id: reload) {
             loading = true; error = nil
@@ -118,10 +119,14 @@ struct EditionDetailsView: View {
             catch { if !Task.isCancelled { self.error = BookDetailsViewModel.message(error) } }
         }
     }
-    private func field(_ title: String, _ value: String?) -> some View {
+    private func field(_ titleKeyPath: KeyPath<ShowBookStrings, String>, _ value: String?) -> some View {
         VStack(alignment: .leading, spacing: \.four) {
-            Text(title).font(\.headline)
-            Text(value.flatMap { $0.isEmpty ? nil : $0 } ?? String(\ShowBookStrings.detailsNotAvailable)).font(\.body).textSelection(.enabled)
+            Text(titleKeyPath).font(\.headline)
+            if let value, !value.isEmpty {
+                Text(value).font(\.body).textSelection(.enabled)
+            } else {
+                Text(\.detailsNotAvailable).font(\.body).textSelection(.enabled)
+            }
         }
     }
 }
@@ -155,12 +160,12 @@ struct LibraryCover: View {
         .contentShape(Rectangle())
         .onLongPressGesture { if AppRuntime.coverPreviewEnabled { previewPresented = true } }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(String(\ShowBookStrings.detailsBookCover))
+        .accessibilityLabel(\.detailsBookCover)
         .accessibilityActions {
-            if AppRuntime.coverPreviewEnabled { Button(String(\ShowBookStrings.previewCover)) { previewPresented = true } }
+            if AppRuntime.coverPreviewEnabled { Button(\.previewCover) { previewPresented = true } }
         }
         .sheet(isPresented: $previewPresented) {
-            BookCoverPreview(coverID: coverID, savedImage: savedImage, title: String(\ShowBookStrings.detailsBookCover))
+            BookCoverPreview(coverID: coverID, savedImage: savedImage, title: String(\.detailsBookCover))
         }
     }
     private var placeholder: some View { Image(\.bookClosed).font(\.largeTitle).foregroundColor(\.secondary) }
@@ -182,13 +187,13 @@ struct BookCoverPreview: View {
             Group {
                 if let image {
                     Image(uiImage: image).resizable().scaledToFit().accessibilityLabel(title)
-                } else if loading { ProgressView(String(\ShowBookStrings.loadingCover)) } else { unavailable }
+                } else if loading { ProgressView { Text(\.loadingCover) } } else { unavailable }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .padding(\.sixteen)
             .background(\.grouped)
             .accessibilityIdentifier(.bookCoverPreview)
-            .navigationTitle(String(\ShowBookStrings.detailsCoverPreview))
+            .navigationTitle(\.detailsCoverPreview)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
@@ -211,7 +216,7 @@ struct BookCoverPreview: View {
                     }
                 }
             }
-            .alert(String(\ShowBookStrings.detailsShareFailed), isPresented: Binding(
+            .alert(Text(\.detailsShareFailed), isPresented: Binding(
                 get: { shareError != nil }, set: { if !$0 { shareError = nil } }
             )) { Button(\.ok, role: .cancel) {} } message: { Text(shareError ?? "") }
             .task {

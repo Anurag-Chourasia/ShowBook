@@ -27,8 +27,8 @@ struct BookItem: View {
         CatalogTile(layout: layout, colors: SemanticColors(surface: ColorTheme.default.groupedSecondary)) {
             if !dynamicTypeSize.isAccessibilitySize {
                 NavigationLink { BookDetailsView(book: item) } label: { cover }
-                    .accessibilityLabel(String(format: String(\ShowBookStrings.detailsFor), locale: LocalizationController.shared.locale, item.title))
-                    .accessibilityHint(AppRuntime.coverPreviewEnabled ? String(\ShowBookStrings.detailsPreviewHint) : String(\ShowBookStrings.detailsOpens))
+                    .accessibilityLabel(Text(\.detailsFor, arguments: [item.title]))
+                    .accessibilityHint(AppRuntime.coverPreviewEnabled ? Text(\.detailsPreviewHint) : Text(\.detailsOpens))
                     .highPriorityGesture(LongPressGesture().onEnded { _ in if AppRuntime.coverPreviewEnabled { previewPresented = true } })
             }
         } details: {
@@ -39,10 +39,17 @@ struct BookItem: View {
                     .font(\.headline)
                     .foregroundColor(\.primary)
                     .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : CatalogMetrics.listTitleLines)
-                Text(item.authorName?.joined(separator: ", ").nilIfEmpty ?? String(\ShowBookStrings.detailsNoAuthor))
-                    .font(\.footnote)
-                    .foregroundColor(\.secondary)
-                    .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : CatalogMetrics.listTitleLines)
+                if let author = item.authorName?.joined(separator: ", ").nilIfEmpty {
+                    Text(author)
+                        .font(\.footnote)
+                        .foregroundColor(\.secondary)
+                        .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : CatalogMetrics.listTitleLines)
+                } else {
+                    Text(\.detailsNoAuthor)
+                        .font(\.footnote)
+                        .foregroundColor(\.secondary)
+                        .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : CatalogMetrics.listTitleLines)
+                }
                 if showsRatings && AppRuntime.ratingsEnabled, let rating = item.availableRating {
                 if !dynamicTypeSize.isAccessibilitySize {
                 HStack(spacing: \.zero) {
@@ -54,18 +61,18 @@ struct BookItem: View {
                 .foregroundColor(\.yellow)
                 .accessibilityHidden(true)
                 }
-                Text(String(format: String(\ShowBookStrings.detailsRatings), locale: LocalizationController.shared.locale, rating.average.formatted(.number.precision(.fractionLength(0...2)).locale(LocalizationController.shared.locale)), rating.count.formatted(.number.locale(LocalizationController.shared.locale))))
+                Text(\.detailsRatings, arguments: [rating.average.formatted(.number.precision(.fractionLength(0...2)).locale(LocalizationController.shared.locale)), rating.count.formatted(.number.locale(LocalizationController.shared.locale))])
                     .font(\.caption)
                     .foregroundColor(\.secondary)
                     .fixedSize(horizontal: false, vertical: true)
                 } else if showsRatings && AppRuntime.ratingsEnabled {
-                    Text(String(\ShowBookStrings.notRated))
+                    Text(\.notRated)
                         .font(\.caption)
                         .foregroundColor(\.secondary)
                 }
                     }
                 }.buttonStyle(.plain)
-                .accessibilityHint(String(\ShowBookStrings.detailsOpens))
+                .accessibilityHint(\.detailsOpens)
                 if dynamicTypeSize.isAccessibilitySize {
                     BookmarkButton(book: item, imageUrl: imageURL, persistenceController: persistenceController)
                 }
@@ -78,7 +85,7 @@ struct BookItem: View {
         }
         .accessibilityIdentifier(.bookTile(layout.rawValue))
         .accessibilityActions {
-            if AppRuntime.coverPreviewEnabled { Button(String(\ShowBookStrings.previewCover)) { previewPresented = true } }
+            if AppRuntime.coverPreviewEnabled { Button(\.previewCover) { previewPresented = true } }
         }
         .sheet(isPresented: $previewPresented) {
             BookCoverPreview(coverID: item.coverI, savedImage: item.image, title: item.title)
@@ -131,9 +138,9 @@ struct BookLayoutPicker: View {
                           onGridUnavailable: { showGridUnavailable = true })
             .tint(\.primary)
             .accessibilityIdentifier(.bookLayoutMenu)
-            .alert(String(\ShowBookStrings.layoutListTitle), isPresented: $showGridUnavailable) {
+            .alert(Text(\.layoutListTitle), isPresented: $showGridUnavailable) {
                 Button(\.ok, role: .cancel) {}
-            } message: { Text(String(\ShowBookStrings.layoutReadability)) }
+            } message: { Text(\.layoutReadability) }
     }
 }
 

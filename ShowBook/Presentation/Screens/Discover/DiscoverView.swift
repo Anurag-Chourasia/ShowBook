@@ -3,32 +3,39 @@ import LocalizationKit
 import DesignTokensKit
 import UIComponentsKit
 
+enum DiscoverSortOption: String, CaseIterable, Identifiable {
+    case title = "Title"
+    case average = "Average"
+    case hits = "Hits"
+
+    var id: String { rawValue }
+
+    var titleKeyPath: KeyPath<ShowBookStrings, String> {
+        switch self {
+        case .title: return \.discoverSortTitle
+        case .average: return \.discoverSortAverage
+        case .hits: return \.discoverSortHits
+        }
+    }
+}
+
 struct DiscoverView: View {
     @StateObject private var model: DiscoverViewModel
     @State private var category: DiscoverCategory = .fiction
     @State private var reload = 0
     @State private var layout: CatalogLayout = AppRuntime.discoverGrid ? .grid : .list
-    @State private var sort = ""
+    @State private var sort: DiscoverSortOption? = nil
 
     init(model: DiscoverViewModel? = nil) {
         _model = StateObject(wrappedValue: model ?? DiscoverViewModel())
     }
 
-    private func sortTitle(_ value: String) -> String {
-        switch value {
-        case "Title": String(\ShowBookStrings.discoverSortTitle)
-        case "Average": String(\ShowBookStrings.discoverSortAverage)
-        case "Hits": String(\ShowBookStrings.discoverSortHits)
-        default: value
-        }
-    }
-
     private var displayedBooks: [Book] {
+        guard let sort else { return model.books }
         switch sort {
-        case "Title": return model.books.sorted { $0.title.localizedStandardCompare($1.title) == .orderedAscending }
-        case "Average": return model.books.sorted { ($0.availableRating?.average ?? -1) > ($1.availableRating?.average ?? -1) }
-        case "Hits": return model.books.sorted { ($0.ratingsCount ?? -1) > ($1.ratingsCount ?? -1) }
-        default: return model.books
+        case .title: return model.books.sorted { $0.title.localizedStandardCompare($1.title) == .orderedAscending }
+        case .average: return model.books.sorted { ($0.availableRating?.average ?? -1) > ($1.availableRating?.average ?? -1) }
+        case .hits: return model.books.sorted { ($0.ratingsCount ?? -1) > ($1.ratingsCount ?? -1) }
         }
     }
 
@@ -36,45 +43,58 @@ struct DiscoverView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: \.sixteen) {
                 VStack(alignment: .leading, spacing: \.eight) {
-                    Text(String(\ShowBookStrings.discover)).font(\.title).accessibilityAddTraits(.isHeader)
-                    Text(String(\ShowBookStrings.discoverSubtitle))
+                    Text(\.discover).font(\.title).accessibilityAddTraits(.isHeader)
+                    Text(\.discoverSubtitle)
                         .font(\.body).foregroundColor(\.secondary)
-                    Picker(String(\ShowBookStrings.discoverCategory), selection: $category) {
-                        ForEach(DiscoverCategory.allCases) { Text($0.title).tag($0) }
-                    }.pickerStyle(.menu)
+                    Picker(selection: $category) {
+                        ForEach(DiscoverCategory.allCases) { Text($0.titleKeyPath).tag($0) }
+                    } label: {
+                        Text(\.discoverCategory)
+                    }
+                    .pickerStyle(.menu)
                     .accessibilityIdentifier(.discoverCategory)
                     if let date = model.cachedAt {
-                        Text(String(format: String(\ShowBookStrings.discoverCached), locale: LocalizationController.shared.locale, date.formatted(.dateTime.year().month().day().locale(LocalizationController.shared.locale))))
+                        Text(\.discoverCached, arguments: [date.formatted(.dateTime.year().month().day().locale(LocalizationController.shared.locale))])
                             .font(\.caption).foregroundColor(\.secondary)
                     }
                 }.padding(.horizontal, \.sixteen)
                 if model.loading {
-                    ProgressView(String(\ShowBookStrings.discoverFinding)).frame(maxWidth: .infinity)
+                    ProgressView { Text(\.discoverFinding) }.frame(maxWidth: .infinity)
                 } else if let message = model.message {
                     StateMessage {
                         Image(\.wifiExclamationmark)
-                    } title: { Text(String(\ShowBookStrings.discoverUnavailable)) }
+                    } title: { Text(\.discoverUnavailable) }
                     detail: { Text(message) }
-                    actions: { Button(String(\CommonStrings.retry)) { reload += 1 } }
+                    actions: { Button(\.retry) { reload += 1 } }
                     .padding(\.sixteen)
                 } else if model.books.isEmpty {
-                    Text(String(\ShowBookStrings.noBooksCategory))
+                    Text(\.noBooksCategory)
                         .font(\.body).padding(\.sixteen)
                 } else {
                     HStack {
                         Menu {
                             Section {
-                                ForEach(["Title", "Average", "Hits"], id: \.self) { option in
+                                ForEach(DiscoverSortOption.allCases) { option in
                                     Button { sort = option } label: {
-                                        if sort == option { Label(sortTitle(option), \.checkmark) } else { Text(sortTitle(option)) }
+                                        if sort == option {
+                                            Label(Text(option.titleKeyPath), \.checkmark)
+                                        } else {
+                                            Text(option.titleKeyPath)
+                                        }
                                     }
                                 }
                             }
                             Section {
-                                Button(String(\ShowBookStrings.actionClear), role: .destructive) { sort = "" }
+                                Button(role: .destructive) { sort = nil } label: {
+                                    Text(\.actionClear)
+                                }
                             }
                         } label: {
-                            Label(sort.isEmpty ? String(\ShowBookStrings.sortBy) : sortTitle(sort), \.arrowUpArrowDown)
+                            if let sort {
+                                Label(Text(sort.titleKeyPath), \.arrowUpArrowDown)
+                            } else {
+                                Label(Text(\.sortBy), \.arrowUpArrowDown)
+                            }
                         }
                         .accessibilityIdentifier(.discoverSortMenu)
                         Spacer()
@@ -95,5 +115,12 @@ struct DiscoverView: View {
 }
 
 private extension DiscoverCategory {
-    var title: String { LocalizedContext<ShowBookDomain>.shared.string("showbook.category." + rawValue) }
+    var titleKeyPath: KeyPath<ShowBookStrings, String> {
+        switch self {
+        case .fiction: return \.categoryFiction
+        case .mystery: return \.categoryMystery
+        case .science: return \.categoryScience
+        case .history: return \.categoryHistory
+        }
+    }
 }

@@ -42,8 +42,8 @@ struct BookmarkButton: View {
     var body: some View {
         SelectionToggleButton(
             isSelected: viewModel.isBookmarked,
-            selectedLabel: String(\ShowBookStrings.bookmarkRemove),
-            unselectedLabel: String(\ShowBookStrings.bookmarkAdd),
+            selectedLabel: String(\.bookmarkRemove),
+            unselectedLabel: String(\.bookmarkAdd),
             action: viewModel.toggleBookmark
         ) {
             bookmarkImage
