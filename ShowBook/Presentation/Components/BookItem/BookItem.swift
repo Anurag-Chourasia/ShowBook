@@ -90,11 +90,11 @@ struct BookItem: View {
             if let data = item.image, let image = UIImage(data: data) {
                 Image(uiImage: image).resizable().scaledToFill()
             } else if let imageURL {
-                AsyncImage(url: imageURL) { phase in
+                RemoteImagePhaseView(url: imageURL) { phase in
                     switch phase {
                     case .success(let image): image.resizable().scaledToFill()
-                    case .empty: placeholder.overlay { ProgressView() }
-                    default: placeholder
+                    case .empty, .loading: placeholder.overlay { ProgressView() }
+                    case .failure: placeholder
                     }
                 }
             } else { placeholder }

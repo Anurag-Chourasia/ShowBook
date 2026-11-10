@@ -7,6 +7,7 @@
 
 import SwiftUI
 import DesignTokensKit
+import UIComponentsKit
 import AuthKit
 import AuthKitUI
 import LocalizationKit
@@ -66,6 +67,7 @@ struct ShowBookApp: App {
                 .appAppearance()
                 .environment(\.designTokens, DesignTokensTheme(brand: .showBook))
                 .environment(\.appDI, appDI)
+                .imageDataLoader(appDI.imageDataLoader)
                 .environmentObject(userViewModel)
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
                 .environment(\.persistenceController, persistenceController)

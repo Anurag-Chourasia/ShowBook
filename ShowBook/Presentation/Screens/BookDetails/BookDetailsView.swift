@@ -140,8 +140,14 @@ struct LibraryCover: View {
             if let savedImage, let image = UIImage(data: savedImage) {
                 Image(uiImage: image).resizable().scaledToFit()
             } else if let url = Self.url(coverID) {
-                AsyncImage(url: url) { phase in
-                    if let image = phase.image { image.resizable().scaledToFit() } else if phase.error != nil { placeholder } else { ProgressView() }
+                RemoteImagePhaseView(url: url) { phase in
+                    if let image = phase.image {
+                        image.resizable().scaledToFit()
+                    } else if phase.error != nil {
+                        placeholder
+                    } else {
+                        ProgressView()
+                    }
                 }
             } else { placeholder }
         }
@@ -213,10 +219,9 @@ struct BookCoverPreview: View {
                 defer { loading = false }
                 guard let url = LibraryCover.url(coverID) else { return }
                 do {
-                    let (data, response) = try await URLSession.shared.data(from: url)
+                    let data = try await AppDI.shared.imageDataLoader.loadImageData(from: url)
                     try Task.checkCancellation()
-                    if let response = response as? HTTPURLResponse,
-                       (200..<300).contains(response.statusCode), let loaded = UIImage(data: data) {
+                    if let loaded = UIImage(data: data) {
                         image = loaded
                     }
                 } catch { /* Retain saved artwork when offline. */ }

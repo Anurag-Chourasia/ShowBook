@@ -9,6 +9,20 @@ import Foundation
 import CoreData
 import Combine
 import SwiftUI
+import CommonNetworkingKit
+import UIComponentsKit
+
+struct CommonNetworkingImageDataLoading: ImageDataLoading {
+    private let fetcher: any ImageDataFetching
+
+    init(fetcher: (any ImageDataFetching)? = nil) {
+        self.fetcher = fetcher ?? ImageDataFetcher(client: AppNetworking.client())
+    }
+
+    func loadImageData(from url: URL) async throws -> Data {
+        try await fetcher.fetchData(for: url)
+    }
+}
 
 final class AppDI: ObservableObject {
     static let shared = AppDI()
@@ -20,6 +34,7 @@ final class AppDI: ObservableObject {
     let bookDetailsService: any BookDetailsServing
     let discoverService: any DiscoverServing
     let networkClass: NetworkClass
+    let imageDataLoader: any ImageDataLoading
 
     init(
         persistenceController: PersistenceController = .shared,
@@ -28,7 +43,8 @@ final class AppDI: ObservableObject {
         bookCatalogCache: BookCatalogCache = BookCatalogCache(),
         bookDetailsService: (any BookDetailsServing)? = nil,
         discoverService: (any DiscoverServing)? = nil,
-        networkClass: NetworkClass = NetworkClass()
+        networkClass: NetworkClass = NetworkClass(),
+        imageDataLoader: (any ImageDataLoading)? = nil
     ) {
         self.persistenceController = persistenceController
         self.bookmarkRepository = bookmarkRepository ?? BookmarkRepositoryImpl(persistenceController: persistenceController)
@@ -37,6 +53,7 @@ final class AppDI: ObservableObject {
         self.bookDetailsService = bookDetailsService ?? BookDetailsService()
         self.discoverService = discoverService ?? DiscoverService()
         self.networkClass = networkClass
+        self.imageDataLoader = imageDataLoader ?? CommonNetworkingImageDataLoading()
     }
 
     // MARK: - Use Cases

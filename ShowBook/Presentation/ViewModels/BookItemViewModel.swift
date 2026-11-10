@@ -89,7 +89,7 @@ class BookItemViewModel: ObservableObject {
 /// Host-owned lifetime guard shared by both bookmark presentation adapters.
 final class BookmarkSaveRequest {
     private var generation = UUID()
-    private var task: URLSessionDataTask?
+    private var task: Task<Void, Never>?
 
     deinit { task?.cancel() }
 
@@ -100,8 +100,14 @@ final class BookmarkSaveRequest {
     }
 
     func download(from url: URL, completion: @escaping (Data?) -> Void) {
-        task = URLSession.shared.dataTask(with: url) { data, _, _ in completion(data) }
-        task?.resume()
+        task = Task {
+            do {
+                let data = try await AppDI.shared.imageDataLoader.loadImageData(from: url)
+                completion(data)
+            } catch {
+                completion(nil)
+            }
+        }
     }
 
     func start(book: Book, imageURL: URL?, controller: PersistenceController,

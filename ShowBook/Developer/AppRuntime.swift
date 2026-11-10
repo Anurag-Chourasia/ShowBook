@@ -1,4 +1,5 @@
 import Foundation
+import Combine
 import CommonNetworkingKit
 
 /// Release behaviour is independent of any developer preferences left on a device.
@@ -83,6 +84,22 @@ enum AppNetworking {
     static func client(session: URLSession? = nil) -> CommonNetworkingKit.HTTPClient {
         context(session: session).client
     }
+
+    static func dataTaskPublisher(for url: URL, session: URLSession? = nil) -> AnyPublisher<(data: Data, response: URLResponse), Error> {
+        let transport = client(session: session)
+        return Future<(data: Data, response: URLResponse), Error> { promise in
+            Task {
+                do {
+                    let res = try await transport.send(URLRequest(url: url))
+                    promise(.success((data: res.data, response: res.response)))
+                } catch {
+                    promise(.failure(error))
+                }
+            }
+        }
+        .eraseToAnyPublisher()
+    }
+
     /// Capture the source once so a settings change during a request cannot mix cache environments.
     static func context(session: URLSession? = nil) -> (client: CommonNetworkingKit.HTTPClient, namespace: String) {
         #if DEBUG
