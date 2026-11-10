@@ -5,7 +5,7 @@ cd "$(dirname "$0")/.."
 echo "=== [ShowBook] Performance Lane: Throughput & Latency Baselines ==="
 START_TIME=$(date +%s)
 
-destination="${TEST_DESTINATION:-platform=iOS Simulator,name=iPhone 11}"
+destination="${TEST_DESTINATION:-platform=iOS Simulator,name=iPhone 11,OS=27.0}"
 result="${TEST_RESULT_PATH:-${RUNNER_TEMP:-/tmp}/ShowBookPerformance.xcresult}"
 rm -rf "$result"
 

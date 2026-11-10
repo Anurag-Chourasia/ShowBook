@@ -72,11 +72,11 @@ struct ShowcaseBadgeView: View {
             .padding(.horizontal, \.ten)
             .padding(.vertical, \.four)
             .background(.ultraThinMaterial)
-            .foregroundColor(ColorTheme.default.oceanAction)
+            .foregroundColor(\.action)
             .clipShape(Capsule())
             .overlay(
                 Capsule()
-                    .stroke(ColorTheme.default.oceanAction.opacity(OpacityTheme.default.p0_35), lineWidth: DesignMetricTheme.default.p1)
+                    .stroke(\.action, opacity: \.p0_35, lineWidth: \.one)
             )
         }
         .padding(.top, \.four)
@@ -159,7 +159,7 @@ private struct DebugSettingsPresenter: UIViewControllerRepresentable {
 }
 
 struct DeveloperSettingsView: View {
-    var buttonTitle = "Apply and close"
+    var buttonTitle = String(\ShowBookStrings.applyAndClose)
     var onContinue: () -> Void
     var cacheSummaryOverride: String?
     @AppStorage("developer.authentication") private var authentication = false
@@ -174,7 +174,19 @@ struct DeveloperSettingsView: View {
     @AppStorage("developer.build") private var build = ""
     @State private var cacheSummary = ""
 
-    private let diskCache = BookCatalogCache.shared
+    private let diskCache: BookCatalogCache
+
+    init(
+        buttonTitle: String = String(\ShowBookStrings.applyAndClose),
+        onContinue: @escaping () -> Void,
+        cacheSummaryOverride: String? = nil,
+        diskCache: BookCatalogCache = BookCatalogCache()
+    ) {
+        self.buttonTitle = buttonTitle
+        self.onContinue = onContinue
+        self.cacheSummaryOverride = cacheSummaryOverride
+        self.diskCache = diskCache
+    }
 
     var body: some View {
         Form {
@@ -235,39 +247,42 @@ struct DeveloperSettingsView: View {
                     Text(\.developerAuthentication)
                 }
                 .accessibilityIdentifier(.developerAuthentication)
-                Text(String(\ShowBookStrings.developerAuthNote))
+                Text(\ShowBookStrings.developerAuthNote)
 
-                Toggle(String(\ShowBookStrings.discover), isOn: $discover)
-                Toggle(String(\ShowBookStrings.detailsCoverPreview), isOn: $preview)
-                Toggle(String(\ShowBookStrings.developerRatings), isOn: $ratings)
+                Toggle(isOn: $discover) { Text(\.discover) }
+                Toggle(isOn: $preview) { Text(\.detailsCoverPreview) }
+                Toggle(isOn: $ratings) { Text(\.developerRatings) }
             }
             Section {
                 Toggle(isOn: $logs) {
                     Text(\.developerHttpLogs)
                 }
-                Text(String(\ShowBookStrings.developerLogsNote))
+                Text(\.developerLogsNote)
             } header: { Text(\.developerDebugLogs) }
             Section {
                 Picker(String(\.developerDataSource), selection: $source) {
-                    Text(String(\ShowBookStrings.developerLive)).tag("live")
-                    Text(String(\CommonStrings.developerSourceStub)).tag("stub")
+                    Text(\ShowBookStrings.developerLive).tag("live")
+                    Text(\CommonStrings.developerSourceStub).tag("stub")
                 }
                 if source == "stub" {
                     Picker(String(\.developerScenario), selection: $scenario) {
+                        Text(\.developerPresetShowcase).tag("showcase")
                         Text(\.developerScenarioSuccess).tag("success")
                         Text(\.developerScenarioEmpty).tag("empty")
                         Text(\.developerScenarioOffline).tag("offline")
                     }
                 }
-                Text(String(\ShowBookStrings.developerStubNote))
+                Text(\ShowBookStrings.developerStubNote)
             } header: { Text(\.developerEnvironment) }
             Section {
-                Picker(String(\ShowBookStrings.developerLayout), selection: $variant) {
-                    Text(String(\ShowBookStrings.developerLayoutA)).tag("A")
-                    Text(String(\ShowBookStrings.developerLayoutB)).tag("B")
+                Picker(selection: $variant) {
+                    Text(\.developerLayoutA).tag("A")
+                    Text(\.developerLayoutB).tag("B")
+                } label: {
+                    Text(\.developerLayout)
                 }
-                Text(String(\ShowBookStrings.developerExperimentNote))
-            } header: { Text(String(\ShowBookStrings.developerExperiment)) }
+                Text(\.developerExperimentNote)
+            } header: { Text(\.developerExperiment) }
             Section {
                 LabeledContent(String(\.developerInstalledVersion), value: AppRuntime.actualVersion)
                 LabeledContent(String(\.developerInstalledBuild), value: AppRuntime.actualBuild)
@@ -275,9 +290,11 @@ struct DeveloperSettingsView: View {
                     .textInputAutocapitalization(.never).autocorrectionDisabled()
                 TextField(String(\.developerSimulatedBuild), text: $build)
                     .textInputAutocapitalization(.never).autocorrectionDisabled()
-                Text(String(\ShowBookStrings.developerVersionNote))
+                Text(\.developerVersionNote)
             } header: { Text(\.developerVersionSimulation) }
-            Section(String(\ShowBookStrings.appearance)) { AppearanceMenu(title: String(\ShowBookStrings.appearance), systemTitle: String(\ShowBookStrings.appearanceSystem), lightTitle: String(\ShowBookStrings.light), darkTitle: String(\ShowBookStrings.dark)) }
+            Section(header: Text(\.appearance)) {
+                AppearanceMenu(title: String(\.appearance), systemTitle: String(\ShowBookStrings.appearanceSystem), lightTitle: String(\.light), darkTitle: String(\.dark))
+            }
             Section(header: Text(\.developerPrivacySupport)) {
                 Link(destination: URL(string: "https://github.com/Anurag-Chourasia/ShowBook/blob/main/Docs/PrivacyInventory.md")!) {
                     Label(Text(\.developerPrivacyPolicy), \.handRaised)
@@ -289,7 +306,7 @@ struct DeveloperSettingsView: View {
                 }
                 .accessibilityIdentifier(.developerSupport)
 
-                Text(String(\ShowBookStrings.developerPrivacy))
+                Text(\ShowBookStrings.developerPrivacy)
                     .font(\.caption)
                     .foregroundColor(\.secondary)
             }
@@ -307,7 +324,7 @@ struct DeveloperSettingsView: View {
         .navigationTitle(Text(\.developerSettingsTitle))
         .navigationBarTitleDisplayMode(.inline)
         .tint(\.primary)
-        .toggleStyle(SwitchToggleStyle(tint: ColorTheme.default.green))
+        .toggleStyle(SwitchToggleStyle(tint: DesignColor.green))
         .onAppear {
             refreshCacheSummary()
         }
@@ -320,9 +337,9 @@ struct DeveloperSettingsView: View {
         }
         let count = diskCache.cachedQueriesCount
         if count == 0 {
-            cacheSummary = "0 queries (0 KB)"
+            cacheSummary = String(\ShowBookStrings.developerCacheEmpty)
         } else {
-            cacheSummary = "\(count) queries (\(diskCache.formattedFileSize))"
+            cacheSummary = String(\ShowBookStrings.developerCacheSummary, arguments: [count, diskCache.formattedFileSize])
         }
     }
 }

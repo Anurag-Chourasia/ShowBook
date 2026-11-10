@@ -4,8 +4,8 @@ root=Path(__file__).resolve().parents[1]
 network_version=json.loads((root/'Scripts/dependencies.json').read_text())['commonnetworking']['version']
 with tempfile.TemporaryDirectory(prefix='showbook-adapter-') as temp:
  p=Path(temp);(p/'Sources/Adapter').mkdir(parents=True)
- for f in ['Models.swift', 'NetworkClass.swift']:
-     shutil.copy2(root / 'ShowBook/Model' / f, p / 'Sources/Adapter' / f)
+ shutil.copy2(root / 'ShowBook/Domain/Entities/Models.swift', p / 'Sources/Adapter/Models.swift')
+ shutil.copy2(root / 'ShowBook/Data/Network/NetworkClass.swift', p / 'Sources/Adapter/NetworkClass.swift')
  shutil.copy2(root/'ShowBook/Developer/AppRuntime.swift',p/'Sources/Adapter/AppRuntime.swift')
  shutil.copytree(root/'TestSupport/NetworkingTests',p/'Tests/AdapterTests')
  (p/'Sources/Adapter/Fixtures').mkdir()

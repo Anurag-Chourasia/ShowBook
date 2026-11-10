@@ -108,32 +108,33 @@ final class LocalizationAndRTLJourneyTests: XCTestCase {
 
     // MARK: - Auth Views Rendering Under RTL and Dynamic Type
 
-    func testLoginViewAndSignUpViewUnderRTL() {
+    func testLandingViewAndAuthViewUnderRTL() {
         let userViewModel = UserViewModel()
 
-        let rtlLoginView = LoginView()
+        let rtlLandingView = LandingView()
             .environmentObject(userViewModel)
             .environment(\.layoutDirection, .rightToLeft)
             .environment(\.dynamicTypeSize, .accessibility3)
 
-        let loginHost = UIHostingController(rootView: rtlLoginView)
-        loginHost.view.frame = CGRect(x: 0, y: 0, width: 390, height: 844)
-        loginHost.view.layoutIfNeeded()
+        let landingHost = UIHostingController(rootView: rtlLandingView)
+        landingHost.view.frame = CGRect(x: 0, y: 0, width: 390, height: 844)
+        landingHost.view.layoutIfNeeded()
 
-        XCTAssertNotNil(loginHost.view)
-        XCTAssertGreaterThan(loginHost.view.frame.height, 0)
+        XCTAssertNotNil(landingHost.view)
+        XCTAssertGreaterThan(landingHost.view.frame.height, 0)
 
-        let rtlSignUpView = SignUpView()
-            .environmentObject(userViewModel)
+        let rtlAuthView = AppAuthGate(brand: .showBook) { _, _ in
+            Text("OK")
+        }
             .environment(\.layoutDirection, .rightToLeft)
             .environment(\.dynamicTypeSize, .accessibility3)
 
-        let signUpHost = UIHostingController(rootView: rtlSignUpView)
-        signUpHost.view.frame = CGRect(x: 0, y: 0, width: 390, height: 844)
-        signUpHost.view.layoutIfNeeded()
+        let authHost = UIHostingController(rootView: rtlAuthView)
+        authHost.view.frame = CGRect(x: 0, y: 0, width: 390, height: 844)
+        authHost.view.layoutIfNeeded()
 
-        XCTAssertNotNil(signUpHost.view)
-        XCTAssertGreaterThan(signUpHost.view.frame.height, 0)
+        XCTAssertNotNil(authHost.view)
+        XCTAssertGreaterThan(authHost.view.frame.height, 0)
     }
 
     // MARK: - AppAuthGate Integration with AuthLocalizing

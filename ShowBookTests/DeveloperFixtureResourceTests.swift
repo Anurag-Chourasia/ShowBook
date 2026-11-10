@@ -46,5 +46,13 @@ final class DeveloperFixtureResourceTests: XCTestCase {
             XCTAssertEqual(error.code, .notConnectedToInternet)
         }
     }
+
+    func testShowBookStubProviderLoadsCatalog() throws {
+        let data = try ShowBookStubProvider.developerCatalogData()
+        XCTAssertFalse(data.isEmpty)
+        let book = ShowBookStubProvider.stubBook()
+        XCTAssertEqual(book.title, "Fixture Book")
+        XCTAssertEqual(book.authorName, ["Fixture Author"])
+    }
 }
 #endif

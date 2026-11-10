@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>SUPABASE_URL</key>
-	<string>https://ulszjssbmmfnheemfwiy.supabase.co</string>
+	<string>$(SUPABASE_URL)</string>
 	<key>SUPABASE_PUBLISHABLE_KEY</key>
-	<string>sb_publishable_1E6uHLzc52xPFVTrT7tl7Q_x2udH9R2</string>
+	<string>$(SUPABASE_PUBLISHABLE_KEY)</string>
 	<key>AUTH_CALLBACK_URL</key>
 	<string>showbook-auth://auth/callback</string>
 	<key>AUTHKIT_ENABLED</key>

@@ -1,0 +1,73 @@
+//
+//  BookmarkButton.swift
+//  ShowBook
+//
+//  Created by Anurag Chourasia on 17/08/24.
+//
+
+import SwiftUI
+import UIComponentsKit
+import DesignTokensKit
+import LocalizationKit
+
+struct BookmarkButton: View {
+    @StateObject private var viewModel: BookmarkButtonViewModel
+    var book: Book
+    var imageUrl: URL?
+
+    init(book: Book, imageUrl: URL? = nil, persistenceController: PersistenceController) {
+        self.book = book
+        self.imageUrl = imageUrl
+        _viewModel = StateObject(wrappedValue: BookmarkButtonViewModel(persistenceController: persistenceController))
+    }
+
+    init(book: Book, imageUrl: URL? = nil, bookmarkRepository: any BookmarkRepositoryProtocol, persistenceController: PersistenceController) {
+        self.book = book
+        self.imageUrl = imageUrl
+        _viewModel = StateObject(wrappedValue: BookmarkButtonViewModel(bookmarkRepository: bookmarkRepository, persistenceController: persistenceController))
+    }
+
+    #if DEBUG
+    init(book: Book, imageUrl: URL? = nil) {
+        self.init(book: book, imageUrl: imageUrl, persistenceController: PersistenceController.inMemory())
+    }
+    #endif
+
+    init(book: Book, imageUrl: URL? = nil, viewModel: @autoclosure @escaping () -> BookmarkButtonViewModel) {
+        self.book = book
+        self.imageUrl = imageUrl
+        _viewModel = StateObject(wrappedValue: viewModel())
+    }
+    
+    var body: some View {
+        SelectionToggleButton(
+            isSelected: viewModel.isBookmarked,
+            selectedLabel: String(\.bookmarkRemove),
+            unselectedLabel: String(\.bookmarkAdd),
+            action: viewModel.toggleBookmark
+        ) {
+            bookmarkImage
+        }
+        .accessibilityValue(book.title)
+        .onAppear {
+            viewModel.configure(book: book, imageUrl: imageUrl)
+        }
+    }
+    
+    private var bookmarkImage: some View {
+        Image(viewModel.isBookmarked ? \.bookmarkFill : \.bookmark)
+            .foregroundColor(viewModel.isBookmarked ? \.white : \.green)
+            .padding(\.eight)
+            .frame(minWidth: TouchTarget.minimum, minHeight: TouchTarget.minimum)
+            .background(viewModel.isBookmarked ? \.green : \.groupedSecondary)
+            .clipShape(Circle())
+            .shadow(radius: DesignMetric.p3)
+    }
+}
+
+#Preview {
+    BookmarkButton(
+        book: ShowBookStubProvider.stubBook(),
+        imageUrl: nil
+    )
+}

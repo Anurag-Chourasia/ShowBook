@@ -29,59 +29,40 @@ final class UserViewModelTests: XCTestCase {
     override func tearDown() {
         super.tearDown()
         UserDefaults.standard.removeObject(forKey: "LoggedInUserEmail")
+        UserDefaults.standard.removeObject(forKey: "LoggedInUserUUID")
         viewModel = nil
-        mockPersistenceController.deleteUser(email: "user@example.com")
         mockPersistenceController = nil
-        
     }
     
     func testCheck_LoginStatusWhenUserIsLoggedIn() {
         // Given
-        let email = "user@example.com"
-        UserDefaults.standard.set(email, forKey: "LoggedInUserEmail")
+        let uuid = UUID()
+        UserDefaults.standard.set(uuid.uuidString, forKey: "LoggedInUserUUID")
         
-        // Save user and then test the login status
-        if mockPersistenceController.saveUser(email: email, password: "Qwe@12345") {
-            
-                self.viewModel.checkLoginStatus()
+        self.viewModel.checkLoginStatus()
 
-                XCTAssertTrue(self.viewModel.isLoggedIn, "User should be logged in when a valid email is found in UserDefaults and the user is successfully logged in.")
-        } else {
-            XCTAssertFalse(mockPersistenceController.doesUserExist(email: email), "User is not saved")
-        }
+        XCTAssertTrue(self.viewModel.isLoggedIn, "User should be logged in when a valid UUID is found in UserDefaults.")
     }
-
     
     func testCheck_LoginStatusWhenUserIsNotLoggedIn() {
-        let email = "user@example.com"
-        UserDefaults.standard.set(email, forKey: "LoggedInUserEmail")
-        if mockPersistenceController.saveUser(email: email, password: "Qwe@12345"){
-            self.mockPersistenceController.logOutUser(email: email)
-            self.viewModel.checkLoginStatus()
-            print("testCheck_LoginStatusWhenUserIsNotLoggedIn ========= ",self.viewModel.isLoggedIn)
-            XCTAssertFalse(self.viewModel.isLoggedIn, "User should not be logged in when no user is found in the persistence controller.")
-        }else{
-            XCTAssertFalse(mockPersistenceController.doesUserExist(email: email), "User is not saved")
-        }
+        UserDefaults.standard.removeObject(forKey: "LoggedInUserUUID")
+        self.viewModel.checkLoginStatus()
+        XCTAssertFalse(self.viewModel.isLoggedIn, "User should not be logged in when no UUID is found in UserDefaults.")
     }
     
     func testCheck_LoginStatusWhenNoEmailInUserDefaults() {
-        UserDefaults.standard.removeObject(forKey: "LoggedInUserEmail")
+        UserDefaults.standard.removeObject(forKey: "LoggedInUserUUID")
         self.viewModel.checkLoginStatus()
-        print("testCheck_LoginStatusWhenNoEmailInUserDefaults ========= ",self.viewModel.isLoggedIn)
-        XCTAssertFalse(self.viewModel.isLoggedIn, "User should not be logged in when no email is found in UserDefaults.")
+        XCTAssertFalse(self.viewModel.isLoggedIn, "User should not be logged in when no UUID is found in UserDefaults.")
     }
     
     func testCheck_Logout() {
-        let email = "user@example.com"
-        UserDefaults.standard.set(email, forKey: "LoggedInUserEmail")
-        if mockPersistenceController.saveUser(email: email, password: "Qwe@12345"){
-            self.viewModel.checkLoginStatus()
-            self.viewModel.logout()
-            print("testCheck_Logout ========= ",self.viewModel.isLoggedIn)
-            XCTAssertNil(UserDefaults.standard.value(forKey: "LoggedInUserEmail"), "LoggedInUserEmail should be removed from UserDefaults after logout.")
-            XCTAssertFalse(self.viewModel.isLoggedIn, "User should be logged out.")
-        }
+        let uuid = UUID()
+        UserDefaults.standard.set(uuid.uuidString, forKey: "LoggedInUserUUID")
+        self.viewModel.checkLoginStatus()
+        self.viewModel.logout()
+        XCTAssertNil(UserDefaults.standard.value(forKey: "LoggedInUserUUID"), "LoggedInUserUUID should be removed from UserDefaults after logout.")
+        XCTAssertFalse(self.viewModel.isLoggedIn, "User should be logged out.")
     }
     
 //    func createInMemoryPersistentContainer() -> NSPersistentContainer {
@@ -189,6 +170,17 @@ final class AuthenticationFlagTests: XCTestCase {
         defaults.removeObject(forKey: "developer.scenario")
         #endif
     }
+
+    func testSupabaseConfigurationIsResolvedFromBuildConfiguration() {
+        let bundle = Bundle.main
+        if let supabaseURL = bundle.object(forInfoDictionaryKey: "SUPABASE_URL") as? String {
+            XCTAssertFalse(supabaseURL.contains("$("), "SUPABASE_URL must be resolved by xcconfig, not raw macro string")
+            XCTAssertTrue(supabaseURL.starts(with: "https://"), "Resolved SUPABASE_URL must be a valid https URL")
+        }
+        if let key = bundle.object(forInfoDictionaryKey: "SUPABASE_PUBLISHABLE_KEY") as? String {
+            XCTAssertFalse(key.contains("$("), "SUPABASE_PUBLISHABLE_KEY must be resolved by xcconfig, not raw macro string")
+        }
+    }
 }
 
 @MainActor
@@ -218,22 +210,19 @@ final class IdentityActivationRecoveryTests: XCTestCase {
 
     private func seed(owner: UUID? = nil) throws {
         let context = persistence.container.viewContext
-        let user = try XCTUnwrap(NSEntityDescription.insertNewObject(forEntityName: "UserEntity", into: context) as? UserEntity)
-        user.email = email
-        user.userUUID = owner
         let book = try XCTUnwrap(NSEntityDescription.insertNewObject(forEntityName: "BookEntity", into: context) as? BookEntity)
         book.title = "Preserved legacy book"
         book.email = email
         book.userUUID = owner
+        book.ownerID = owner?.uuidString.lowercased()
         try context.save()
     }
 
-    private func owners() throws -> (UUID?, [UUID?]) {
+    private func owners() throws -> [UUID?] {
         let context = persistence.container.newBackgroundContext()
         return try context.performAndWait {
-            let users = try context.fetch(UserEntity.fetchRequest())
             let books = try context.fetch(BookEntity.fetchRequest())
-            return (users.first?.userUUID, books.map(\.userUUID))
+            return books.map(\.userUUID)
         }
     }
 
@@ -250,8 +239,7 @@ final class IdentityActivationRecoveryTests: XCTestCase {
         XCTAssertFalse(model.isLoggedIn)
         XCTAssertNotNil(model.activationError)
         XCTAssertNil(UserDefaults.standard.string(forKey: "LoggedInUserUUID"))
-        XCTAssertNil(try owners().0)
-        XCTAssertEqual(try owners().1, [nil])
+        XCTAssertEqual(try owners(), [nil])
         model.checkLoginStatus()
         XCTAssertFalse(model.isLoggedIn)
 
@@ -259,8 +247,7 @@ final class IdentityActivationRecoveryTests: XCTestCase {
         XCTAssertTrue(model.isLoggedIn)
         XCTAssertNil(model.activationError)
         XCTAssertEqual(model.currentUserUUID, uuid)
-        XCTAssertEqual(try owners().0, uuid)
-        XCTAssertEqual(try owners().1, [uuid])
+        XCTAssertEqual(try owners(), [uuid])
     }
 
     func testFinalSaveFailureRollsBackLinkAndBookmarkTogether() throws {
@@ -272,14 +259,12 @@ final class IdentityActivationRecoveryTests: XCTestCase {
         model.activateCloudAccount(email: email, uuid: uuid) {}
         XCTAssertFalse(model.isLoggedIn)
         XCTAssertNotNil(model.activationError)
-        XCTAssertNil(try owners().0)
-        XCTAssertEqual(try owners().1, [nil])
+        XCTAssertEqual(try owners(), [nil])
         XCTAssertNil(UserDefaults.standard.string(forKey: "LoggedInUserUUID"))
 
         model.migrateIdentity = { try $0.activateCloudIdentity(email: $1, uuid: $2) }
         model.retryCloudActivation()
-        XCTAssertEqual(try owners().0, uuid)
-        XCTAssertEqual(try owners().1, [uuid])
+        XCTAssertEqual(try owners(), [uuid])
         XCTAssertTrue(model.isLoggedIn)
     }
 
@@ -289,8 +274,7 @@ final class IdentityActivationRecoveryTests: XCTestCase {
         model.activateCloudAccount(email: email, uuid: UUID()) {}
         XCTAssertFalse(model.isLoggedIn)
         XCTAssertNotNil(model.activationError)
-        XCTAssertEqual(try owners().0, original)
-        XCTAssertEqual(try owners().1, [original])
+        XCTAssertEqual(try owners(), [original])
     }
 
     func testIdempotentActivationAndRelaunchKeepCommittedIdentity() throws {
@@ -299,12 +283,12 @@ final class IdentityActivationRecoveryTests: XCTestCase {
         model.activateCloudAccount(email: email, uuid: uuid) {}
         model.activateCloudAccount(email: email, uuid: uuid) {}
         XCTAssertTrue(model.isLoggedIn)
-        XCTAssertEqual(try owners().1, [uuid])
+        XCTAssertEqual(try owners(), [uuid])
         let restored = UserViewModel(persistenceController: persistence)
         restored.activateCloudAccount(email: email, uuid: uuid) {}
         XCTAssertTrue(restored.isLoggedIn)
         XCTAssertEqual(restored.currentUserUUID, uuid)
-        XCTAssertEqual(try owners().1, [uuid])
+        XCTAssertEqual(try owners(), [uuid])
     }
 
     func testAbandonDelegatesSignOutWithoutDeletingLegacyData() throws {
@@ -315,7 +299,7 @@ final class IdentityActivationRecoveryTests: XCTestCase {
         model.abandonCloudActivation()
         XCTAssertTrue(signedOut)
         XCTAssertNil(model.activationError)
-        XCTAssertEqual(try owners().1, [nil])
+        XCTAssertEqual(try owners(), [nil])
         model.retryCloudActivation()
         XCTAssertFalse(model.isLoggedIn)
     }
@@ -325,6 +309,6 @@ final class IdentityActivationRecoveryTests: XCTestCase {
         try seed(owner: original)
         let context = persistence.container.viewContext
         XCTAssertEqual(try PersistenceController.migrateBookmarks(fromEmail: email, toUUID: UUID(), in: context), 0)
-        XCTAssertEqual(try owners().1, [original])
+        XCTAssertEqual(try owners(), [original])
     }
 }

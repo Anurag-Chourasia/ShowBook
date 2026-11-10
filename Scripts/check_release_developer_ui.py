@@ -13,7 +13,7 @@ for marker in [b'Developer settings', b'developer.source', b'developer.httpLogs'
     pattern = re.escape(marker) + rb'(?![A-Za-z0-9_.])'
     if re.search(pattern, binary):
         raise SystemExit(f'Debug-only marker in Release: {marker.decode()}')
-for marker in [b'DeveloperSettingsView', b'DeveloperStubProtocol']:
+for marker in [b'DeveloperSettingsView', b'DeveloperStubProtocol', b'ShowBookDeveloperView']:
     # Coverage metadata can retain the source filename after #if DEBUG exclusion.
     # Match the actual Swift type symbol, not a filename substring.
     if re.search(rb'\$s8ShowBook[0-9]+' + marker + rb'[VC]', binary):

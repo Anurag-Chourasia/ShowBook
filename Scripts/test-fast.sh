@@ -23,7 +23,7 @@ echo "--> Running deterministic networking adapter tests..."
 python3 TestSupport/run-networking-tests.py
 
 # 3. Fast unit tests on iOS Simulator
-destination="${TEST_DESTINATION:-platform=iOS Simulator,name=iPhone 11}"
+destination="${TEST_DESTINATION:-platform=iOS Simulator,name=iPhone 11,OS=27.0}"
 result="${TEST_RESULT_PATH:-${RUNNER_TEMP:-/tmp}/ShowBookFast.xcresult}"
 rm -rf "$result"
 
@@ -38,16 +38,25 @@ xcrun xcodebuild test -project ShowBook.xcodeproj -scheme ShowBook \
     -scmProvider system CODE_SIGNING_ALLOWED=NO \
     -only-testing:ShowBookTests/DeveloperFixtureResourceTests \
     -only-testing:ShowBookTests/BookItemViewModelTests \
+    -only-testing:ShowBookTests/BookDetailsTests \
     -only-testing:ShowBookTests/BookmarkSaveLifetimeTests \
     -only-testing:ShowBookTests/BookmarkButtonViewModelTests \
     -only-testing:ShowBookTests/TextFieldObserverTests \
     -only-testing:ShowBookTests/PrivacyManifestTests \
-    -only-testing:ShowBookTests/LoginViewModelTests \
-    -only-testing:ShowBookTests/CredentialStorageTests \
-    -only-testing:ShowBookTests/SignUpViewModelTests \
     -only-testing:ShowBookTests/UserViewModelTests \
     -only-testing:ShowBookTests/IdentityActivationRecoveryTests \
-    -only-testing:ShowBookTests/AuthenticationFlagTests
+    -only-testing:ShowBookTests/AuthenticationFlagTests \
+    -only-testing:ShowBookTests/DomainUseCasesTests \
+    -only-testing:ShowBookTests/DashboardViewModelTests \
+    -only-testing:ShowBookTests/BookmarkViewModelTests \
+    -only-testing:ShowBookTests/PersistenceRelationshipTests \
+    -only-testing:ShowBookTests/BookmarkUUIDMigrationTests \
+    -only-testing:ShowBookTests/RiskBasedIsolationAndConcurrencyTests \
+    -only-testing:ShowBookTests/DiscoverServiceTests
+
+# 4. Governance Coverage Gate
+echo "--> Verifying governance coverage thresholds (Domain/Data >= 85%, ViewModels >= 80%)..."
+python3 Scripts/check_coverage.py "$result" --governance
 
 END_TIME=$(date +%s)
 ELAPSED=$((END_TIME - START_TIME))

@@ -1,4 +1,5 @@
 import Foundation
+import Combine
 import CommonNetworkingKit
 
 /// Release behaviour is independent of any developer preferences left on a device.
@@ -83,6 +84,22 @@ enum AppNetworking {
     static func client(session: URLSession? = nil) -> CommonNetworkingKit.HTTPClient {
         context(session: session).client
     }
+
+    static func dataTaskPublisher(for url: URL, session: URLSession? = nil) -> AnyPublisher<(data: Data, response: URLResponse), Error> {
+        let transport = client(session: session)
+        return Future<(data: Data, response: URLResponse), Error> { promise in
+            Task {
+                do {
+                    let res = try await transport.send(URLRequest(url: url))
+                    promise(.success((data: res.data, response: res.response)))
+                } catch {
+                    promise(.failure(error))
+                }
+            }
+        }
+        .eraseToAnyPublisher()
+    }
+
     /// Capture the source once so a settings change during a request cannot mix cache environments.
     static func context(session: URLSession? = nil) -> (client: CommonNetworkingKit.HTTPClient, namespace: String) {
         #if DEBUG
@@ -170,5 +187,42 @@ class DeveloperStubProtocol: URLProtocol {
 final class EmptyStubProtocol: DeveloperStubProtocol { override class var scenario: String { "empty" } }
 final class OfflineStubProtocol: DeveloperStubProtocol { override class var scenario: String { "offline" } }
 final class ShowcaseStubProtocol: DeveloperStubProtocol { override class var scenario: String { "showcase" } }
+
+/// Structured preview and test stub data provider backed by AppStubData shared fixtures.
+enum ShowBookStubProvider {
+    enum Scenario: String, CaseIterable, Sendable {
+        case success, empty, showcase, offline
+    }
+
+    private final class BundleMarker {}
+
+    static func developerCatalogData() throws -> Data {
+        #if SWIFT_PACKAGE
+        let bundle = Bundle.module
+        let directory: String? = nil
+        #else
+        let bundle = Bundle(for: BundleMarker.self)
+        let directory: String? = "DeveloperFixtures"
+        #endif
+        if let file = bundle.url(forResource: "showbook-developer-responses", withExtension: "json", subdirectory: directory) {
+            return try Data(contentsOf: file)
+        }
+        if let file = Bundle.main.url(forResource: "showbook-developer-responses", withExtension: "json", subdirectory: "DeveloperFixtures") {
+            return try Data(contentsOf: file)
+        }
+        throw CocoaError(.fileNoSuchFile)
+    }
+
+    static func stubBook() -> Book {
+        Book(
+            title: "Fixture Book",
+            ratingsAverage: 4.5,
+            ratingsCount: 7,
+            authorName: ["Fixture Author"],
+            coverI: 123,
+            image: nil
+        )
+    }
+}
 
 #endif

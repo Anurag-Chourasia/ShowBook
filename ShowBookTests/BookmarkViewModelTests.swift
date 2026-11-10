@@ -198,21 +198,14 @@ final class BookmarkUUIDMigrationTests: XCTestCase {
         super.tearDown()
     }
 
-    func testExplicitLocalAccountLinking() throws {
-        let email = "localuser@example.com"
-        let uuid = UUID()
-        let context = persistence.container.viewContext
-
-        XCTAssertTrue(persistence.saveUser(email: email, password: "SecretPassword123!"))
-
-        let linkedUser = try PersistenceController.linkLocalAccount(email: email, toUUID: uuid, in: context)
-        XCTAssertNotNil(linkedUser)
-        XCTAssertEqual(linkedUser?.userUUID, uuid)
-        XCTAssertEqual(linkedUser?.email, email)
-        XCTAssertNotNil(linkedUser?.passwordHash, "Legacy passwordHash must be preserved after linking")
-
-        let nonExistent = try PersistenceController.linkLocalAccount(email: "nobody@example.com", toUUID: UUID(), in: context)
-        XCTAssertNil(nonExistent)
+    func testModelV7DropsUserEntity() throws {
+        let model = PersistenceController.managedObjectModel()
+        XCTAssertNil(model.entitiesByName["UserEntity"], "UserEntity must be removed from Core Data model V7")
+        XCTAssertNotNil(model.entitiesByName["BookEntity"])
+        XCTAssertNotNil(model.entitiesByName["CountryEntity"])
+        XCTAssertNotNil(model.entitiesByName["DatumEntity"])
+        XCTAssertNotNil(model.entitiesByName["RegionEntity"])
+        XCTAssertNotNil(model.entitiesByName["UserPreference"])
     }
 
     func testEmailToUUIDBookmarkMigration() throws {
@@ -296,42 +289,18 @@ final class BookmarkUUIDMigrationTests: XCTestCase {
         XCTAssertEqual(bookmarkViewModel.bookmarkBooks.count, 0)
     }
 
-    func testFlagTransitionsPreserveLegacyHashingAndRecords() throws {
+    func testV7ModelPreservesBookmarksAndPreferences() throws {
         let email = "hybrid@example.com"
-        let password = "HybridPassword123!"
-
-        UserDefaults.standard.set(false, forKey: "developer.authentication")
-        XCTAssertTrue(persistence.saveUser(email: email, password: password))
-
-        let localUser = try XCTUnwrap(persistence.fetchUser(email: email))
-        let initialHash = localUser.passwordHash
-        XCTAssertNotNil(initialHash)
-
-        UserDefaults.standard.set(email, forKey: "LoggedInUserEmail")
-        let localBook = Book(title: "Local Story", ratingsAverage: 4.2, ratingsCount: 3, authorName: ["Local Author"], coverI: 50, image: nil)
-        persistence.saveBook(localBook, imageData: nil)
-        XCTAssertTrue(persistence.doesBookExist(title: "Local Story", authors: ["Local Author"]))
-
-        UserDefaults.standard.set(true, forKey: "developer.authentication")
         let cloudUUID = UUID()
         userViewModel.activateCloudAccount(email: email, uuid: cloudUUID) {}
+
+        let book = Book(title: "Local Story", ratingsAverage: 4.2, ratingsCount: 3, authorName: ["Local Author"], coverI: 50, image: nil)
+        persistence.saveBook(book, imageData: nil)
+        XCTAssertTrue(persistence.doesBookExist(title: "Local Story", authors: ["Local Author"]))
 
         let migratedBooks = persistence.fetchBooks()
         XCTAssertEqual(migratedBooks.count, 1)
         XCTAssertEqual(migratedBooks.first?.title, "Local Story")
-
-        UserDefaults.standard.set(false, forKey: "developer.authentication")
-        userViewModel.clearCloudAccount()
-        UserDefaults.standard.set(email, forKey: "LoggedInUserEmail")
-
-        let preservedUser = try XCTUnwrap(persistence.fetchUser(email: email))
-        XCTAssertEqual(preservedUser.passwordHash, initialHash)
-        let hash = try XCTUnwrap(preservedUser.passwordHash)
-        XCTAssertTrue(try PasswordCredential.verify(password, encoded: hash))
-
-        let fallbackBooks = persistence.fetchBooks()
-        XCTAssertEqual(fallbackBooks.count, 1)
-        XCTAssertEqual(fallbackBooks.first?.title, "Local Story")
     }
 
     func testFailedMigrationRollbackPreservesOriginalRecords() throws {
@@ -411,5 +380,133 @@ final class BookmarkUUIDMigrationTests: XCTestCase {
         XCTAssertTrue(controller.isStoreLoaded)
         XCTAssertNil(controller.storeLoadError)
         #endif
+    }
+
+    func testModelV6ContainsUserPreferenceAndBookmarkOwnerID() throws {
+        let model = PersistenceController.managedObjectModel()
+        guard let bookEntity = model.entitiesByName["BookEntity"] else {
+            XCTFail("BookEntity not found in model")
+            return
+        }
+        XCTAssertNotNil(bookEntity.attributesByName["ownerID"], "BookEntity must contain ownerID attribute in V6")
+
+        guard let userPreferenceEntity = model.entitiesByName["UserPreference"] else {
+            XCTFail("UserPreference entity not found in model V6")
+            return
+        }
+        XCTAssertNotNil(userPreferenceEntity.attributesByName["ownerID"])
+        XCTAssertNotNil(userPreferenceEntity.attributesByName["selectedCountryName"])
+        XCTAssertNotNil(userPreferenceEntity.attributesByName["userUUID"])
+    }
+
+    func testUserPreferenceSavesAndFetchesCountry() throws {
+        let testCountry = "Germany"
+        persistence.saveDefaultCountryName(selectedCountryName: testCountry)
+        XCTAssertEqual(persistence.fetchSelectedCountryName(), testCountry)
+
+        // Verify UserPreference managed object
+        let context = persistence.container.viewContext
+        let request: NSFetchRequest<UserPreference> = UserPreference.fetchRequest()
+        let prefs = try context.fetch(request)
+        XCTAssertFalse(prefs.isEmpty)
+        XCTAssertEqual(prefs.first?.selectedCountryName, testCountry)
+    }
+
+    func testBookmarkOwnerIDSavedAndMigrated() throws {
+        let email = "v6owner@example.com"
+        let uuid = UUID()
+        let context = persistence.container.viewContext
+
+        createBookEntity(in: context, title: "V6 Book", email: email, userUUID: nil)
+        try context.save()
+
+        let migrated = try PersistenceController.migrateBookmarks(fromEmail: email, toUUID: uuid, in: context)
+        XCTAssertEqual(migrated, 1)
+
+        let request: NSFetchRequest<BookEntity> = BookEntity.fetchRequest()
+        request.predicate = NSPredicate(format: "title == %@", "V6 Book")
+        let book = try context.fetch(request).first
+        XCTAssertNotNil(book)
+        XCTAssertEqual(book?.userUUID, uuid)
+        XCTAssertEqual(book?.ownerID, uuid.uuidString.lowercased())
+
+        let rolledBack = try PersistenceController.rollbackBookmarkMigration(forUUID: uuid, in: context)
+        XCTAssertEqual(rolledBack, 1)
+        XCTAssertNil(book?.userUUID)
+        XCTAssertNil(book?.ownerID)
+    }
+
+    func testFirstSignInRekeysAnonymousBookmarksToAuthKitUser() throws {
+        let authUUID = UUID()
+        let authEmail = "newauth@example.com"
+        let context = persistence.container.viewContext
+
+        createBookEntity(in: context, title: "Anon Book 1", email: "", userUUID: nil)
+        createBookEntity(in: context, title: "Anon Book 2", email: "", userUUID: nil)
+        try context.save()
+
+        userViewModel.activateCloudAccount(email: authEmail, uuid: authUUID) {}
+        XCTAssertEqual(userViewModel.currentUserUUID, authUUID)
+
+        let request: NSFetchRequest<BookEntity> = BookEntity.fetchRequest()
+        let books = try context.fetch(request)
+        XCTAssertEqual(books.count, 2)
+        for book in books {
+            XCTAssertEqual(book.userUUID, authUUID)
+            XCTAssertEqual(book.ownerID, authUUID.uuidString.lowercased())
+            XCTAssertEqual(book.email, authEmail)
+        }
+
+        bookmarkViewModel.loadBookmarks()
+        XCTAssertEqual(bookmarkViewModel.bookmarkBooks.count, 2)
+    }
+
+    func testFirstSignInRekeyViaRepository() throws {
+        let repo = BookmarkRepositoryImpl(persistenceController: persistence)
+        let authUUID = UUID()
+        let email = "rekeyrepo@example.com"
+        let context = persistence.container.viewContext
+
+        createBookEntity(in: context, title: "Repo Rekey Book", email: email, userUUID: nil)
+        try context.save()
+
+        let count = try repo.rekeyBookmarks(fromEmail: email, toUUID: authUUID)
+        XCTAssertEqual(count, 1)
+
+        let idempotentCount = try repo.rekeyBookmarks(fromEmail: email, toUUID: authUUID)
+        XCTAssertEqual(idempotentCount, 0)
+
+        let request: NSFetchRequest<BookEntity> = BookEntity.fetchRequest()
+        request.predicate = NSPredicate(format: "title == %@", "Repo Rekey Book")
+        let book = try context.fetch(request).first
+        XCTAssertEqual(book?.userUUID, authUUID)
+        XCTAssertEqual(book?.ownerID, authUUID.uuidString.lowercased())
+    }
+
+    func testFirstSignInRekeyPreservesIsolationBetweenDifferentAccounts() throws {
+        let userAUUID = UUID()
+        let userAEmail = "userA.isolated@example.com"
+        let userBUUID = UUID()
+        let userBEmail = "userB.isolated@example.com"
+        let context = persistence.container.viewContext
+
+        let bookA = createBookEntity(in: context, title: "User A Book", email: userAEmail, userUUID: userAUUID)
+        bookA.ownerID = userAUUID.uuidString.lowercased()
+
+        createBookEntity(in: context, title: "Unowned Local Book", email: "", userUUID: nil)
+        try context.save()
+
+        userViewModel.activateCloudAccount(email: userBEmail, uuid: userBUUID) {}
+        XCTAssertEqual(userViewModel.currentUserUUID, userBUUID)
+
+        bookmarkViewModel.loadBookmarks()
+        XCTAssertEqual(bookmarkViewModel.bookmarkBooks.count, 1)
+        XCTAssertEqual(bookmarkViewModel.bookmarkBooks.first?.title, "Unowned Local Book")
+
+        let request: NSFetchRequest<BookEntity> = BookEntity.fetchRequest()
+        request.predicate = NSPredicate(format: "title == %@", "User A Book")
+        let fetchedBookA = try context.fetch(request).first
+        XCTAssertEqual(fetchedBookA?.userUUID, userAUUID)
+        XCTAssertEqual(fetchedBookA?.ownerID, userAUUID.uuidString.lowercased())
     }
 }

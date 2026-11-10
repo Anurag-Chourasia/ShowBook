@@ -10,7 +10,7 @@ if [[ "${CI:-}" != "" && ( "${RECORD_SNAPSHOTS:-0}" == 1 || "${SNAPSHOT_RECORD:-
     echo "CI cannot record snapshots" >&2; exit 1
 fi
 
-destination="${TEST_DESTINATION:-platform=iOS Simulator,name=iPhone 11}"
+destination="${TEST_DESTINATION:-platform=iOS Simulator,name=iPhone 11,OS=27.0}"
 result="${TEST_RESULT_PATH:-${RUNNER_TEMP:-/tmp}/ShowBookSmoke.xcresult}"
 rm -rf "$result"
 
