@@ -83,7 +83,11 @@ final class DiscoverViewModel: ObservableObject {
     @Published private(set) var cachedAt: Date?
     private var requestID = UUID()
     private let service: any DiscoverServing
-    init(service: any DiscoverServing = DiscoverService.shared) { self.service = service }
+    init(service: any DiscoverServing) { self.service = service }
+
+    #if DEBUG
+    convenience init() { self.init(service: DiscoverService()) }
+    #endif
     func load(_ category: DiscoverCategory, refresh: Bool = false) async {
         let id = UUID(); requestID = id
         loading = true; message = nil; cachedAt = nil; books = []

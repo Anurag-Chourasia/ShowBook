@@ -14,9 +14,15 @@ struct LoginView: View {
     @EnvironmentObject var userViewModel: UserViewModel
     @StateObject private var viewModel: LoginViewModel
 
-    init(persistenceController: PersistenceController = .shared) {
+    init(persistenceController: PersistenceController) {
         _viewModel = StateObject(wrappedValue: LoginViewModel(persistenceController: persistenceController))
     }
+
+    #if DEBUG
+    init() {
+        self.init(persistenceController: PersistenceController.inMemory())
+    }
+    #endif
 
     init(viewModel: @autoclosure @escaping () -> LoginViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel())

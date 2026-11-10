@@ -15,6 +15,7 @@ class BookItemViewModel: ObservableObject {
     @Published var showBookmarkButton: Bool = false
 
     private var persistenceController: PersistenceController
+    private var bookmarkRepository: any BookmarkRepositoryProtocol
     private let bookmarkSave = BookmarkSaveRequest()
     private var bookItem: Book
     private var imageUrl: URL?
@@ -27,16 +28,24 @@ class BookItemViewModel: ObservableObject {
         imageUrl
     }
 
-    init(item: Book, persistenceController: PersistenceController = .shared) {
+    init(item: Book, bookmarkRepository: (any BookmarkRepositoryProtocol)? = nil, persistenceController: PersistenceController) {
         self.persistenceController = persistenceController
+        self.bookmarkRepository = bookmarkRepository ?? BookmarkRepositoryImpl(persistenceController: persistenceController)
         self.bookItem = item
         self.imageUrl = URL(string: "https://covers.openlibrary.org/b/id/\(item.coverI ?? 0)-M.jpg")
         fetchInitialState()
     }
+
+    #if DEBUG
+    convenience init(item: Book) {
+        self.init(item: item, persistenceController: PersistenceController.inMemory())
+    }
+    #endif
     
     func setUpPersistenceController(controller: PersistenceController) {
         bookmarkSave.cancel()
         self.persistenceController = controller
+        self.bookmarkRepository = BookmarkRepositoryImpl(persistenceController: controller)
         fetchInitialState()
     }
 
@@ -54,16 +63,12 @@ class BookItemViewModel: ObservableObject {
             }
         } else {
             bookmarkSave.cancel()
-            persistenceController.deleteBook(bookItem)
+            bookmarkRepository.deleteBook(bookItem)
         }
     }
     
     func fetchInitialState() {
-        if let existingBook = persistenceController.bookExists(bookItem), existingBook.title == bookItem.title {
-            isBookmarked = true
-        } else {
-            isBookmarked = false
-        }
+        isBookmarked = bookmarkRepository.isBookmarked(bookItem)
         authorNames = bookItem.authorName?.joined(separator: ", ") ?? ""
     }
     

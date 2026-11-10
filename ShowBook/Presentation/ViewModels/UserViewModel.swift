@@ -22,10 +22,16 @@ class UserViewModel: ObservableObject {
     var cloudSignOut: (() -> Void)?
     var persistenceController: PersistenceController
     
-    init(persistenceController: PersistenceController = .shared) {
+    init(persistenceController: PersistenceController) {
         self.persistenceController = persistenceController
         checkLoginStatus()
     }
+
+    #if DEBUG
+    convenience init() {
+        self.init(persistenceController: PersistenceController.inMemory())
+    }
+    #endif
     
     func setUpPersistenceController(controller: PersistenceController) {
         persistenceController = controller

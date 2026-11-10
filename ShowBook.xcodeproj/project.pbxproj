@@ -15,6 +15,11 @@
 		3403E2F72C7064330063E7D0 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 3403E2F52C7064330063E7D0 /* PrivacyInfo.xcprivacy */; };
 		3403E2F62C7064330063E7D0 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 3403E2F52C7064330063E7D0 /* PrivacyInfo.xcprivacy */; };
 		3403E2722C7064320063E7D0 /* ShowBookApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3403E2712C7064320063E7D0 /* ShowBookApp.swift */; };
+		620000000000000000000002 /* BookmarkRepositoryProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 620000000000000000000001 /* BookmarkRepositoryProtocol.swift */; };
+		620000000000000000000004 /* UserPreferenceRepositoryProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 620000000000000000000003 /* UserPreferenceRepositoryProtocol.swift */; };
+		620000000000000000000006 /* BookmarkRepositoryImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 620000000000000000000005 /* BookmarkRepositoryImpl.swift */; };
+		620000000000000000000008 /* UserPreferenceRepositoryImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 620000000000000000000007 /* UserPreferenceRepositoryImpl.swift */; };
+		62000000000000000000000A /* AppDI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 620000000000000000000009 /* AppDI.swift */; };
 		3403E2772C7064320063E7D0 /* ShowBook.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 3403E2752C7064320063E7D0 /* ShowBook.xcdatamodeld */; };
 		3403E2792C7064320063E7D0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3403E2782C7064320063E7D0 /* ContentView.swift */; };
 		3403E27B2C7064330063E7D0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3403E27A2C7064330063E7D0 /* Assets.xcassets */; };
@@ -87,6 +92,11 @@
 		342B8AA12C7279B300EC41C8 /* RiskBasedIsolationAndConcurrencyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiskBasedIsolationAndConcurrencyTests.swift; sourceTree = "<group>"; };
 		3403E26E2C7064310063E7D0 /* ShowBook.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ShowBook.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3403E2712C7064320063E7D0 /* ShowBookApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowBookApp.swift; sourceTree = "<group>"; };
+		620000000000000000000001 /* BookmarkRepositoryProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkRepositoryProtocol.swift; sourceTree = "<group>"; };
+		620000000000000000000003 /* UserPreferenceRepositoryProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPreferenceRepositoryProtocol.swift; sourceTree = "<group>"; };
+		620000000000000000000005 /* BookmarkRepositoryImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkRepositoryImpl.swift; sourceTree = "<group>"; };
+		620000000000000000000007 /* UserPreferenceRepositoryImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPreferenceRepositoryImpl.swift; sourceTree = "<group>"; };
+		620000000000000000000009 /* AppDI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDI.swift; sourceTree = "<group>"; };
 		3403E2732C7064320063E7D0 /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
 		3403E2762C7064320063E7D0 /* ShowBook.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ShowBook.xcdatamodel; sourceTree = "<group>"; };
 		3403E2782C7064320063E7D0 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -218,6 +228,7 @@
 		B10000000000000000000001 /* App */ = {
 			isa = PBXGroup;
 			children = (
+				620000000000000000000009 /* AppDI.swift */,
 				3403E2712C7064320063E7D0 /* ShowBookApp.swift */,
 			);
 			path = App;
@@ -235,8 +246,18 @@
 			isa = PBXGroup;
 			children = (
 				B10000000000000000000010 /* Entities */,
+				62000000000000000000000B /* Repositories */,
 			);
 			path = Domain;
+			sourceTree = "<group>";
+		};
+		62000000000000000000000B /* Repositories */ = {
+			isa = PBXGroup;
+			children = (
+				620000000000000000000001 /* BookmarkRepositoryProtocol.swift */,
+				620000000000000000000003 /* UserPreferenceRepositoryProtocol.swift */,
+			);
+			path = Repositories;
 			sourceTree = "<group>";
 		};
 		B10000000000000000000010 /* Entities */ = {
@@ -253,8 +274,18 @@
 				B10000000000000000000020 /* Cache */,
 				B10000000000000000000021 /* Network */,
 				B10000000000000000000022 /* Persistence */,
+				62000000000000000000000C /* Repositories */,
 			);
 			path = Data;
+			sourceTree = "<group>";
+		};
+		62000000000000000000000C /* Repositories */ = {
+			isa = PBXGroup;
+			children = (
+				620000000000000000000005 /* BookmarkRepositoryImpl.swift */,
+				620000000000000000000007 /* UserPreferenceRepositoryImpl.swift */,
+			);
+			path = Repositories;
 			sourceTree = "<group>";
 		};
 		B10000000000000000000020 /* Cache */ = {
@@ -599,6 +630,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				62000000000000000000000A /* AppDI.swift in Sources */,
+				620000000000000000000002 /* BookmarkRepositoryProtocol.swift in Sources */,
+				620000000000000000000004 /* UserPreferenceRepositoryProtocol.swift in Sources */,
+				620000000000000000000006 /* BookmarkRepositoryImpl.swift in Sources */,
+				620000000000000000000008 /* UserPreferenceRepositoryImpl.swift in Sources */,
 				3403E2EF2C70EAD50063E7D0 /* BookItemViewModel.swift in Sources */,
 				3403E2722C7064320063E7D0 /* ShowBookApp.swift in Sources */,
 				3403E2BE2C7065190063E7D0 /* DashboardView.swift in Sources */,

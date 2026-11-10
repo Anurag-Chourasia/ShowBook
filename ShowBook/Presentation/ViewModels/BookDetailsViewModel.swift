@@ -15,10 +15,16 @@ import CommonNetworkingKit
     private let key: String?
     private let service: any BookDetailsServing
 
-    init(key: String?, service: any BookDetailsServing = BookDetailsService.shared) {
+    init(key: String?, service: any BookDetailsServing) {
         self.key = key
         self.service = service
     }
+
+    #if DEBUG
+    convenience init(key: String?) {
+        self.init(key: key, service: BookDetailsService())
+    }
+    #endif
     func load() async {
         guard !loading else { return }
         guard let key else { error = BookDetailsError.invalidKey.localizedDescription; return }

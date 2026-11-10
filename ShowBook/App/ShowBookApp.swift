@@ -14,7 +14,7 @@ import LocalizationKit
 extension LocalizationController: @retroactive AuthLocalizing {}
 
 private struct PersistenceControllerEnvironmentKey: EnvironmentKey {
-    static let defaultValue: PersistenceController = .shared
+    static let defaultValue: PersistenceController = AppDI.shared.persistenceController
 }
 
 extension EnvironmentValues {
@@ -26,17 +26,26 @@ extension EnvironmentValues {
 
 @main
 struct ShowBookApp: App {
+    private let appDI: AppDI
     @ObservedObject private var persistenceController: PersistenceController
     @StateObject private var userViewModel: UserViewModel
     private let localization = LocalizationController(initialLocale: .current)
 
     init() {
-        self.init(persistenceController: .shared)
+        self.init(appDI: .shared)
+    }
+
+    init(appDI: AppDI) {
+        self.appDI = appDI
+        self.persistenceController = appDI.persistenceController
+        _userViewModel = StateObject(wrappedValue: appDI.makeUserViewModel())
     }
 
     init(persistenceController: PersistenceController) {
+        let appDI = AppDI(persistenceController: persistenceController)
+        self.appDI = appDI
         self.persistenceController = persistenceController
-        _userViewModel = StateObject(wrappedValue: UserViewModel(persistenceController: persistenceController))
+        _userViewModel = StateObject(wrappedValue: appDI.makeUserViewModel())
     }
 
     var body: some Scene {
@@ -56,6 +65,7 @@ struct ShowBookApp: App {
             }
                 .appAppearance()
                 .environment(\.designTokens, DesignTokensTheme(brand: .showBook))
+                .environment(\.appDI, appDI)
                 .environmentObject(userViewModel)
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
                 .environment(\.persistenceController, persistenceController)

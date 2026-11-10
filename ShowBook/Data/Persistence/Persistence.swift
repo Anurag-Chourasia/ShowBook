@@ -9,6 +9,7 @@ import CoreData
 import UIKit
 import CommonCrypto
 import Security
+import Combine
 
 class PersistenceController: ObservableObject {
     struct BookmarkOwner: Equatable {
@@ -837,3 +838,18 @@ enum PasswordCredential {
         return key
     }
 }
+
+// MARK: - BookmarkRepositoryProtocol & UserPreferenceRepositoryProtocol Conformance
+extension PersistenceController: BookmarkRepositoryProtocol, UserPreferenceRepositoryProtocol {
+    var updatedBooksPublisher: AnyPublisher<[Book]?, Never> {
+        $updatedBooks.eraseToAnyPublisher()
+    }
+
+    func isBookmarked(_ book: Book) -> Bool {
+        if let existing = bookExists(book) {
+            return existing.title == book.title
+        }
+        return false
+    }
+}
+

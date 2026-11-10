@@ -15,13 +15,22 @@ class BookmarkViewModel: ObservableObject {
     @Published var isLoading = false
     
     var persistenceController: PersistenceController
-    
-    init(persistenceController: PersistenceController = .shared) {
+    var bookmarkRepository: any BookmarkRepositoryProtocol
+
+    init(bookmarkRepository: (any BookmarkRepositoryProtocol)? = nil, persistenceController: PersistenceController) {
         self.persistenceController = persistenceController
+        self.bookmarkRepository = bookmarkRepository ?? BookmarkRepositoryImpl(persistenceController: persistenceController)
     }
-    
+
+    #if DEBUG
+    convenience init() {
+        self.init(persistenceController: PersistenceController.inMemory())
+    }
+    #endif
+
     func setUpPersistenceController(controller: PersistenceController) {
         persistenceController = controller
+        bookmarkRepository = BookmarkRepositoryImpl(persistenceController: controller)
     }
 
     func setUpPersitenceController(controller: PersistenceController) {
@@ -35,7 +44,7 @@ class BookmarkViewModel: ObservableObject {
             return
         }
         isLoading = true
-        bookmarkBooks = persistenceController.fetchBooks()
+        bookmarkBooks = bookmarkRepository.fetchBooks()
         if bookmarkBooks.isEmpty {
             showAlert = true
             errorMessage = "No record found"

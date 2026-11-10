@@ -13,7 +13,21 @@ import CoreData
 struct WheelPickerView: View {
     @Binding var selectedCountryIndex: Int
     var country: [String]
-    var persistenceController: PersistenceController = .shared
+    var persistenceController: PersistenceController
+
+    init(selectedCountryIndex: Binding<Int>, country: [String], persistenceController: PersistenceController) {
+        self._selectedCountryIndex = selectedCountryIndex
+        self.country = country
+        self.persistenceController = persistenceController
+    }
+
+    #if DEBUG
+    init(selectedCountryIndex: Binding<Int>, country: [String]) {
+        self._selectedCountryIndex = selectedCountryIndex
+        self.country = country
+        self.persistenceController = PersistenceController.inMemory()
+    }
+    #endif
     
     @Environment(\.managedObjectContext) private var viewContext
     

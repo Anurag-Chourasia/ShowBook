@@ -11,17 +11,26 @@ import Combine
 class BookmarkButtonViewModel: ObservableObject {
     @Published var isBookmarked: Bool = false
     private var persistenceController: PersistenceController
+    private var bookmarkRepository: any BookmarkRepositoryProtocol
     private let bookmarkSave = BookmarkSaveRequest()
 
-    init(persistenceController: PersistenceController = .shared) {
+    init(bookmarkRepository: (any BookmarkRepositoryProtocol)? = nil, persistenceController: PersistenceController) {
         self.persistenceController = persistenceController
+        self.bookmarkRepository = bookmarkRepository ?? BookmarkRepositoryImpl(persistenceController: persistenceController)
     }
+
+    #if DEBUG
+    convenience init() {
+        self.init(persistenceController: PersistenceController.inMemory())
+    }
+    #endif
     var book: Book?
     var imageUrl: URL?
     
     func setUpPersistenceController(controller: PersistenceController) {
         bookmarkSave.cancel()
         persistenceController = controller
+        bookmarkRepository = BookmarkRepositoryImpl(persistenceController: controller)
     }
 
     func setUpPersitenceController(controller: PersistenceController) {
@@ -37,11 +46,7 @@ class BookmarkButtonViewModel: ObservableObject {
     
     func fetchInitialState() {
         guard let book = book else { return }
-        if let existingBook = persistenceController.bookExists(book), existingBook.title == book.title {
-            self.isBookmarked = true
-        } else {
-            self.isBookmarked = false
-        }
+        self.isBookmarked = bookmarkRepository.isBookmarked(book)
     }
     
     func toggleBookmark() {
@@ -53,7 +58,7 @@ class BookmarkButtonViewModel: ObservableObject {
             }
         } else {
             bookmarkSave.cancel()
-            persistenceController.deleteBook(book)
+            bookmarkRepository.deleteBook(book)
         }
     }
     

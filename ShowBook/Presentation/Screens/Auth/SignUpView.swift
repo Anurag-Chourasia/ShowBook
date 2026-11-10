@@ -14,9 +14,15 @@ struct SignUpView: View {
     @StateObject private var viewModel: SignUpViewModel
     @EnvironmentObject var userViewModel: UserViewModel
 
-    init(persistenceController: PersistenceController = .shared) {
+    init(persistenceController: PersistenceController) {
         _viewModel = StateObject(wrappedValue: SignUpViewModel(persistenceController: persistenceController))
     }
+
+    #if DEBUG
+    init() {
+        self.init(persistenceController: PersistenceController.inMemory())
+    }
+    #endif
 
     init(viewModel: @autoclosure @escaping () -> SignUpViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel())

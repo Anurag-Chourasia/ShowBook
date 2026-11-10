@@ -8,10 +8,12 @@ struct BookDetailsView: View {
     @StateObject private var model: BookDetailsViewModel
     @State private var reload = 0
     @State private var more = 0
+    @Environment(\.persistenceController) private var persistenceController
+    @Environment(\.appDI) private var appDI
 
     init(book: Book, model: BookDetailsViewModel? = nil) {
         self.book = book
-        _model = StateObject(wrappedValue: model ?? BookDetailsViewModel(key: book.key))
+        _model = StateObject(wrappedValue: model ?? AppDI.shared.makeBookDetailsViewModel(key: book.key))
     }
     var body: some View {
         ScrollView {
@@ -22,7 +24,7 @@ struct BookDetailsView: View {
                 if let authors = book.authorName, !authors.isEmpty {
                     Text(authors.joined(separator: ", ")).font(\.body).foregroundColor(\.secondary)
                 }
-                BookmarkButton(book: book, imageUrl: LibraryCover.url(book.coverI))
+                BookmarkButton(book: book, imageUrl: LibraryCover.url(book.coverI), persistenceController: persistenceController)
                 if model.loading && model.work == nil { ProgressView(String(\ShowBookStrings.loadingBookDetails)) }
                 if let error = model.error {
                     Text(error).foregroundColor(\.secondary)
@@ -36,7 +38,7 @@ struct BookDetailsView: View {
                     }
                     Text(String(\ShowBookStrings.editions)).font(\.title2).accessibilityAddTraits(.isHeader)
                     ForEach(model.editions) { edition in
-                        NavigationLink { EditionDetailsView(key: edition.key, title: edition.title) } label: {
+                        NavigationLink { EditionDetailsView(key: edition.key, title: edition.title, service: appDI.bookDetailsService) } label: {
                             SurfaceCard {
                                 VStack(alignment: .leading, spacing: \.eight) {
                                     Text(edition.title).font(\.headline)
@@ -71,10 +73,17 @@ struct BookDetailsView: View {
 struct EditionDetailsView: View {
     let key: String
     let title: String
+    var service: any BookDetailsServing
     @State private var edition: LibraryEdition?
     @State private var error: String?
     @State private var loading = true
     @State private var reload = 0
+
+    init(key: String, title: String, service: (any BookDetailsServing)? = nil) {
+        self.key = key
+        self.title = title
+        self.service = service ?? AppDI.shared.bookDetailsService
+    }
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: \.sixteen) {
@@ -102,7 +111,7 @@ struct EditionDetailsView: View {
             loading = true; error = nil
             defer { loading = false }
             do {
-                let result = try await BookDetailsService.shared.edition(key: key)
+                let result = try await service.edition(key: key)
                 try Task.checkCancellation()
                 edition = result
             } catch is CancellationError { }

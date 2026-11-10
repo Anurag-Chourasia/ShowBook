@@ -22,8 +22,13 @@ class DashboardViewModel: ObservableObject {
     @Published var loadingMoreBookNotPossible: Bool = false
     @Published var scrollOffset: CGFloat = 0
 
-    var api = NetworkClass()
-    var cache: BookCatalogCache = .shared
+    var api: NetworkClass
+    var cache: BookCatalogCache
+
+    init(api: NetworkClass = NetworkClass(), cache: BookCatalogCache = BookCatalogCache()) {
+        self.api = api
+        self.cache = cache
+    }
     var offset: Int = 0
     private var requestID = UUID()
     private var requestTask: Task<Void, Never>?

@@ -39,12 +39,18 @@ class SignUpViewModel: ObservableObject {
     init(
         api: NetworkClass = NetworkClass(),
         regionCode: String? = Locale.current.region?.identifier,
-        persistenceController: PersistenceController = .shared
+        persistenceController: PersistenceController
     ) {
         self.api = api
         self.regionCode = regionCode
         self.persistenceController = persistenceController
     }
+
+    #if DEBUG
+    convenience init() {
+        self.init(persistenceController: PersistenceController.inMemory())
+    }
+    #endif
     
     func setUpPersistenceController(controller : PersistenceController){
         persistenceController = controller

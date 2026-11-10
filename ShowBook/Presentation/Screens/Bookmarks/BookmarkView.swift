@@ -17,9 +17,19 @@ struct BookmarkView: View {
     
     @StateObject private var viewModel: BookmarkViewModel
 
-    init(persistenceController: PersistenceController = .shared) {
+    init(persistenceController: PersistenceController) {
         _viewModel = StateObject(wrappedValue: BookmarkViewModel(persistenceController: persistenceController))
     }
+
+    init(bookmarkRepository: any BookmarkRepositoryProtocol, persistenceController: PersistenceController) {
+        _viewModel = StateObject(wrappedValue: BookmarkViewModel(bookmarkRepository: bookmarkRepository, persistenceController: persistenceController))
+    }
+
+    #if DEBUG
+    init() {
+        self.init(persistenceController: PersistenceController.inMemory())
+    }
+    #endif
 
     init(viewModel: @autoclosure @escaping () -> BookmarkViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel())

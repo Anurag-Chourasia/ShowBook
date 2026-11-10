@@ -174,7 +174,19 @@ struct DeveloperSettingsView: View {
     @AppStorage("developer.build") private var build = ""
     @State private var cacheSummary = ""
 
-    private let diskCache = BookCatalogCache.shared
+    private let diskCache: BookCatalogCache
+
+    init(
+        buttonTitle: String = "Apply and close",
+        onContinue: @escaping () -> Void,
+        cacheSummaryOverride: String? = nil,
+        diskCache: BookCatalogCache = BookCatalogCache()
+    ) {
+        self.buttonTitle = buttonTitle
+        self.onContinue = onContinue
+        self.cacheSummaryOverride = cacheSummaryOverride
+        self.diskCache = diskCache
+    }
 
     var body: some View {
         Form {
