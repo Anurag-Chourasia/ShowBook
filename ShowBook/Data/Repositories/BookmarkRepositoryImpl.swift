@@ -49,4 +49,9 @@ final class BookmarkRepositoryImpl: BookmarkRepositoryProtocol {
     func doesBookHaveImageData(title: String, authors: [String]?) -> Bool {
         persistenceController.doesBookHaveImageData(title: title, authors: authors)
     }
+
+    @discardableResult
+    func rekeyBookmarks(fromEmail: String, toUUID: UUID) throws -> Int {
+        try persistenceController.rekeyBookmarks(fromEmail: fromEmail, toUUID: toUUID)
+    }
 }

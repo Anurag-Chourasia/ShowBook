@@ -17,4 +17,6 @@ protocol BookmarkRepositoryProtocol: AnyObject {
     func isBookmarked(_ book: Book) -> Bool
     func doesBookExist(title: String, authors: [String]?) -> Bool
     func doesBookHaveImageData(title: String, authors: [String]?) -> Bool
+    @discardableResult
+    func rekeyBookmarks(fromEmail: String, toUUID: UUID) throws -> Int
 }

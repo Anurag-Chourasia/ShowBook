@@ -466,4 +466,78 @@ final class BookmarkUUIDMigrationTests: XCTestCase {
         XCTAssertNil(book?.userUUID)
         XCTAssertNil(book?.ownerID)
     }
+
+    func testFirstSignInRekeysAnonymousBookmarksToAuthKitUser() throws {
+        let authUUID = UUID()
+        let authEmail = "newauth@example.com"
+        let context = persistence.container.viewContext
+
+        createBookEntity(in: context, title: "Anon Book 1", email: "", userUUID: nil)
+        createBookEntity(in: context, title: "Anon Book 2", email: "", userUUID: nil)
+        try context.save()
+
+        userViewModel.activateCloudAccount(email: authEmail, uuid: authUUID) {}
+        XCTAssertEqual(userViewModel.currentUserUUID, authUUID)
+
+        let request: NSFetchRequest<BookEntity> = BookEntity.fetchRequest()
+        let books = try context.fetch(request)
+        XCTAssertEqual(books.count, 2)
+        for book in books {
+            XCTAssertEqual(book.userUUID, authUUID)
+            XCTAssertEqual(book.ownerID, authUUID.uuidString.lowercased())
+            XCTAssertEqual(book.email, authEmail)
+        }
+
+        bookmarkViewModel.loadBookmarks()
+        XCTAssertEqual(bookmarkViewModel.bookmarkBooks.count, 2)
+    }
+
+    func testFirstSignInRekeyViaRepository() throws {
+        let repo = BookmarkRepositoryImpl(persistenceController: persistence)
+        let authUUID = UUID()
+        let email = "rekeyrepo@example.com"
+        let context = persistence.container.viewContext
+
+        createBookEntity(in: context, title: "Repo Rekey Book", email: email, userUUID: nil)
+        try context.save()
+
+        let count = try repo.rekeyBookmarks(fromEmail: email, toUUID: authUUID)
+        XCTAssertEqual(count, 1)
+
+        let idempotentCount = try repo.rekeyBookmarks(fromEmail: email, toUUID: authUUID)
+        XCTAssertEqual(idempotentCount, 0)
+
+        let request: NSFetchRequest<BookEntity> = BookEntity.fetchRequest()
+        request.predicate = NSPredicate(format: "title == %@", "Repo Rekey Book")
+        let book = try context.fetch(request).first
+        XCTAssertEqual(book?.userUUID, authUUID)
+        XCTAssertEqual(book?.ownerID, authUUID.uuidString.lowercased())
+    }
+
+    func testFirstSignInRekeyPreservesIsolationBetweenDifferentAccounts() throws {
+        let userAUUID = UUID()
+        let userAEmail = "userA.isolated@example.com"
+        let userBUUID = UUID()
+        let userBEmail = "userB.isolated@example.com"
+        let context = persistence.container.viewContext
+
+        let bookA = createBookEntity(in: context, title: "User A Book", email: userAEmail, userUUID: userAUUID)
+        bookA.ownerID = userAUUID.uuidString.lowercased()
+
+        createBookEntity(in: context, title: "Unowned Local Book", email: "", userUUID: nil)
+        try context.save()
+
+        userViewModel.activateCloudAccount(email: userBEmail, uuid: userBUUID) {}
+        XCTAssertEqual(userViewModel.currentUserUUID, userBUUID)
+
+        bookmarkViewModel.loadBookmarks()
+        XCTAssertEqual(bookmarkViewModel.bookmarkBooks.count, 1)
+        XCTAssertEqual(bookmarkViewModel.bookmarkBooks.first?.title, "Unowned Local Book")
+
+        let request: NSFetchRequest<BookEntity> = BookEntity.fetchRequest()
+        request.predicate = NSPredicate(format: "title == %@", "User A Book")
+        let fetchedBookA = try context.fetch(request).first
+        XCTAssertEqual(fetchedBookA?.userUUID, userAUUID)
+        XCTAssertEqual(fetchedBookA?.ownerID, userAUUID.uuidString.lowercased())
+    }
 }

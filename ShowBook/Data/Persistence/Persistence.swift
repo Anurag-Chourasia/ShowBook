@@ -628,7 +628,11 @@ class PersistenceController: ObservableObject {
             }
         } else {
             let email = currentUserEmail.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-            return NSPredicate(format: "email ==[c] %@", email)
+            if !email.isEmpty {
+                return NSPredicate(format: "email ==[c] %@", email)
+            } else {
+                return NSPredicate(format: "userUUID == nil AND ownerID == nil")
+            }
         }
     }
 
@@ -643,6 +647,11 @@ class PersistenceController: ObservableObject {
             do {
                 _ = try Self.linkLocalAccount(email: email, toUUID: uuid, in: context, save: { _ in })
                 _ = try Self.migrateBookmarks(fromEmail: email, toUUID: uuid, in: context, save: { _ in })
+                let prefRequest: NSFetchRequest<UserPreference> = UserPreference.fetchRequest()
+                if let pref = try context.fetch(prefRequest).first {
+                    pref.userUUID = uuid
+                    pref.ownerID = uuid.uuidString.lowercased()
+                }
                 if context.hasChanges { try save(context) }
             } catch {
                 context.rollback()
@@ -657,6 +666,11 @@ class PersistenceController: ObservableObject {
     }
 
     @discardableResult
+    func rekeyBookmarks(fromEmail: String, toUUID: UUID) throws -> Int {
+        try migrateBookmarks(fromEmail: fromEmail, toUUID: toUUID)
+    }
+
+    @discardableResult
     static func migrateBookmarks(
         fromEmail: String,
         toUUID: UUID,
@@ -664,13 +678,18 @@ class PersistenceController: ObservableObject {
         save: (NSManagedObjectContext) throws -> Void = { try $0.save() }
     ) throws -> Int {
         let cleanEmail = fromEmail.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-        guard !cleanEmail.isEmpty else { return 0 }
 
         let fetchRequest: NSFetchRequest<BookEntity> = BookEntity.fetchRequest()
-        fetchRequest.predicate = NSPredicate(
-            format: "email ==[c] %@ AND userUUID == nil",
-            cleanEmail
-        )
+        if !cleanEmail.isEmpty {
+            fetchRequest.predicate = NSPredicate(
+                format: "(email ==[c] %@ OR email == nil OR email == '') AND userUUID == nil AND ownerID == nil",
+                cleanEmail
+            )
+        } else {
+            fetchRequest.predicate = NSPredicate(
+                format: "(email == nil OR email == '') AND userUUID == nil AND ownerID == nil"
+            )
+        }
 
         let booksToMigrate = try context.fetch(fetchRequest)
         guard !booksToMigrate.isEmpty else { return 0 }
@@ -679,6 +698,9 @@ class PersistenceController: ObservableObject {
             for book in booksToMigrate {
                 book.userUUID = toUUID
                 book.ownerID = toUUID.uuidString.lowercased()
+                if (book.email == nil || book.email?.isEmpty == true) && !cleanEmail.isEmpty {
+                    book.email = cleanEmail
+                }
             }
             try save(context)
             return booksToMigrate.count
