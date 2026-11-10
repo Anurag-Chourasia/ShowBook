@@ -61,7 +61,7 @@ struct BookmarkButton: View {
             .frame(minWidth: TouchTarget.minimum, minHeight: TouchTarget.minimum)
             .background(viewModel.isBookmarked ? \.green : \.groupedSecondary)
             .clipShape(Circle())
-            .shadow(radius: DesignMetricTheme.default.p3)
+            .shadow(radius: DesignMetric.p3)
     }
 }
 

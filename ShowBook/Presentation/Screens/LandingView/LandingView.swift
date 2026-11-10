@@ -52,7 +52,7 @@ struct LandingView: View {
                 Image("Logo")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(width: min(geo.size.width - DesignMetricTheme.default.p80, DesignMetricTheme.default.p400), height: geo.size.height)
+                    .frame(width: min(geo.size.width - DesignMetric.p80, DesignMetric.p400), height: geo.size.height)
                     .clipShape(Circle())
             }
             .frame(width: geo.size.width, alignment: .center)

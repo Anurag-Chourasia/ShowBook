@@ -45,7 +45,7 @@ struct TextFieldWithDebounce: View {
                 .fieldPlaceholder(when: textObserver.searchText.isEmpty) {
                     HStack {
                         Text(\.searchForBooks)
-                            .foregroundColor(ColorTheme.default.primary)
+                            .foregroundColor(\.primary)
                             .font(\.title3)
                     }
                 }

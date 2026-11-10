@@ -72,11 +72,11 @@ struct ShowcaseBadgeView: View {
             .padding(.horizontal, \.ten)
             .padding(.vertical, \.four)
             .background(.ultraThinMaterial)
-            .foregroundColor(ColorTheme.default.oceanAction)
+            .foregroundColor(\.action)
             .clipShape(Capsule())
             .overlay(
                 Capsule()
-                    .stroke(ColorTheme.default.oceanAction.opacity(OpacityTheme.default.p0_35), lineWidth: DesignMetricTheme.default.p1)
+                    .stroke(\.action, opacity: \.p0_35, lineWidth: \.one)
             )
         }
         .padding(.top, \.four)
@@ -324,7 +324,7 @@ struct DeveloperSettingsView: View {
         .navigationTitle(Text(\.developerSettingsTitle))
         .navigationBarTitleDisplayMode(.inline)
         .tint(\.primary)
-        .toggleStyle(SwitchToggleStyle(tint: ColorTheme.default.green))
+        .toggleStyle(SwitchToggleStyle(tint: DesignColor.green))
         .onAppear {
             refreshCacheSummary()
         }

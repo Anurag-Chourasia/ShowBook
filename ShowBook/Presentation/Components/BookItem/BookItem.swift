@@ -24,7 +24,7 @@ struct BookItem: View {
     private var coverSize: CGSize { layout == .grid ? CatalogMetrics.coverGridSize : CatalogMetrics.coverListSize }
 
     var body: some View {
-        CatalogTile(layout: layout, colors: SemanticColors(surface: ColorTheme.default.groupedSecondary)) {
+        CatalogTile(layout: layout, colors: SemanticColors(surface: \.groupedSecondary)) {
             if !dynamicTypeSize.isAccessibilitySize {
                 NavigationLink { BookDetailsView(book: item) } label: { cover }
                     .accessibilityLabel(Text(\.detailsFor, arguments: [item.title]))

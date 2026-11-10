@@ -134,8 +134,8 @@ struct DashboardView: View {
                 }
         }
         .overlay(
-            RoundedRectangle(cornerRadius: DesignMetricTheme.default.p26_5)
-                .stroke(ColorTheme.default.secondary, lineWidth: StrokeWidth.one)
+            RoundedRectangle(cornerRadius: DesignMetric.p26_5)
+                .stroke(\.secondary, lineWidth: \.one)
         )
         .padding(.bottom, \.fourteen)
         .padding(.horizontal, \.twenty)
@@ -212,7 +212,7 @@ struct DashboardView: View {
             CenteredProgressOverlay(width: innerGeometry.size.width) {
                 Text(\.loadingProgress)
             } background: {
-                ColorTheme.default.groupedSecondary.opacity(OpacityTheme.default.p0_5)
+                Rectangle().fill(\.groupedSecondary, opacity: \.p0_5)
             }
         }
     }
@@ -222,7 +222,7 @@ struct DashboardView: View {
             CenteredProgressOverlay(width: innerGeometry.size.width) {
                 Text(\.loadingProgress)
             } background: {
-                ColorTheme.default.groupedSecondary.opacity(OpacityTheme.default.p0_5)
+                Rectangle().fill(\.groupedSecondary, opacity: \.p0_5)
             }
         }
     }

@@ -77,7 +77,7 @@ struct BookmarkView: View {
             CenteredProgressOverlay(width: innerGeometry.size.width) {
                 Text(\.loadingProgress)
             } background: {
-                ColorTheme.default.groupedSecondary.opacity(OpacityTheme.default.p0_5)
+                Rectangle().fill(\.groupedSecondary, opacity: \.p0_5)
             }
         }
     }
