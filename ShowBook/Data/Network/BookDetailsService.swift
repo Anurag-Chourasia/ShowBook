@@ -1,51 +1,7 @@
 import Foundation
 import CommonNetworkingKit
 
-struct LibraryText: Decodable, Sendable {
-    let value: String
-    init(from decoder: Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        if let text = try? container.decode(String.self) { value = text }
-        else { value = try container.decode(TextValue.self).value }
-    }
-    private struct TextValue: Decodable { let value: String }
-}
-struct LibraryWork: Decodable, Sendable {
-    let key: String
-    let title: String
-    let description: LibraryText?
-    let subjects: [String]?
-    let covers: [Int]?
-    let first_publish_date: String?
-}
-struct LibraryEdition: Decodable, Sendable, Identifiable {
-    let key: String
-    let title: String
-    let publishers: [String]?
-    let publish_date: String?
-    let number_of_pages: Int?
-    let physical_format: String?
-    let isbn_10: [String]?
-    let isbn_13: [String]?
-    let languages: [Reference]?
-    let covers: [Int]?
-    var id: String { key }
-    struct Reference: Decodable, Sendable { let key: String }
-}
-struct LibraryEditions: Decodable, Sendable {
-    let size: Int
-    let entries: [LibraryEdition]
-}
-protocol BookDetailsServing: Sendable {
-    func work(key: String) async throws -> LibraryWork
-    func editions(key: String, offset: Int) async throws -> LibraryEditions
-    func edition(key: String) async throws -> LibraryEdition
-}
-
-enum BookDetailsError: LocalizedError {
-    case invalidKey
-    var errorDescription: String? { "This book has no valid Open Library identifier. Search for it again to open online details." }
-}
+protocol BookDetailsServing: BookDetailsRepositoryProtocol {}
 
 /// App-owned endpoints. HTTP transport stays in CommonNetworkingKit.
 actor BookDetailsService: BookDetailsServing {

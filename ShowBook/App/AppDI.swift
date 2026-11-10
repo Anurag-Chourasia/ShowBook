@@ -39,6 +39,31 @@ final class AppDI: ObservableObject {
         self.networkClass = networkClass
     }
 
+    // MARK: - Use Cases
+    var fetchBookmarksUseCase: any FetchBookmarksUseCaseProtocol {
+        FetchBookmarksUseCase(repository: bookmarkRepository)
+    }
+
+    var toggleBookmarkUseCase: any ToggleBookmarkUseCaseProtocol {
+        ToggleBookmarkUseCase(repository: bookmarkRepository)
+    }
+
+    var searchBooksUseCase: any SearchBooksUseCaseProtocol {
+        SearchBooksUseCase(repository: BookSearchRepositoryImpl(api: networkClass, cache: bookCatalogCache))
+    }
+
+    var fetchDiscoverCategoryUseCase: any FetchDiscoverCategoryUseCaseProtocol {
+        FetchDiscoverCategoryUseCase(repository: discoverService)
+    }
+
+    var fetchBookDetailsUseCase: any FetchBookDetailsUseCaseProtocol {
+        FetchBookDetailsUseCase(repository: bookDetailsService)
+    }
+
+    var fetchBookEditionsUseCase: any FetchBookEditionsUseCaseProtocol {
+        FetchBookEditionsUseCase(repository: bookDetailsService)
+    }
+
     @MainActor
     func makeUserViewModel() -> UserViewModel {
         UserViewModel(persistenceController: persistenceController)
@@ -47,6 +72,7 @@ final class AppDI: ObservableObject {
     @MainActor
     func makeBookmarkViewModel() -> BookmarkViewModel {
         BookmarkViewModel(
+            fetchBookmarksUseCase: fetchBookmarksUseCase,
             bookmarkRepository: bookmarkRepository,
             persistenceController: persistenceController
         )
@@ -55,6 +81,7 @@ final class AppDI: ObservableObject {
     @MainActor
     func makeBookmarkButtonViewModel(book: Book? = nil, imageUrl: URL? = nil) -> BookmarkButtonViewModel {
         let vm = BookmarkButtonViewModel(
+            toggleBookmarkUseCase: toggleBookmarkUseCase,
             bookmarkRepository: bookmarkRepository,
             persistenceController: persistenceController
         )
@@ -76,6 +103,7 @@ final class AppDI: ObservableObject {
     @MainActor
     func makeDashboardViewModel() -> DashboardViewModel {
         DashboardViewModel(
+            searchBooksUseCase: searchBooksUseCase,
             api: networkClass,
             cache: bookCatalogCache
         )
@@ -83,12 +111,20 @@ final class AppDI: ObservableObject {
 
     @MainActor
     func makeDiscoverViewModel() -> DiscoverViewModel {
-        DiscoverViewModel(service: discoverService)
+        DiscoverViewModel(
+            fetchDiscoverCategoryUseCase: fetchDiscoverCategoryUseCase,
+            service: discoverService
+        )
     }
 
     @MainActor
     func makeBookDetailsViewModel(key: String?) -> BookDetailsViewModel {
-        BookDetailsViewModel(key: key, service: bookDetailsService)
+        BookDetailsViewModel(
+            key: key,
+            fetchBookDetailsUseCase: fetchBookDetailsUseCase,
+            fetchBookEditionsUseCase: fetchBookEditionsUseCase,
+            service: bookDetailsService
+        )
     }
 }
 

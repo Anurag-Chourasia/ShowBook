@@ -44,7 +44,8 @@ xcrun xcodebuild test -project ShowBook.xcodeproj -scheme ShowBook \
     -only-testing:ShowBookTests/PrivacyManifestTests \
     -only-testing:ShowBookTests/UserViewModelTests \
     -only-testing:ShowBookTests/IdentityActivationRecoveryTests \
-    -only-testing:ShowBookTests/AuthenticationFlagTests
+    -only-testing:ShowBookTests/AuthenticationFlagTests \
+    -only-testing:ShowBookTests/DomainUseCasesTests
 
 END_TIME=$(date +%s)
 ELAPSED=$((END_TIME - START_TIME))

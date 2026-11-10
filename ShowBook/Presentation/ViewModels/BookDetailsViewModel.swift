@@ -14,10 +14,19 @@ import CommonNetworkingKit
     private var offset = 0
     private let key: String?
     private let service: any BookDetailsServing
+    private let fetchBookDetailsUseCase: any FetchBookDetailsUseCaseProtocol
+    private let fetchBookEditionsUseCase: any FetchBookEditionsUseCaseProtocol
 
-    init(key: String?, service: any BookDetailsServing) {
+    init(
+        key: String?,
+        fetchBookDetailsUseCase: (any FetchBookDetailsUseCaseProtocol)? = nil,
+        fetchBookEditionsUseCase: (any FetchBookEditionsUseCaseProtocol)? = nil,
+        service: any BookDetailsServing = BookDetailsService()
+    ) {
         self.key = key
         self.service = service
+        self.fetchBookDetailsUseCase = fetchBookDetailsUseCase ?? FetchBookDetailsUseCase(repository: service)
+        self.fetchBookEditionsUseCase = fetchBookEditionsUseCase ?? FetchBookEditionsUseCase(repository: service)
     }
 
     #if DEBUG
@@ -33,7 +42,7 @@ import CommonNetworkingKit
         defer { loading = false }
         do {
             if work == nil {
-                let result = try await service.work(key: key)
+                let result = try await fetchBookDetailsUseCase.execute(key: key)
                 try Task.checkCancellation()
                 work = result
             }
@@ -47,7 +56,7 @@ import CommonNetworkingKit
         editionsError = nil
         defer { loadingEditions = false }
         do {
-            let page = try await service.editions(key: key, offset: offset)
+            let page = try await fetchBookEditionsUseCase.execute(key: key, offset: offset)
             try Task.checkCancellation()
             var seen = Set(editions.map(\.key))
             editions.append(contentsOf: page.entries.filter { seen.insert($0.key).inserted })

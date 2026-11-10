@@ -16,10 +16,17 @@ class BookmarkViewModel: ObservableObject {
     
     var persistenceController: PersistenceController
     var bookmarkRepository: any BookmarkRepositoryProtocol
+    var fetchBookmarksUseCase: any FetchBookmarksUseCaseProtocol
 
-    init(bookmarkRepository: (any BookmarkRepositoryProtocol)? = nil, persistenceController: PersistenceController) {
+    init(
+        fetchBookmarksUseCase: (any FetchBookmarksUseCaseProtocol)? = nil,
+        bookmarkRepository: (any BookmarkRepositoryProtocol)? = nil,
+        persistenceController: PersistenceController
+    ) {
         self.persistenceController = persistenceController
-        self.bookmarkRepository = bookmarkRepository ?? BookmarkRepositoryImpl(persistenceController: persistenceController)
+        let repo = bookmarkRepository ?? BookmarkRepositoryImpl(persistenceController: persistenceController)
+        self.bookmarkRepository = repo
+        self.fetchBookmarksUseCase = fetchBookmarksUseCase ?? FetchBookmarksUseCase(repository: repo)
     }
 
     #if DEBUG
@@ -30,7 +37,9 @@ class BookmarkViewModel: ObservableObject {
 
     func setUpPersistenceController(controller: PersistenceController) {
         persistenceController = controller
-        bookmarkRepository = BookmarkRepositoryImpl(persistenceController: controller)
+        let repo = BookmarkRepositoryImpl(persistenceController: controller)
+        bookmarkRepository = repo
+        fetchBookmarksUseCase = FetchBookmarksUseCase(repository: repo)
     }
 
     func setUpPersitenceController(controller: PersistenceController) {
@@ -44,7 +53,7 @@ class BookmarkViewModel: ObservableObject {
             return
         }
         isLoading = true
-        bookmarkBooks = bookmarkRepository.fetchBooks()
+        bookmarkBooks = fetchBookmarksUseCase.execute()
         if bookmarkBooks.isEmpty {
             showAlert = true
             errorMessage = "No record found"

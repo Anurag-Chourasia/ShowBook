@@ -20,6 +20,18 @@
 		620000000000000000000006 /* BookmarkRepositoryImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 620000000000000000000005 /* BookmarkRepositoryImpl.swift */; };
 		620000000000000000000008 /* UserPreferenceRepositoryImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 620000000000000000000007 /* UserPreferenceRepositoryImpl.swift */; };
 		62000000000000000000000A /* AppDI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 620000000000000000000009 /* AppDI.swift */; };
+		680000000000000000000002 /* DiscoverEntities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 680000000000000000000001 /* DiscoverEntities.swift */; };
+		680000000000000000000004 /* BookDetailsEntities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 680000000000000000000003 /* BookDetailsEntities.swift */; };
+		680000000000000000000006 /* BookSearchRepositoryProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 680000000000000000000005 /* BookSearchRepositoryProtocol.swift */; };
+		680000000000000000000008 /* DiscoverRepositoryProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 680000000000000000000007 /* DiscoverRepositoryProtocol.swift */; };
+		68000000000000000000000A /* BookDetailsRepositoryProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 680000000000000000000009 /* BookDetailsRepositoryProtocol.swift */; };
+		68000000000000000000000C /* SearchBooksUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68000000000000000000000B /* SearchBooksUseCase.swift */; };
+		68000000000000000000000E /* FetchDiscoverCategoryUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68000000000000000000000D /* FetchDiscoverCategoryUseCase.swift */; };
+		680000000000000000000010 /* FetchBookmarksUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68000000000000000000000F /* FetchBookmarksUseCase.swift */; };
+		680000000000000000000012 /* ToggleBookmarkUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 680000000000000000000011 /* ToggleBookmarkUseCase.swift */; };
+		680000000000000000000014 /* FetchBookDetailsUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 680000000000000000000013 /* FetchBookDetailsUseCase.swift */; };
+		680000000000000000000016 /* FetchBookEditionsUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 680000000000000000000015 /* FetchBookEditionsUseCase.swift */; };
+		680000000000000000000018 /* BookSearchRepositoryImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 680000000000000000000017 /* BookSearchRepositoryImpl.swift */; };
 		3403E2772C7064320063E7D0 /* ShowBook.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 3403E2752C7064320063E7D0 /* ShowBook.xcdatamodeld */; };
 		3403E2792C7064320063E7D0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3403E2782C7064320063E7D0 /* ContentView.swift */; };
 		3403E27B2C7064330063E7D0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3403E27A2C7064330063E7D0 /* Assets.xcassets */; };
@@ -41,6 +53,7 @@
 		3403E2ED2C70EA0F0063E7D0 /* BookmarkButtonViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3403E2EC2C70EA0F0063E7D0 /* BookmarkButtonViewModel.swift */; };
 		3403E2EF2C70EAD50063E7D0 /* BookItemViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3403E2EE2C70EAD50063E7D0 /* BookItemViewModel.swift */; };
 		342B8A842C71E2A300EC41C8 /* TextFieldObserverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342B8A832C71E2A300EC41C8 /* TextFieldObserverTests.swift */; };
+		680000000000000000000031 /* DomainUseCasesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 680000000000000000000030 /* DomainUseCasesTests.swift */; };
 		342B8A882C71E50B00EC41C8 /* DashboardViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342B8A872C71E50B00EC41C8 /* DashboardViewTests.swift */; };
 		342B8A8A2C71F97500EC41C8 /* UserViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342B8A892C71F97500EC41C8 /* UserViewModelTests.swift */; };
 		342B8A8C2C72570E00EC41C8 /* BookItemViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342B8A8B2C72570E00EC41C8 /* BookItemViewModelTests.swift */; };
@@ -98,6 +111,18 @@
 		3403E2A22C70648B0063E7D0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		670000000000000000000001 /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 		670000000000000000000002 /* Secrets.xcconfig.template */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig.template; sourceTree = "<group>"; };
+		680000000000000000000001 /* DiscoverEntities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverEntities.swift; sourceTree = "<group>"; };
+		680000000000000000000003 /* BookDetailsEntities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookDetailsEntities.swift; sourceTree = "<group>"; };
+		680000000000000000000005 /* BookSearchRepositoryProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookSearchRepositoryProtocol.swift; sourceTree = "<group>"; };
+		680000000000000000000007 /* DiscoverRepositoryProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverRepositoryProtocol.swift; sourceTree = "<group>"; };
+		680000000000000000000009 /* BookDetailsRepositoryProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookDetailsRepositoryProtocol.swift; sourceTree = "<group>"; };
+		68000000000000000000000B /* SearchBooksUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBooksUseCase.swift; sourceTree = "<group>"; };
+		68000000000000000000000D /* FetchDiscoverCategoryUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchDiscoverCategoryUseCase.swift; sourceTree = "<group>"; };
+		68000000000000000000000F /* FetchBookmarksUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchBookmarksUseCase.swift; sourceTree = "<group>"; };
+		680000000000000000000011 /* ToggleBookmarkUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToggleBookmarkUseCase.swift; sourceTree = "<group>"; };
+		680000000000000000000013 /* FetchBookDetailsUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchBookDetailsUseCase.swift; sourceTree = "<group>"; };
+		680000000000000000000015 /* FetchBookEditionsUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchBookEditionsUseCase.swift; sourceTree = "<group>"; };
+		680000000000000000000017 /* BookSearchRepositoryImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookSearchRepositoryImpl.swift; sourceTree = "<group>"; };
 		3403E2F52C7064330063E7D0 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		3403E2A42C7065190063E7D0 /* BookItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BookItem.swift; sourceTree = "<group>"; };
 		3403E2A52C7065190063E7D0 /* BookmarkButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BookmarkButton.swift; sourceTree = "<group>"; };
@@ -116,6 +141,7 @@
 		3403E2EC2C70EA0F0063E7D0 /* BookmarkButtonViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkButtonViewModel.swift; sourceTree = "<group>"; };
 		3403E2EE2C70EAD50063E7D0 /* BookItemViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookItemViewModel.swift; sourceTree = "<group>"; };
 		342B8A832C71E2A300EC41C8 /* TextFieldObserverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = TextFieldObserverTests.swift; path = ShowBookTests/TextFieldObserverTests.swift; sourceTree = SOURCE_ROOT; };
+		680000000000000000000030 /* DomainUseCasesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DomainUseCasesTests.swift; sourceTree = "<group>"; };
 		342B8A872C71E50B00EC41C8 /* DashboardViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardViewTests.swift; sourceTree = "<group>"; };
 		342B8A892C71F97500EC41C8 /* UserViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserViewModelTests.swift; sourceTree = "<group>"; };
 		342B8A8B2C72570E00EC41C8 /* BookItemViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookItemViewModelTests.swift; sourceTree = "<group>"; };
@@ -245,6 +271,7 @@
 			children = (
 				B10000000000000000000010 /* Entities */,
 				62000000000000000000000B /* Repositories */,
+				680000000000000000000020 /* UseCases */,
 			);
 			path = Domain;
 			sourceTree = "<group>";
@@ -254,6 +281,9 @@
 			children = (
 				620000000000000000000001 /* BookmarkRepositoryProtocol.swift */,
 				620000000000000000000003 /* UserPreferenceRepositoryProtocol.swift */,
+				680000000000000000000005 /* BookSearchRepositoryProtocol.swift */,
+				680000000000000000000007 /* DiscoverRepositoryProtocol.swift */,
+				680000000000000000000009 /* BookDetailsRepositoryProtocol.swift */,
 			);
 			path = Repositories;
 			sourceTree = "<group>";
@@ -262,8 +292,55 @@
 			isa = PBXGroup;
 			children = (
 				3403E2B42C7065190063E7D0 /* Models.swift */,
+				680000000000000000000001 /* DiscoverEntities.swift */,
+				680000000000000000000003 /* BookDetailsEntities.swift */,
 			);
 			path = Entities;
+			sourceTree = "<group>";
+		};
+		680000000000000000000020 /* UseCases */ = {
+			isa = PBXGroup;
+			children = (
+				680000000000000000000021 /* Dashboard */,
+				680000000000000000000022 /* Discover */,
+				680000000000000000000023 /* Bookmark */,
+				680000000000000000000024 /* BookDetails */,
+			);
+			path = UseCases;
+			sourceTree = "<group>";
+		};
+		680000000000000000000021 /* Dashboard */ = {
+			isa = PBXGroup;
+			children = (
+				68000000000000000000000B /* SearchBooksUseCase.swift */,
+			);
+			path = Dashboard;
+			sourceTree = "<group>";
+		};
+		680000000000000000000022 /* Discover */ = {
+			isa = PBXGroup;
+			children = (
+				68000000000000000000000D /* FetchDiscoverCategoryUseCase.swift */,
+			);
+			path = Discover;
+			sourceTree = "<group>";
+		};
+		680000000000000000000023 /* Bookmark */ = {
+			isa = PBXGroup;
+			children = (
+				68000000000000000000000F /* FetchBookmarksUseCase.swift */,
+				680000000000000000000011 /* ToggleBookmarkUseCase.swift */,
+			);
+			path = Bookmark;
+			sourceTree = "<group>";
+		};
+		680000000000000000000024 /* BookDetails */ = {
+			isa = PBXGroup;
+			children = (
+				680000000000000000000013 /* FetchBookDetailsUseCase.swift */,
+				680000000000000000000015 /* FetchBookEditionsUseCase.swift */,
+			);
+			path = BookDetails;
 			sourceTree = "<group>";
 		};
 		B10000000000000000000004 /* Data */ = {
@@ -282,6 +359,7 @@
 			children = (
 				620000000000000000000005 /* BookmarkRepositoryImpl.swift */,
 				620000000000000000000007 /* UserPreferenceRepositoryImpl.swift */,
+				680000000000000000000017 /* BookSearchRepositoryImpl.swift */,
 			);
 			path = Repositories;
 			sourceTree = "<group>";
@@ -444,6 +522,7 @@
 		3493640E2C7111C8008A99F8 /* ShowBookTests */ = {
 			isa = PBXGroup;
 			children = (
+				680000000000000000000030 /* DomainUseCasesTests.swift */,
 				87BB901AB8D24E8BA8B959B9 /* PortfolioSnapshot.swift */,
 				81AE220383BB4E2580143336 /* DeveloperFixtureResourceTests.swift */,
 				342B8A892C71F97500EC41C8 /* UserViewModelTests.swift */,
@@ -617,6 +696,18 @@
 				620000000000000000000004 /* UserPreferenceRepositoryProtocol.swift in Sources */,
 				620000000000000000000006 /* BookmarkRepositoryImpl.swift in Sources */,
 				620000000000000000000008 /* UserPreferenceRepositoryImpl.swift in Sources */,
+				680000000000000000000002 /* DiscoverEntities.swift in Sources */,
+				680000000000000000000004 /* BookDetailsEntities.swift in Sources */,
+				680000000000000000000006 /* BookSearchRepositoryProtocol.swift in Sources */,
+				680000000000000000000008 /* DiscoverRepositoryProtocol.swift in Sources */,
+				68000000000000000000000A /* BookDetailsRepositoryProtocol.swift in Sources */,
+				68000000000000000000000C /* SearchBooksUseCase.swift in Sources */,
+				68000000000000000000000E /* FetchDiscoverCategoryUseCase.swift in Sources */,
+				680000000000000000000010 /* FetchBookmarksUseCase.swift in Sources */,
+				680000000000000000000012 /* ToggleBookmarkUseCase.swift in Sources */,
+				680000000000000000000014 /* FetchBookDetailsUseCase.swift in Sources */,
+				680000000000000000000016 /* FetchBookEditionsUseCase.swift in Sources */,
+				680000000000000000000018 /* BookSearchRepositoryImpl.swift in Sources */,
 				3403E2EF2C70EAD50063E7D0 /* BookItemViewModel.swift in Sources */,
 				3403E2722C7064320063E7D0 /* ShowBookApp.swift in Sources */,
 				3403E2BE2C7065190063E7D0 /* DashboardView.swift in Sources */,
@@ -665,6 +756,7 @@
 				342B8A8C2C72570E00EC41C8 /* BookItemViewModelTests.swift in Sources */,
 				342B8A8E2C7279B300EC41C8 /* BookmarkViewModelTests.swift in Sources */,
 				342B8A8A2C71F97500EC41C8 /* UserViewModelTests.swift in Sources */,
+				680000000000000000000031 /* DomainUseCasesTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

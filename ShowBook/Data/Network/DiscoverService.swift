@@ -3,21 +3,19 @@ import LocalizationKit
 import Combine
 import CommonNetworkingKit
 
-enum DiscoverCategory: String, CaseIterable, Identifiable, Codable, Sendable {
-    case fiction, mystery, science, history
-    var id: String { rawValue }
+extension DiscoverCategory {
     var title: String { LocalizedContext<ShowBookDomain>.shared.string("showbook.category." + rawValue) }
 }
 
-struct DiscoverResult {
-    let books: [Book]
-    let cached: Bool
-    let savedAt: Date
+/// Bounded to four subject files per environment. Cache data never crosses live/stub boundaries.
+protocol DiscoverServing: DiscoverRepositoryProtocol {
+    func load(_ category: DiscoverCategory, refresh: Bool) async throws -> DiscoverResult
 }
 
-/// Bounded to four subject files per environment. Cache data never crosses live/stub boundaries.
-protocol DiscoverServing: Sendable {
-    func load(_ category: DiscoverCategory, refresh: Bool) async throws -> DiscoverResult
+extension DiscoverServing {
+    func loadCategory(_ category: DiscoverCategory, refresh: Bool) async throws -> DiscoverResult {
+        try await load(category, refresh: refresh)
+    }
 }
 
 actor DiscoverService: DiscoverServing {
@@ -83,7 +81,15 @@ final class DiscoverViewModel: ObservableObject {
     @Published private(set) var cachedAt: Date?
     private var requestID = UUID()
     private let service: any DiscoverServing
-    init(service: any DiscoverServing) { self.service = service }
+    private let fetchDiscoverCategoryUseCase: any FetchDiscoverCategoryUseCaseProtocol
+
+    init(
+        fetchDiscoverCategoryUseCase: (any FetchDiscoverCategoryUseCaseProtocol)? = nil,
+        service: any DiscoverServing = DiscoverService()
+    ) {
+        self.service = service
+        self.fetchDiscoverCategoryUseCase = fetchDiscoverCategoryUseCase ?? FetchDiscoverCategoryUseCase(repository: service)
+    }
 
     #if DEBUG
     convenience init() { self.init(service: DiscoverService()) }
@@ -93,7 +99,7 @@ final class DiscoverViewModel: ObservableObject {
         loading = true; message = nil; cachedAt = nil; books = []
         defer { if requestID == id { loading = false } }
         do {
-            let result = try await service.load(category, refresh: refresh)
+            let result = try await fetchDiscoverCategoryUseCase.execute(category: category, refresh: refresh)
             guard requestID == id, !Task.isCancelled else { return }
             books = result.books
             cachedAt = result.cached ? result.savedAt : nil

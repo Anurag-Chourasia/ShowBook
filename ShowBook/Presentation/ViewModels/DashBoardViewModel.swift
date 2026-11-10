@@ -24,10 +24,16 @@ class DashboardViewModel: ObservableObject {
 
     var api: NetworkClass
     var cache: BookCatalogCache
+    var searchBooksUseCase: any SearchBooksUseCaseProtocol
 
-    init(api: NetworkClass = NetworkClass(), cache: BookCatalogCache = BookCatalogCache()) {
+    init(
+        searchBooksUseCase: (any SearchBooksUseCaseProtocol)? = nil,
+        api: NetworkClass = NetworkClass(),
+        cache: BookCatalogCache = BookCatalogCache()
+    ) {
         self.api = api
         self.cache = cache
+        self.searchBooksUseCase = searchBooksUseCase ?? SearchBooksUseCase(repository: BookSearchRepositoryImpl(api: api, cache: cache))
     }
     var offset: Int = 0
     private var requestID = UUID()
@@ -119,7 +125,7 @@ class DashboardViewModel: ObservableObject {
         let id = UUID()
         requestID = id
         isLoadingMore = true
-        requestTask = api.fetchBooks(title: title, offset: offset) { [weak self] result in
+        requestTask = searchBooksUseCase.execute(title: title, offset: offset) { [weak self] result in
             DispatchQueue.main.async {
                 defer { completion() }
                 guard let self, self.requestID == id else { return }
@@ -128,21 +134,13 @@ class DashboardViewModel: ObservableObject {
                 self.isLoadingMore = false
                 switch result {
                 case .success(let books):
-                    self.cache.save(books: books, for: title, offset: offset)
                     self.books = offset == 0 ? books : self.books + books
                     self.offset = offset
                     self.loadedTitle = title
                     self.loadingMoreBookNotPossible = books.isEmpty
                 case .failure(let error):
-                    if let cached = self.cache.load(for: title, offset: offset), !cached.isEmpty {
-                        self.books = offset == 0 ? cached : self.books + cached
-                        self.offset = offset
-                        self.loadedTitle = title
-                        self.loadingMoreBookNotPossible = cached.isEmpty
-                    } else {
-                        self.errorMessage = Self.localizedErrorMessage(for: error)
-                        self.showAlert = true
-                    }
+                    self.errorMessage = Self.localizedErrorMessage(for: error)
+                    self.showAlert = true
                 }
             }
         }

@@ -12,11 +12,18 @@ class BookmarkButtonViewModel: ObservableObject {
     @Published var isBookmarked: Bool = false
     private var persistenceController: PersistenceController
     private var bookmarkRepository: any BookmarkRepositoryProtocol
+    private var toggleBookmarkUseCase: any ToggleBookmarkUseCaseProtocol
     private let bookmarkSave = BookmarkSaveRequest()
 
-    init(bookmarkRepository: (any BookmarkRepositoryProtocol)? = nil, persistenceController: PersistenceController) {
+    init(
+        toggleBookmarkUseCase: (any ToggleBookmarkUseCaseProtocol)? = nil,
+        bookmarkRepository: (any BookmarkRepositoryProtocol)? = nil,
+        persistenceController: PersistenceController
+    ) {
         self.persistenceController = persistenceController
-        self.bookmarkRepository = bookmarkRepository ?? BookmarkRepositoryImpl(persistenceController: persistenceController)
+        let repo = bookmarkRepository ?? BookmarkRepositoryImpl(persistenceController: persistenceController)
+        self.bookmarkRepository = repo
+        self.toggleBookmarkUseCase = toggleBookmarkUseCase ?? ToggleBookmarkUseCase(repository: repo)
     }
 
     #if DEBUG
@@ -30,7 +37,9 @@ class BookmarkButtonViewModel: ObservableObject {
     func setUpPersistenceController(controller: PersistenceController) {
         bookmarkSave.cancel()
         persistenceController = controller
-        bookmarkRepository = BookmarkRepositoryImpl(persistenceController: controller)
+        let repo = BookmarkRepositoryImpl(persistenceController: controller)
+        bookmarkRepository = repo
+        toggleBookmarkUseCase = ToggleBookmarkUseCase(repository: repo)
     }
 
     func setUpPersitenceController(controller: PersistenceController) {
@@ -46,7 +55,7 @@ class BookmarkButtonViewModel: ObservableObject {
     
     func fetchInitialState() {
         guard let book = book else { return }
-        self.isBookmarked = bookmarkRepository.isBookmarked(book)
+        self.isBookmarked = toggleBookmarkUseCase.isBookmarked(book)
     }
     
     func toggleBookmark() {
@@ -58,7 +67,7 @@ class BookmarkButtonViewModel: ObservableObject {
             }
         } else {
             bookmarkSave.cancel()
-            bookmarkRepository.deleteBook(book)
+            toggleBookmarkUseCase.deleteBookmark(book)
         }
     }
     
