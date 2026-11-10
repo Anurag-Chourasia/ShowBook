@@ -15,3 +15,9 @@ xcuserdata/
 
 # macOS
 .DS_Store
+
+# Secrets & Local Configurations
+Secrets.xcconfig
+Configuration/Secrets.xcconfig
+ShowBook/Configuration/Secrets.xcconfig
+*.xcconfig.local

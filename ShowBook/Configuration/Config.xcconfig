@@ -1,0 +1,10 @@
+//
+//  Config.xcconfig
+//  ShowBook
+//
+
+SLASH = /
+SUPABASE_URL = https:$(SLASH)$(SLASH)ulszjssbmmfnheemfwiy.supabase.co
+SUPABASE_PUBLISHABLE_KEY = sb_publishable_1E6uHLzc52xPFVTrT7tl7Q_x2udH9R2
+
+#include? "Secrets.xcconfig"

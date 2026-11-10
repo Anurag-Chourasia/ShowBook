@@ -96,6 +96,8 @@
 		3403E27C2C7064330063E7D0 /* ShowBook.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ShowBook.entitlements; sourceTree = "<group>"; };
 		3403E27E2C7064330063E7D0 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		3403E2A22C70648B0063E7D0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		670000000000000000000001 /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
+		670000000000000000000002 /* Secrets.xcconfig.template */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig.template; sourceTree = "<group>"; };
 		3403E2F52C7064330063E7D0 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		3403E2A42C7065190063E7D0 /* BookItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BookItem.swift; sourceTree = "<group>"; };
 		3403E2A52C7065190063E7D0 /* BookmarkButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BookmarkButton.swift; sourceTree = "<group>"; };
@@ -188,6 +190,7 @@
 		3403E2702C7064320063E7D0 /* ShowBook */ = {
 			isa = PBXGroup;
 			children = (
+				670000000000000000000003 /* Configuration */,
 				3403E2A22C70648B0063E7D0 /* Info.plist */,
 				3403E2F52C7064330063E7D0 /* PrivacyInfo.xcprivacy */,
 				3403E27C2C7064330063E7D0 /* ShowBook.entitlements */,
@@ -201,6 +204,15 @@
 				B10000000000000000000006 /* Developer */,
 			);
 			path = ShowBook;
+			sourceTree = "<group>";
+		};
+		670000000000000000000003 /* Configuration */ = {
+			isa = PBXGroup;
+			children = (
+				670000000000000000000001 /* Config.xcconfig */,
+				670000000000000000000002 /* Secrets.xcconfig.template */,
+			);
+			path = Configuration;
 			sourceTree = "<group>";
 		};
 		3403E27D2C7064330063E7D0 /* Preview Content */ = {
@@ -791,6 +803,7 @@
 		};
 		3403E2992C7064330063E7D0 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 670000000000000000000001 /* Config.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -835,6 +848,7 @@
 		};
 		3403E29A2C7064330063E7D0 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 670000000000000000000001 /* Config.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;

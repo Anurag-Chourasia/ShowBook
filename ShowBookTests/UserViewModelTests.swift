@@ -170,6 +170,17 @@ final class AuthenticationFlagTests: XCTestCase {
         defaults.removeObject(forKey: "developer.scenario")
         #endif
     }
+
+    func testSupabaseConfigurationIsResolvedFromBuildConfiguration() {
+        let bundle = Bundle.main
+        if let supabaseURL = bundle.object(forInfoDictionaryKey: "SUPABASE_URL") as? String {
+            XCTAssertFalse(supabaseURL.contains("$("), "SUPABASE_URL must be resolved by xcconfig, not raw macro string")
+            XCTAssertTrue(supabaseURL.starts(with: "https://"), "Resolved SUPABASE_URL must be a valid https URL")
+        }
+        if let key = bundle.object(forInfoDictionaryKey: "SUPABASE_PUBLISHABLE_KEY") as? String {
+            XCTAssertFalse(key.contains("$("), "SUPABASE_PUBLISHABLE_KEY must be resolved by xcconfig, not raw macro string")
+        }
+    }
 }
 
 @MainActor
