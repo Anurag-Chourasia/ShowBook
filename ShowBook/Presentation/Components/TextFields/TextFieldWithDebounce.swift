@@ -32,7 +32,6 @@ class TextFieldObserver: ObservableObject {
 struct TextFieldWithDebounce: View {
     @Binding var debouncedText: String
     @StateObject private var textObserver: TextFieldObserver
-    @State private var books: [Book] = []
 
     init(debouncedText: Binding<String>) {
         _debouncedText = debouncedText

@@ -11,7 +11,7 @@ import AuthKit
 import AuthKitUI
 import LocalizationKit
 
-extension LocalizationController: AuthLocalizing {}
+extension LocalizationController: @retroactive AuthLocalizing {}
 
 private struct PersistenceControllerEnvironmentKey: EnvironmentKey {
     static let defaultValue: PersistenceController = .shared

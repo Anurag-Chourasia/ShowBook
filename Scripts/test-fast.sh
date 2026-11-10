@@ -23,7 +23,7 @@ echo "--> Running deterministic networking adapter tests..."
 python3 TestSupport/run-networking-tests.py
 
 # 3. Fast unit tests on iOS Simulator
-destination="${TEST_DESTINATION:-platform=iOS Simulator,name=iPhone 11}"
+destination="${TEST_DESTINATION:-platform=iOS Simulator,name=iPhone 11,OS=27.0}"
 result="${TEST_RESULT_PATH:-${RUNNER_TEMP:-/tmp}/ShowBookFast.xcresult}"
 rm -rf "$result"
 
