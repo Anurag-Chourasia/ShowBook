@@ -21,7 +21,7 @@ class UserViewModel: ObservableObject {
     }
     var cloudSignOut: (() -> Void)?
     var persistenceController: PersistenceController
-    
+
     init(persistenceController: PersistenceController) {
         self.persistenceController = persistenceController
         checkLoginStatus()
@@ -32,12 +32,12 @@ class UserViewModel: ObservableObject {
         self.init(persistenceController: PersistenceController.inMemory())
     }
     #endif
-    
+
     func setUpPersistenceController(controller: PersistenceController) {
         persistenceController = controller
         checkLoginStatus()
     }
-    
+
     func checkLoginStatus() {
         guard pendingActivation == nil else { isLoggedIn = false; return }
         if let uuidString = UserDefaults.standard.string(forKey: "LoggedInUserUUID"),

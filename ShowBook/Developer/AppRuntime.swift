@@ -72,7 +72,9 @@ enum AppRuntime {
     }
     private static func override(_ key: String, fallback: String) -> String {
         #if DEBUG
-        let value = UserDefaults.standard.string(forKey: "developer." + key)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        let defaults = UserDefaults.standard
+        let raw = defaults.string(forKey: "developer." + key)
+        let value = raw?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         return value.isEmpty ? fallback : value
         #else
         return fallback
@@ -85,7 +87,10 @@ enum AppNetworking {
         context(session: session).client
     }
 
-    static func dataTaskPublisher(for url: URL, session: URLSession? = nil) -> AnyPublisher<(data: Data, response: URLResponse), Error> {
+    static func dataTaskPublisher(
+        for url: URL,
+        session: URLSession? = nil
+    ) -> AnyPublisher<(data: Data, response: URLResponse), Error> {
         let transport = client(session: session)
         return Future<(data: Data, response: URLResponse), Error> { promise in
             Task {
@@ -167,7 +172,15 @@ class DeveloperStubProtocol: URLProtocol {
                 let offset = URLComponents(url: url, resolvingAgainstBaseURL: false)?
                     .queryItems?.first { $0.name == "offset" }?.value ?? "0"
                 if scenario != "showcase", offset != "0" { payloadScenario = "empty" }
-            } else if url.path.hasSuffix("/editions.json") { route = "editions" } else if url.path.hasPrefix("/works/") { route = "work" } else if url.path.hasPrefix("/books/") { route = "edition" } else { return nil }
+            } else if url.path.hasSuffix("/editions.json") {
+                route = "editions"
+            } else if url.path.hasPrefix("/works/") {
+                route = "work"
+            } else if url.path.hasPrefix("/books/") {
+                route = "edition"
+            } else {
+                return nil
+            }
         } else if url.host == "api.first.org" { route = "countries" } else { return nil }
         #if SWIFT_PACKAGE
         let bundle = Bundle.module
@@ -176,7 +189,11 @@ class DeveloperStubProtocol: URLProtocol {
         let bundle = Bundle.main
         let directory: String? = "DeveloperFixtures"
         #endif
-        guard let file = bundle.url(forResource: "showbook-developer-responses", withExtension: "json", subdirectory: directory),
+        guard let file = bundle.url(
+            forResource: "showbook-developer-responses",
+            withExtension: "json",
+            subdirectory: directory
+        ),
               let data = try? Data(contentsOf: file),
               let catalog = try? JSONSerialization.jsonObject(with: data) as? [String: [String: Any]],
               let payload = catalog[payloadScenario]?[route],
@@ -207,7 +224,11 @@ enum ShowBookStubProvider {
         if let file = bundle.url(forResource: "showbook-developer-responses", withExtension: "json", subdirectory: directory) {
             return try Data(contentsOf: file)
         }
-        if let file = Bundle.main.url(forResource: "showbook-developer-responses", withExtension: "json", subdirectory: "DeveloperFixtures") {
+        if let file = Bundle.main.url(
+            forResource: "showbook-developer-responses",
+            withExtension: "json",
+            subdirectory: "DeveloperFixtures"
+        ) {
             return try Data(contentsOf: file)
         }
         throw CocoaError(.fileNoSuchFile)

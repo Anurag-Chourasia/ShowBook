@@ -33,7 +33,7 @@ class BookmarkButtonViewModel: ObservableObject {
     #endif
     var book: Book?
     var imageUrl: URL?
-    
+
     func setUpPersistenceController(controller: PersistenceController) {
         bookmarkSave.cancel()
         persistenceController = controller
@@ -45,32 +45,32 @@ class BookmarkButtonViewModel: ObservableObject {
     func setUpPersitenceController(controller: PersistenceController) {
         setUpPersistenceController(controller: controller)
     }
-    
+
     func configure(book: Book, imageUrl: URL?) {
         bookmarkSave.cancel()
         self.book = book
         self.imageUrl = imageUrl
         fetchInitialState()
     }
-    
+
     func fetchInitialState() {
         guard let book = book else { return }
         self.isBookmarked = toggleBookmarkUseCase.isBookmarked(book)
     }
-    
+
     func toggleBookmark() {
         guard let book = book else { return }
         isBookmarked.toggle()
         if isBookmarked {
             handleBookmarkAdded{
-                
+
             }
         } else {
             bookmarkSave.cancel()
             toggleBookmarkUseCase.deleteBookmark(book)
         }
     }
-    
+
     func handleBookmarkAdded(completion: @escaping () -> Void) {
         guard let book else { completion(); return }
         bookmarkSave.start(book: book, imageURL: imageUrl, controller: persistenceController,

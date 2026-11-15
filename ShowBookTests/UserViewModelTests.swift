@@ -15,17 +15,17 @@ import CoreData
 final class UserViewModelTests: XCTestCase {
     var viewModel: UserViewModel!
     var mockPersistenceController: PersistenceController!
-    
+
     override func setUpWithError() throws {
         try super.setUpWithError()
         mockPersistenceController = PersistenceController.inMemory()
     }
-    
+
     override func setUp() {
         super.setUp()
         viewModel = UserViewModel(persistenceController: mockPersistenceController)
     }
-    
+
     override func tearDown() {
         super.tearDown()
         UserDefaults.standard.removeObject(forKey: "LoggedInUserEmail")
@@ -33,29 +33,29 @@ final class UserViewModelTests: XCTestCase {
         viewModel = nil
         mockPersistenceController = nil
     }
-    
+
     func testCheck_LoginStatusWhenUserIsLoggedIn() {
         // Given
         let uuid = UUID()
         UserDefaults.standard.set(uuid.uuidString, forKey: "LoggedInUserUUID")
-        
+
         self.viewModel.checkLoginStatus()
 
         XCTAssertTrue(self.viewModel.isLoggedIn, "User should be logged in when a valid UUID is found in UserDefaults.")
     }
-    
+
     func testCheck_LoginStatusWhenUserIsNotLoggedIn() {
         UserDefaults.standard.removeObject(forKey: "LoggedInUserUUID")
         self.viewModel.checkLoginStatus()
         XCTAssertFalse(self.viewModel.isLoggedIn, "User should not be logged in when no UUID is found in UserDefaults.")
     }
-    
+
     func testCheck_LoginStatusWhenNoEmailInUserDefaults() {
         UserDefaults.standard.removeObject(forKey: "LoggedInUserUUID")
         self.viewModel.checkLoginStatus()
         XCTAssertFalse(self.viewModel.isLoggedIn, "User should not be logged in when no UUID is found in UserDefaults.")
     }
-    
+
     func testCheck_Logout() {
         let uuid = UUID()
         UserDefaults.standard.set(uuid.uuidString, forKey: "LoggedInUserUUID")
@@ -64,41 +64,41 @@ final class UserViewModelTests: XCTestCase {
         XCTAssertNil(UserDefaults.standard.value(forKey: "LoggedInUserUUID"), "LoggedInUserUUID should be removed from UserDefaults after logout.")
         XCTAssertFalse(self.viewModel.isLoggedIn, "User should be logged out.")
     }
-    
+
 //    func createInMemoryPersistentContainer() -> NSPersistentContainer {
 //        let container = NSPersistentContainer(name: "ShowBook")
 //        let description = NSPersistentStoreDescription()
 //        description.type = NSInMemoryStoreType
 //        container.persistentStoreDescriptions = [description]
-//        
+//
 //        container.loadPersistentStores { (storeDescription, error) in
 //            if let error = error {
 //                fatalError("Error loading Core Data stores: \(error)")
 //            }
 //        }
-//        
+//
 //        return container
 //    }
-    
+
     func createInMemoryPersistentContainer() -> NSPersistentContainer {
         let modelURL = Bundle.main.url(forResource: "ShowBook", withExtension: "momd")!
         let managedObjectModel = NSManagedObjectModel(contentsOf: modelURL)!
         let container = NSPersistentContainer(name: "ShowBook", managedObjectModel: managedObjectModel)
-        
+
         let description = NSPersistentStoreDescription()
         description.type = NSInMemoryStoreType
         container.persistentStoreDescriptions = [description]
-        
+
         container.loadPersistentStores { (storeDescription, error) in
             if let error = error {
                 fatalError("Error loading Core Data stores: \(error)")
             }
         }
-        
+
         return container
     }
 
-    
+
     func testCloudAccountBindsBookmarksAndDelegatesLogoutUntilConfirmed() {
         var requestedSignOut = false
         viewModel.activateCloudAccount(email: "Cloud@Example.com", uuid: UUID()) { requestedSignOut = true }

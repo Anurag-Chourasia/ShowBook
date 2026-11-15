@@ -42,7 +42,8 @@ class DashboardViewModel: ObservableObject {
     ) {
         self.api = api
         self.cache = cache
-        self.searchBooksUseCase = searchBooksUseCase ?? SearchBooksUseCase(repository: BookSearchRepositoryImpl(api: api, cache: cache))
+        let repo = BookSearchRepositoryImpl(api: api, cache: cache)
+        self.searchBooksUseCase = searchBooksUseCase ?? SearchBooksUseCase(repository: repo)
     }
     var offset: Int = 0
     private var requestID = UUID()

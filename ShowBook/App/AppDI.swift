@@ -47,8 +47,12 @@ final class AppDI: ObservableObject {
         imageDataLoader: (any ImageDataLoading)? = nil
     ) {
         self.persistenceController = persistenceController
-        self.bookmarkRepository = bookmarkRepository ?? BookmarkRepositoryImpl(persistenceController: persistenceController)
-        self.userPreferenceRepository = userPreferenceRepository ?? UserPreferenceRepositoryImpl(persistenceController: persistenceController)
+        self.bookmarkRepository = bookmarkRepository ?? BookmarkRepositoryImpl(
+            persistenceController: persistenceController
+        )
+        self.userPreferenceRepository = userPreferenceRepository ?? UserPreferenceRepositoryImpl(
+            persistenceController: persistenceController
+        )
         self.bookCatalogCache = bookCatalogCache
         self.bookDetailsService = bookDetailsService ?? BookDetailsService()
         self.discoverService = discoverService ?? DiscoverService()

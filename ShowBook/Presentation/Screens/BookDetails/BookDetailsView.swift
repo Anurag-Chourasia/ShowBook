@@ -38,7 +38,13 @@ struct BookDetailsView: View {
                     }
                     Text(\.editions).font(\.title2).accessibilityAddTraits(.isHeader)
                     ForEach(model.editions) { edition in
-                        NavigationLink { EditionDetailsView(key: edition.key, title: edition.title, service: appDI.bookDetailsService) } label: {
+                        NavigationLink {
+                            EditionDetailsView(
+                                key: edition.key,
+                                title: edition.title,
+                                service: appDI.bookDetailsService
+                            )
+                        } label: {
                             SurfaceCard {
                                 VStack(alignment: .leading, spacing: \.eight) {
                                     Text(edition.title).font(\.headline)

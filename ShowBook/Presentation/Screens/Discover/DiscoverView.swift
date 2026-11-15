@@ -54,7 +54,10 @@ struct DiscoverView: View {
                     .pickerStyle(.menu)
                     .accessibilityIdentifier(.discoverCategory)
                     if let date = model.cachedAt {
-                        Text(\.discoverCached, arguments: [date.formatted(.dateTime.year().month().day().locale(LocalizationController.shared.locale))])
+                        let dateText = date.formatted(
+                            .dateTime.year().month().day().locale(LocalizationController.shared.locale)
+                        )
+                        Text(\.discoverCached, arguments: [dateText])
                             .font(\.caption).foregroundColor(\.secondary)
                     }
                 }.padding(.horizontal, \.sixteen)

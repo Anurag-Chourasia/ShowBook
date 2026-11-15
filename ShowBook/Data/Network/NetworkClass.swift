@@ -28,7 +28,10 @@ class NetworkClass: ObservableObject {
     init(session: URLSession? = nil) { self.session = session }
 
     // Callbacks remain off-main; consumers own the returned cancellation handle.
-    private func fetchData(from url: URL, completion: @escaping (Data?, URLResponse?, Error?) -> Void) -> Task<Void, Never> {
+    private func fetchData(
+        from url: URL,
+        completion: @escaping (Data?, URLResponse?, Error?) -> Void
+    ) -> Task<Void, Never> {
         let transport = AppNetworking.client(session: session)
         return Task.detached { [transport] in
             do {
@@ -51,7 +54,7 @@ class NetworkClass: ObservableObject {
             completion(nil, NetworkSemanticError.invalidURL)
             return nil
         }
-        
+
         return fetchData(from: url) { data, _, error in
             if let error {
                 completion(nil, error)
@@ -72,12 +75,16 @@ class NetworkClass: ObservableObject {
                 completion(nil,error)
             }
         }
-        
+
 
     }
-    
+
     @discardableResult
-    func fetchBooks(title: String, offset: Int, completion: @escaping (Result<[Book], Error>) -> Void) -> Task<Void, Never>? {
+    func fetchBooks(
+        title: String,
+        offset: Int,
+        completion: @escaping (Result<[Book], Error>) -> Void
+    ) -> Task<Void, Never>? {
         var components = URLComponents(string: "https://openlibrary.org/search.json")!
         components.queryItems = [
             URLQueryItem(name: "title", value: title),
@@ -92,18 +99,18 @@ class NetworkClass: ObservableObject {
             completion(.failure(NetworkSemanticError.invalidURL))
             return nil
         }
-        
+
         return fetchData(from: url) { data, _, error in
             if let error = error {
                 completion(.failure(error))
                 return
             }
-            
+
             guard let data = data else {
                 completion(.failure(NetworkSemanticError.noDataReceived))
                 return
             }
-            
+
             do {
                 let booksResponse = try JSONDecoder().decode(BooksResponse.self, from: data)
                 completion(.success(booksResponse.docs))
@@ -111,7 +118,7 @@ class NetworkClass: ObservableObject {
                 completion(.failure(error))
             }
         }
-        
+
 
     }
 }

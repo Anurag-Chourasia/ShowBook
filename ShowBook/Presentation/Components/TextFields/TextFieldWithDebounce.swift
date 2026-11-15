@@ -14,9 +14,9 @@ import UIComponentsKit
 class TextFieldObserver: ObservableObject {
     @Published var searchText = ""
     @Published var debouncedText = ""
-    
+
     private var cancellables = Set<AnyCancellable>()
-    
+
     init(initialText: String = "") {
         searchText = initialText
         debouncedText = initialText

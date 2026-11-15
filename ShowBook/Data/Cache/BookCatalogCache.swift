@@ -22,7 +22,8 @@ final class BookCatalogCache {
     }
 
     var totalSizeBytes: Int {
-        let files = (try? FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: [.fileSizeKey])) ?? []
+        let keys: [URLResourceKey] = [.fileSizeKey]
+        let files = (try? FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: keys)) ?? []
         var total = 0
         for file in files {
             if let size = try? file.resourceValues(forKeys: [.fileSizeKey]).fileSize {

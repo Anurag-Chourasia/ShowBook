@@ -48,7 +48,8 @@ struct CornerRadiusStyle: ViewModifier {
         var corners = UIRectCorner.allCorners
 
         func path(in rect: CGRect) -> Path {
-            let path = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
+            let radii = CGSize(width: radius, height: radius)
+            let path = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: radii)
             return Path(path.cgPath)
         }
     }

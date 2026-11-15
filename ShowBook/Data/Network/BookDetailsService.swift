@@ -26,13 +26,20 @@ actor BookDetailsService: BookDetailsServing {
     func editions(key: String, offset: Int) async throws -> LibraryEditions {
         try await fetch(key: key, resource: "works", editionsOffset: offset)
     }
-    private func fetch<T: Decodable & Sendable>(key: String, resource: String, editionsOffset: Int? = nil) async throws -> T {
+    private func fetch<T: Decodable & Sendable>(
+        key: String,
+        resource: String,
+        editionsOffset: Int? = nil
+    ) async throws -> T {
         try Task.checkCancellation()
         guard Self.validKey(key, resource: resource) else { throw BookDetailsError.invalidKey }
         var components = URLComponents(string: "https://openlibrary.org")!
         components.path = key + (editionsOffset == nil ? ".json" : "/editions.json")
         if let offset = editionsOffset {
-            components.queryItems = [.init(name: "limit", value: String(Self.pageSize)), .init(name: "offset", value: String(max(0, offset)))]
+            components.queryItems = [
+                .init(name: "limit", value: String(Self.pageSize)),
+                .init(name: "offset", value: String(max(0, offset)))
+            ]
         }
         let url = components.url!
         let context = AppNetworking.context(session: session)

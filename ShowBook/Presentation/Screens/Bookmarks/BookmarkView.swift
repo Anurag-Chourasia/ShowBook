@@ -14,7 +14,7 @@ import DesignTokensKit
 struct BookmarkView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @Environment(\.presentationMode) var presentationMode
-    
+
     @StateObject private var viewModel: BookmarkViewModel
 
     init(persistenceController: PersistenceController) {
@@ -22,7 +22,10 @@ struct BookmarkView: View {
     }
 
     init(bookmarkRepository: any BookmarkRepositoryProtocol, persistenceController: PersistenceController) {
-        _viewModel = StateObject(wrappedValue: BookmarkViewModel(bookmarkRepository: bookmarkRepository, persistenceController: persistenceController))
+        _viewModel = StateObject(wrappedValue: BookmarkViewModel(
+            bookmarkRepository: bookmarkRepository,
+            persistenceController: persistenceController
+        ))
     }
 
     #if DEBUG
@@ -34,7 +37,7 @@ struct BookmarkView: View {
     init(viewModel: @autoclosure @escaping () -> BookmarkViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel())
     }
-    
+
     var body: some View {
         VStack(spacing: \.zero) {
             ZStack{
@@ -56,13 +59,13 @@ struct BookmarkView: View {
                     bookLoadingIndicator
                 }
             }
-            
+
         }
         .navigationTitle(\.savedBooks)
         .navigationBarTitleDisplayMode(.inline)
         .showBookTools(includeLayout: true)
     }
-    
+
     private var booksListView: some View {
             ScrollView(.vertical, showsIndicators: false) {
                 VStack(spacing: \.zero) {
@@ -71,7 +74,7 @@ struct BookmarkView: View {
                 .padding(.vertical, \.ten)
             }
         }
-    
+
     private var bookLoadingIndicator: some View {
         GeometryReader { innerGeometry in
             CenteredProgressOverlay(width: innerGeometry.size.width) {

@@ -293,7 +293,12 @@ struct DeveloperSettingsView: View {
                 Text(\.developerVersionNote)
             } header: { Text(\.developerVersionSimulation) }
             Section(header: Text(\.appearance)) {
-                AppearanceMenu(title: String(\.appearance), systemTitle: String(\ShowBookStrings.appearanceSystem), lightTitle: String(\.light), darkTitle: String(\.dark))
+                AppearanceMenu(
+                    title: String(\.appearance),
+                    systemTitle: String(\ShowBookStrings.appearanceSystem),
+                    lightTitle: String(\.light),
+                    darkTitle: String(\.dark)
+                )
             }
             Section(header: Text(\.developerPrivacySupport)) {
                 Link(destination: URL(string: "https://github.com/Anurag-Chourasia/ShowBook/blob/main/Docs/PrivacyInventory.md")!) {

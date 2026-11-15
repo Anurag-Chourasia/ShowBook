@@ -28,9 +28,9 @@ struct WheelPickerView: View {
         self.persistenceController = PersistenceController.inMemory()
     }
     #endif
-    
+
     @Environment(\.managedObjectContext) private var viewContext
-    
+
     var body: some View {
         VStack {
             Picker(selection: $selectedCountryIndex) {

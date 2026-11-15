@@ -23,12 +23,16 @@ class BookItemViewModel: ObservableObject {
     var item: Book {
         bookItem
     }
-    
+
     var imageURL: URL? {
         imageUrl
     }
 
-    init(item: Book, bookmarkRepository: (any BookmarkRepositoryProtocol)? = nil, persistenceController: PersistenceController) {
+    init(
+        item: Book,
+        bookmarkRepository: (any BookmarkRepositoryProtocol)? = nil,
+        persistenceController: PersistenceController
+    ) {
         self.persistenceController = persistenceController
         self.bookmarkRepository = bookmarkRepository ?? BookmarkRepositoryImpl(persistenceController: persistenceController)
         self.bookItem = item
@@ -41,7 +45,7 @@ class BookItemViewModel: ObservableObject {
         self.init(item: item, persistenceController: PersistenceController.inMemory())
     }
     #endif
-    
+
     func setUpPersistenceController(controller: PersistenceController) {
         bookmarkSave.cancel()
         self.persistenceController = controller
@@ -54,24 +58,24 @@ class BookItemViewModel: ObservableObject {
         self.imageUrl = imageUrl
         fetchInitialState()
     }
-    
+
     func toggleBookmark() {
         isBookmarked.toggle()
         if isBookmarked {
             handleBookmarkAdded{
-                
+
             }
         } else {
             bookmarkSave.cancel()
             bookmarkRepository.deleteBook(bookItem)
         }
     }
-    
+
     func fetchInitialState() {
         isBookmarked = bookmarkRepository.isBookmarked(bookItem)
         authorNames = bookItem.authorName?.joined(separator: ", ") ?? ""
     }
-    
+
     func handleBookmarkAdded(completion: @escaping () -> Void) {
         bookmarkSave.start(book: bookItem, imageURL: imageUrl, controller: persistenceController,
                            download: downloadImage, completion: completion)

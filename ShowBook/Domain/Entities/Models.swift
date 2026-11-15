@@ -14,7 +14,7 @@ struct CountryModel: Codable {
     let version, access: String
     let total, offset, limit: Int
     let data: [String: Datum]
-    
+
     enum CodingKeys: String, CodingKey {
         case status
         case statusCode = "status-code"
@@ -64,7 +64,7 @@ struct Book: Identifiable, Codable, Equatable, Hashable {
               let count = ratingsCount, count > 0 else { return nil }
         return (average, count)
     }
-    
+
     enum CodingKeys: String, CodingKey {
         case title, key
         case ratingsAverage = "ratings_average"
@@ -73,12 +73,12 @@ struct Book: Identifiable, Codable, Equatable, Hashable {
         case coverI = "cover_i"
         case image
     }
-    
+
     // Implementing Hashable conformance
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
-    
+
     static func == (lhs: Book, rhs: Book) -> Bool {
         return lhs.id == rhs.id &&
         lhs.title == rhs.title &&

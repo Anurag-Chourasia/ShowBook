@@ -21,10 +21,18 @@ struct BookmarkButton: View {
         _viewModel = StateObject(wrappedValue: BookmarkButtonViewModel(persistenceController: persistenceController))
     }
 
-    init(book: Book, imageUrl: URL? = nil, bookmarkRepository: any BookmarkRepositoryProtocol, persistenceController: PersistenceController) {
+    init(
+        book: Book,
+        imageUrl: URL? = nil,
+        bookmarkRepository: any BookmarkRepositoryProtocol,
+        persistenceController: PersistenceController
+    ) {
         self.book = book
         self.imageUrl = imageUrl
-        _viewModel = StateObject(wrappedValue: BookmarkButtonViewModel(bookmarkRepository: bookmarkRepository, persistenceController: persistenceController))
+        _viewModel = StateObject(wrappedValue: BookmarkButtonViewModel(
+            bookmarkRepository: bookmarkRepository,
+            persistenceController: persistenceController
+        ))
     }
 
     #if DEBUG
@@ -38,7 +46,7 @@ struct BookmarkButton: View {
         self.imageUrl = imageUrl
         _viewModel = StateObject(wrappedValue: viewModel())
     }
-    
+
     var body: some View {
         SelectionToggleButton(
             isSelected: viewModel.isBookmarked,
@@ -53,7 +61,7 @@ struct BookmarkButton: View {
             viewModel.configure(book: book, imageUrl: imageUrl)
         }
     }
-    
+
     private var bookmarkImage: some View {
         Image(viewModel.isBookmarked ? \.bookmarkFill : \.bookmark)
             .foregroundColor(viewModel.isBookmarked ? \.white : \.green)

@@ -54,7 +54,12 @@ private struct ShowBookTools: ViewModifier {
                             }
                             .accessibilityIdentifier(.bookmarkButton)
                         }
-                        AppearanceMenu(title: String(\.appearance), systemTitle: String(\ShowBookStrings.appearanceSystem), lightTitle: String(\.light), darkTitle: String(\.dark))
+                        AppearanceMenu(
+                            title: String(\.appearance),
+                            systemTitle: String(\ShowBookStrings.appearanceSystem),
+                            lightTitle: String(\.light),
+                            darkTitle: String(\.dark)
+                        )
                         if includeLayout { BookLayoutPicker() }
                         #if DEBUG
                         if includeDeveloper {

@@ -14,7 +14,7 @@ class BookmarkViewModel: ObservableObject {
     @Published var errorMessage: String = ""
     @Published var showAlert = false
     @Published var isLoading = false
-    
+
     var persistenceController: PersistenceController
     var bookmarkRepository: any BookmarkRepositoryProtocol
     var fetchBookmarksUseCase: any FetchBookmarksUseCaseProtocol

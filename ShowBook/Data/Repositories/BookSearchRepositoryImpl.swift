@@ -14,7 +14,11 @@ final class BookSearchRepositoryImpl: BookSearchRepositoryProtocol {
         self.cache = cache
     }
 
-    func searchBooks(title: String, offset: Int, completion: @escaping (Result<[Book], Error>) -> Void) -> Task<Void, Never>? {
+    func searchBooks(
+        title: String,
+        offset: Int,
+        completion: @escaping (Result<[Book], Error>) -> Void
+    ) -> Task<Void, Never>? {
         api.fetchBooks(title: title, offset: offset) { [cache] result in
             switch result {
             case .success(let books):

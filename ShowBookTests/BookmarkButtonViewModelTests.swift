@@ -15,12 +15,12 @@ class BookmarkButtonViewModelTests: XCTestCase {
     var mockPersistenceController: PersistenceController!
     var mockBook: Book!
     var mockImageUrl: URL!
-    
+
     override func setUpWithError() throws {
         try super.setUpWithError()
         mockPersistenceController = PersistenceController.inMemory()
     }
-    
+
     override func setUp() {
         super.setUp()
         viewModel = MockBookmarkButtonViewModel(persistenceController: mockPersistenceController)
@@ -28,7 +28,7 @@ class BookmarkButtonViewModelTests: XCTestCase {
         mockImageUrl = URL(string: "https://example.com/image.jpg")!
         viewModel.configure(book: mockBook, imageUrl: mockImageUrl)
     }
-    
+
     override func tearDown() {
         mockPersistenceController.deleteAllBooks()
         mockPersistenceController = nil
@@ -37,18 +37,18 @@ class BookmarkButtonViewModelTests: XCTestCase {
         mockImageUrl = nil
         super.tearDown()
     }
-    
+
     func testFetchInitialStateWhenBookExists() {
         mockPersistenceController.saveBook(mockBook, imageData: mockBook.image)
         viewModel.fetchInitialState()
         XCTAssertTrue(viewModel.isBookmarked)
     }
-    
+
     func testFetchInitialStateWhenBookDoesNotExist() {
         viewModel.fetchInitialState()
         XCTAssertFalse(viewModel.isBookmarked)
     }
-    
+
     func testToggleBookmarkWhenAdding() {
         mockPersistenceController.saveBook(mockBook, imageData: mockBook.image)
         viewModel.isBookmarked = false
@@ -59,7 +59,7 @@ class BookmarkButtonViewModelTests: XCTestCase {
         expectation.fulfill()
         waitForExpectations(timeout: 1, handler: nil)
     }
-    
+
     func testToggleBookmarkWhenRemoving() {
         mockPersistenceController.saveBook(mockBook, imageData: mockBook.image)
         viewModel.isBookmarked = true
@@ -67,7 +67,7 @@ class BookmarkButtonViewModelTests: XCTestCase {
         XCTAssertFalse(viewModel.isBookmarked)
         XCTAssertFalse(mockPersistenceController.fetchBooks().contains(where: { $0.title == mockBook.title}))
     }
-    
+
     func testHandleBookmarkAddedWithoutImageUrl() {
         viewModel.imageUrl = nil
         let expectation = self.expectation(description: "Handle bookmark added")
@@ -79,7 +79,7 @@ class BookmarkButtonViewModelTests: XCTestCase {
         }
         waitForExpectations(timeout: 1, handler: nil)
     }
-    
+
     func testHandleBookmarkAddedWithImageUrl() {
         let expectation = self.expectation(description: "Handle bookmark added with image")
         viewModel.handleBookmarkAdded {
@@ -91,7 +91,7 @@ class BookmarkButtonViewModelTests: XCTestCase {
         }
         waitForExpectations(timeout: 2, handler: nil)
     }
-    
+
     func createInMemoryPersistentContainer() -> NSPersistentContainer {
         let modelURL = Bundle.main.url(forResource: "ShowBook", withExtension: "momd")!
         let managedObjectModel = NSManagedObjectModel(contentsOf: modelURL)!

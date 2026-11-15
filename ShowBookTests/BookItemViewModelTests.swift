@@ -19,18 +19,18 @@ class BookItemViewModelTests: XCTestCase {
     var mockPersistenceController: PersistenceController!
     var mockBook: Book!
     var cancellables = Set<AnyCancellable>()
-    
+
     override func setUpWithError() throws {
         try super.setUpWithError()
         mockPersistenceController = PersistenceController.inMemory()
     }
-    
+
     override func setUp() {
         super.setUp()
         mockBook = Book(title: "Test Book", ratingsAverage: 4.5, ratingsCount: 100, authorName: ["Anurag"], coverI: 12345, image: nil)
         viewModel = BookItemViewModel(item: mockBook, persistenceController: mockPersistenceController)
     }
-    
+
     override func tearDown() {
         viewModel = nil
         mockPersistenceController = nil
@@ -38,7 +38,7 @@ class BookItemViewModelTests: XCTestCase {
         cancellables.removeAll()
         super.tearDown()
     }
-    
+
     func testInitialState() {
         let expectedAuthorNames = "Anurag"
         let actualAuthorNames = viewModel.authorNames
@@ -46,7 +46,7 @@ class BookItemViewModelTests: XCTestCase {
         XCTAssertEqual(expectedAuthorNames, actualAuthorNames)
         XCTAssertFalse(isBookmarked)
     }
-    
+
     func testToggleBookmarkAddsBook() {
         viewModel.isBookmarked = false
         mockPersistenceController.saveBook(mockBook, imageData: mockBook.image)
@@ -54,7 +54,7 @@ class BookItemViewModelTests: XCTestCase {
         XCTAssertTrue(viewModel.isBookmarked)
         XCTAssertTrue(mockPersistenceController.doesBookExist(title: mockBook.title, authors: mockBook.authorName))
     }
-    
+
     func testToggleBookmarkRemovesBook() {
         viewModel.isBookmarked = true
         mockPersistenceController.saveBook(mockBook, imageData: mockBook.image)
@@ -62,25 +62,25 @@ class BookItemViewModelTests: XCTestCase {
         XCTAssertFalse(viewModel.isBookmarked)
         XCTAssertFalse(mockPersistenceController.doesBookExist(title: mockBook.title, authors: mockBook.authorName))
     }
-    
+
     func testFetchInitialStateWhenBookExists() {
         mockPersistenceController.saveBook(mockBook, imageData: mockBook.image)
         viewModel = BookItemViewModel(item: mockBook, persistenceController: mockPersistenceController)
         XCTAssertTrue(viewModel.isBookmarked)
     }
-    
+
     func testFetchInitialStateWhenBookDoesNotExist() {
         viewModel = BookItemViewModel(item: mockBook, persistenceController: mockPersistenceController)
         viewModel.fetchInitialState()
         XCTAssertFalse(viewModel.isBookmarked)
     }
-    
+
     func testConfigureUpdatesImageURL() {
         let newImageUrl = URL(string: "https://example.com/image.jpg")
         viewModel.configure(imageUrl: newImageUrl)
         XCTAssertEqual(viewModel.imageURL, newImageUrl)
     }
-    
+
     func testHandleBookmarkAddedSavesBookWith_ImageData() {
         let expectation = XCTestExpectation(description: "Download and save the image data")
         let imageUrl = URL(string: "https://covers.openlibrary.org/b/id/\(12345)-M.jpg")!
@@ -95,7 +95,7 @@ class BookItemViewModelTests: XCTestCase {
         XCTAssertTrue(self.mockPersistenceController.doesBookExist(title: self.mockBook.title, authors: self.mockBook.authorName))
         XCTAssertTrue(self.mockPersistenceController.doesBookHaveImageData(title: self.mockBook.title, authors: self.mockBook.authorName))
     }
-    
+
     func testHandleBookmarkAddedSavesBookWith_NoImageData() {
         let expectation = XCTestExpectation(description: "Download and save the image data")
         let imageUrl = URL(string: "https://covers.openlibrary.org/b/id/\(-1)-M.jpg")!
@@ -110,7 +110,7 @@ class BookItemViewModelTests: XCTestCase {
         XCTAssertTrue(self.mockPersistenceController.doesBookExist(title: self.mockBook.title, authors: self.mockBook.authorName))
         XCTAssertFalse(self.mockPersistenceController.doesBookHaveImageData(title: self.mockBook.title, authors: self.mockBook.authorName))
     }
-    
+
     func createInMemoryPersistentContainer() -> NSPersistentContainer {
         let modelURL = Bundle.main.url(forResource: "ShowBook", withExtension: "momd")!
         let managedObjectModel = NSManagedObjectModel(contentsOf: modelURL)!

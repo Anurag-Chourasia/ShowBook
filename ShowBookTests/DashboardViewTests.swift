@@ -15,7 +15,7 @@ final class DashboardViewModelTests: XCTestCase {
     var viewModel: DashboardViewModel!
     var userViewModel: UserViewModel!
     var mockApi: MockNetworkClass!
-    
+
     override func setUp() {
         super.setUp()
         mockApi = MockNetworkClass()
@@ -23,14 +23,14 @@ final class DashboardViewModelTests: XCTestCase {
         viewModel.api = mockApi
         userViewModel = UserViewModel()
     }
-    
+
     override func tearDown() {
         viewModel = nil
         userViewModel = nil
         mockApi = nil
         super.tearDown()
     }
-    
+
     func testSearchStatesDistinguishInitialShortEmptyAndFailure() {
         XCTAssertEqual(viewModel.searchState, .idle)
         viewModel.searchBook = "   "
@@ -68,30 +68,30 @@ final class DashboardViewModelTests: XCTestCase {
         // Given
         viewModel.isLoading = true
         viewModel.logOutAlert = true
-        
+
         // When
         let alertIsPresented = viewModel.logOutAlert
-        
+
         // Then
         XCTAssertTrue(alertIsPresented, "Logout alert should be shown")
     }
-    
+
     func testLogoutAlertDismissal() {
         // Given
         viewModel.isLoading = true
         viewModel.logOutAlert = true
-        
+
         // Simulate user tapping the "Yes" button
         viewModel.logOutAlert = false
         userViewModel.logout()
-        
+
         // When
         let alertIsPresented = viewModel.logOutAlert
-        
+
         // Then
         XCTAssertFalse(alertIsPresented, "Logout alert should be dismissed after logout")
     }
-    
+
     // Test case for filtered books sorting
     func testFilteredBooksSorting() {
         viewModel.searchBook = "Swift"
@@ -99,17 +99,17 @@ final class DashboardViewModelTests: XCTestCase {
             Book(title: "SwiftUI", ratingsAverage: 4.5, ratingsCount: 10, authorName: ["Anurag"],coverI: 12345, image: nil ),
             Book(title: "Combine", ratingsAverage: 4.4, ratingsCount: 34, authorName: ["Chourasia"],coverI: 54321, image: nil )
         ]
-        
+
         viewModel.selectedCategoryFilter = "Title"
         XCTAssertEqual(viewModel.filteredBooks.map { $0.title }, ["Combine", "SwiftUI"])
-        
+
         viewModel.selectedCategoryFilter = "Average"
         XCTAssertEqual(viewModel.filteredBooks.map { $0.title }, ["SwiftUI", "Combine"])
-        
+
         viewModel.selectedCategoryFilter = "Hits"
         XCTAssertEqual(viewModel.filteredBooks.map { $0.title }, ["Combine", "SwiftUI"])
     }
-    
+
     func testPaginationFailureRetriesSameOffset() {
         viewModel.searchBook = "Swift"
         let book = Book(title: "Swift", ratingsAverage: nil, ratingsCount: nil, authorName: nil, coverI: nil, image: nil)
@@ -179,7 +179,7 @@ final class DashboardViewModelTests: XCTestCase {
     func testFetchBooksSuccess() {
         let books = [Book(title: "SwiftUI", ratingsAverage: 4.5, ratingsCount: 10, authorName: ["Anurag"], coverI: 12345, image: nil)]
         mockApi.result = .success(books)
-        
+
         let expectation = XCTestExpectation(description: "Books fetched successfully")
 
         viewModel.fetchBooks(title: "SwiftUI", offset: 0) {
@@ -193,12 +193,12 @@ final class DashboardViewModelTests: XCTestCase {
 
         wait(for: [expectation], timeout: 2.0)
     }
-    
+
     // Test case for fetch books failure
     func testFetchBooksFailure() {
         let error = NSError(domain: "Test", code: 0, userInfo: [NSLocalizedDescriptionKey: "Network Error"])
         mockApi.result = .failure(error)
-        
+
         let expectation = XCTestExpectation(description: "Fetch books fails and updates state")
 
         viewModel.fetchBooks(title: "SwiftUI", offset: 0) {
@@ -212,14 +212,14 @@ final class DashboardViewModelTests: XCTestCase {
 
         wait(for: [expectation], timeout: 2.0)
     }
-    
+
     // Test case for perform search
     func testPerformSearch() {
         viewModel.searchBook = "Swift"
         mockApi.result = .success([]) // Mocking empty result
-        
+
         viewModel.performSearch()
-        
+
         XCTAssertTrue(viewModel.isBookLoading)
         XCTAssertEqual(viewModel.offset, 0)
     }
@@ -311,7 +311,7 @@ class MockNetworkClass: NetworkClass {
     var handles: [Task<Void, Never>] = []
     deinit { handles.forEach { $0.cancel() } }
     var pending: [(Result<[Book], Error>) -> Void] = []
-    
+
     override func fetchBooks(title: String, offset: Int, completion: @escaping (Result<[Book], Error>) -> Void) -> Task<Void, Never>? {
         offsets.append(offset)
         pending.append(completion)

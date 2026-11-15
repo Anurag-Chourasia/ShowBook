@@ -57,7 +57,11 @@ struct ShowBookApp: App {
                         persistenceController.retryLoadingStore()
                     }
                 } else if authenticationEnabled {
-                    AppAuthGate(brand: .showBook, localizer: localization, onSignedOut: { userViewModel.clearCloudAccount() }) { user, session in
+                    AppAuthGate(
+                        brand: .showBook,
+                        localizer: localization,
+                        onSignedOut: { userViewModel.clearCloudAccount() }
+                    ) { user, session in
                         CloudBookRoot(user: user, session: session, userViewModel: userViewModel)
                     }
                 } else {

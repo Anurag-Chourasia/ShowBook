@@ -19,7 +19,7 @@ struct DashboardView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @StateObject private var viewModel: DashboardViewModel
     @EnvironmentObject var userViewModel: UserViewModel
-    
+
     init(viewModel: @autoclosure @escaping () -> DashboardViewModel = DashboardViewModel()) {
         _viewModel = StateObject(wrappedValue: viewModel())
     }
@@ -36,7 +36,7 @@ struct DashboardView: View {
                                     booksListView
                                 }
                             }
-                            
+
                             if viewModel.filteredBooks.isEmpty && !viewModel.isBookLoading {
                                 if viewModel.searchBook.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && AppRuntime.discoverEnabled {
                                     DiscoverView()
@@ -76,7 +76,7 @@ struct DashboardView: View {
                 }
         }
     }
-    
+
     private var searchStateBanner: some View {
         ScrollView {
             SurfaceCard {
@@ -140,7 +140,7 @@ struct DashboardView: View {
         .padding(.bottom, \.fourteen)
         .padding(.horizontal, \.twenty)
     }
-    
+
     private func localizedSortTitle(_ value: String) -> String {
         switch value {
         case "Title": String(\.discoverSortTitle)
@@ -170,8 +170,10 @@ struct DashboardView: View {
                     }
                 }
             } label: {
-                Label(viewModel.selectedCategoryFilter.isEmpty ? String(\.sortBy) : localizedSortTitle(viewModel.selectedCategoryFilter),
-                      systemImage: \.arrowUpArrowDown)
+                let sortTitle = viewModel.selectedCategoryFilter.isEmpty
+                    ? String(\.sortBy)
+                    : localizedSortTitle(viewModel.selectedCategoryFilter)
+                Label(sortTitle, systemImage: \.arrowUpArrowDown)
             }
             .tint(\.primary)
             .font(\.subheadline)
@@ -204,9 +206,9 @@ struct DashboardView: View {
             .padding(.vertical, \.ten)
         }
     }
-    
-    
-    
+
+
+
     private var loadingIndicator: some View {
         GeometryReader { innerGeometry in
             CenteredProgressOverlay(width: innerGeometry.size.width) {
@@ -216,7 +218,7 @@ struct DashboardView: View {
             }
         }
     }
-    
+
     private var bookLoadingIndicator: some View {
         GeometryReader { innerGeometry in
             CenteredProgressOverlay(width: innerGeometry.size.width) {
@@ -240,11 +242,16 @@ struct ShowBookDeveloperView: View {
     @AppStorage("bookCatalogLayout") private var storedLayout = CatalogLayout.list.rawValue
 
     var body: some View {
+        let disclaimer = "ShowBook is a book discovery application. Book metadata and covers are provided by "
+            + "Open Library. Availability and accuracy depend on the source records.\n\n"
+            + "Source: https://openlibrary.org\n\n"
+            + "[Privacy Policy](https://github.com/Anurag-Chourasia/ShowBook/blob/main/Docs/PrivacyInventory.md)"
+            + " • [Support](mailto:anuragchourasiaios@gmail.com)"
         DeveloperProfileView(app: DeveloperAppInfo(
             name: "ShowBook",
             version: AppRuntime.version,
             build: AppRuntime.build,
-            disclaimer: "ShowBook is a book discovery application. Book metadata and covers are provided by Open Library. Availability and accuracy depend on the source records.\n\nSource: https://openlibrary.org\n\n[Privacy Policy](https://github.com/Anurag-Chourasia/ShowBook/blob/main/Docs/PrivacyInventory.md) • [Support](mailto:anuragchourasiaios@gmail.com)"
+            disclaimer: disclaimer
         ), layout: CatalogLayout(rawValue: storedLayout) ?? .list)
         .tint(\.blue)
         .navigationTitle(\.knowYourDeveloper)

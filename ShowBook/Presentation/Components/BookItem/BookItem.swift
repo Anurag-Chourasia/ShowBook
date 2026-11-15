@@ -61,7 +61,11 @@ struct BookItem: View {
                 .foregroundColor(\.yellow)
                 .accessibilityHidden(true)
                 }
-                Text(\.detailsRatings, arguments: [rating.average.formatted(.number.precision(.fractionLength(0...2)).locale(LocalizationController.shared.locale)), rating.count.formatted(.number.locale(LocalizationController.shared.locale))])
+                let avg = rating.average.formatted(
+                    .number.precision(.fractionLength(0...2)).locale(LocalizationController.shared.locale)
+                )
+                let count = rating.count.formatted(.number.locale(LocalizationController.shared.locale))
+                Text(\.detailsRatings, arguments: [avg, count])
                     .font(\.caption)
                     .foregroundColor(\.secondary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -129,7 +133,9 @@ struct BookLayoutPicker: View {
     @State private var showGridUnavailable = false
 
     var body: some View {
-        CatalogLayoutMenu(selection: (selection?.wrappedValue ?? CatalogLayout(rawValue: storedLayout) ?? .list).resolved(isAccessibilitySize: dynamicTypeSize.isAccessibilitySize),
+        let currentLayout = selection?.wrappedValue ?? CatalogLayout(rawValue: storedLayout) ?? .list
+        let resolved = currentLayout.resolved(isAccessibilitySize: dynamicTypeSize.isAccessibilitySize)
+        CatalogLayoutMenu(selection: resolved,
                           isAccessibilitySize: dynamicTypeSize.isAccessibilitySize,
                           onSelect: { layout in
                               if let selection { selection.wrappedValue = layout }
@@ -152,13 +158,15 @@ struct BookCollection: View {
     @AppStorage("bookCatalogLayout") private var storedLayout = CatalogLayout.list.rawValue
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     private var layout: CatalogLayout {
-        (layoutOverride ?? CatalogLayout(rawValue: storedLayout) ?? .list).resolved(isAccessibilitySize: dynamicTypeSize.isAccessibilitySize)
+        let base = layoutOverride ?? CatalogLayout(rawValue: storedLayout) ?? .list
+        return base.resolved(isAccessibilitySize: dynamicTypeSize.isAccessibilitySize)
     }
 
     var body: some View {
         Group {
             if layout == .grid {
-                LazyVGrid(columns: [GridItem(.adaptive(minimum: CatalogMetrics.bookGridMinimum), spacing: \.twelve)], spacing: \.twelve) {
+                let col = GridItem(.adaptive(minimum: CatalogMetrics.bookGridMinimum), spacing: \.twelve)
+                LazyVGrid(columns: [col], spacing: \.twelve) {
                     tiles
                 }
             } else {

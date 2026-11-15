@@ -129,7 +129,7 @@ class PersistenceController: ObservableObject {
 
     func saveCountryModel(_ countryModel: CountryModel) {
         let context = container.viewContext
-        
+
         let countryEntity = CountryEntity(context: context)
         countryEntity.status = countryModel.status
         countryEntity.statusCode = Int16(countryModel.statusCode)
@@ -138,28 +138,28 @@ class PersistenceController: ObservableObject {
         countryEntity.total = Int16(countryModel.total)
         countryEntity.offset = Int16(countryModel.offset)
         countryEntity.limit = Int16(countryModel.limit)
-        
+
         for (_, datum) in countryModel.data {
             let datumEntity = DatumEntity(context: context)
             datumEntity.country = datum.country
-            
+
             let regionEntity = RegionEntity(context: context)
             regionEntity.region = datum.region.rawValue
-            
+
             datumEntity.region = regionEntity
             countryEntity.addToData(datumEntity)
         }
-        
+
         saveContext()
     }
-    
+
     func saveDefaultCountryName(selectedCountryName: String) {
         let context = container.viewContext
-        
+
         do {
             let fetchRequest: NSFetchRequest<CountryEntity> = CountryEntity.fetchRequest()
             let countryEntities = try context.fetch(fetchRequest)
-            
+
             if let existingCountryEntity = countryEntities.first {
                 existingCountryEntity.selectedCountryName = selectedCountryName
             } else {
@@ -175,16 +175,16 @@ class PersistenceController: ObservableObject {
                 pref.userUUID = uuid
                 pref.ownerID = uuid.uuidString.lowercased()
             }
-            
+
             saveContext()
         } catch {
             logger.log("Error saving default country name: \(error)", level: .error)
         }
     }
-    
+
     func fetchSelectedCountryName() -> String? {
         let context = container.viewContext
-        
+
         do {
             let prefRequest: NSFetchRequest<UserPreference> = UserPreference.fetchRequest()
             if let pref = try context.fetch(prefRequest).first,
@@ -194,22 +194,22 @@ class PersistenceController: ObservableObject {
 
             let fetchRequest: NSFetchRequest<CountryEntity> = CountryEntity.fetchRequest()
             let countryEntities = try context.fetch(fetchRequest)
-            
+
             guard let firstCountryEntity = countryEntities.first else {
                 logger.log("No CountryEntity found", level: .info)
                 return nil
             }
-            
+
             return firstCountryEntity.selectedCountryName
         } catch {
             logger.log("Error fetching selected country name: \(error)", level: .error)
             return nil
         }
     }
-    
+
     func fetchCountryModel() -> CountryModel? {
         let context = container.viewContext
-        
+
         do {
             let fetchRequest: NSFetchRequest<CountryEntity> = CountryEntity.fetchRequest()
             let countryEntities = try context.fetch(fetchRequest)
@@ -217,8 +217,8 @@ class PersistenceController: ObservableObject {
             guard let firstCountryEntity = countryEntities.first else {
                 return nil
             }
-            
-            
+
+
             var data: [String: Datum] = [:]
             firstCountryEntity.data?.forEach { (datumEntity) in
                 if let datum = datumEntity as? DatumEntity {
@@ -226,7 +226,7 @@ class PersistenceController: ObservableObject {
                     data[datum.country ?? ""] = Datum(country: datum.country ?? "", region: regionEnum)
                 }
             }
-            
+
             let countryModel = CountryModel(status: firstCountryEntity.status ?? "",
                                             statusCode: Int(firstCountryEntity.statusCode),
                                             version: firstCountryEntity.version ?? "",
@@ -235,14 +235,14 @@ class PersistenceController: ObservableObject {
                                             offset: Int(firstCountryEntity.offset),
                                             limit: Int(firstCountryEntity.limit),
                                             data: data)
-            
+
             return countryModel
         } catch {
             logger.log("Error fetching CountryModel: \(error)", level: .error)
             return nil
         }
     }
-    
+
     private func saveContext() {
         let context = container.viewContext
         do {
@@ -251,11 +251,11 @@ class PersistenceController: ObservableObject {
             logger.log("Error saving context: \(error)", level: .error)
         }
     }
-    
+
     func deleteAllData(entity: String) {
         let fetchRequest: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: entity)
         let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
-        
+
         do {
             let context = container.viewContext
             try context.execute(deleteRequest)
@@ -464,7 +464,8 @@ class PersistenceController: ObservableObject {
             let email = currentUserEmail.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
             let uuidString = currentUUID.uuidString.lowercased()
             if !email.isEmpty {
-                return NSPredicate(format: "userUUID == %@ OR ownerID ==[c] %@ OR (userUUID == nil AND ownerID == nil AND email ==[c] %@)", currentUUID as CVarArg, uuidString, email)
+                let format = "userUUID == %@ OR ownerID ==[c] %@ OR (userUUID == nil AND ownerID == nil AND email ==[c] %@)"
+                return NSPredicate(format: format, currentUUID as CVarArg, uuidString, email)
             } else {
                 return NSPredicate(format: "userUUID == %@ OR ownerID ==[c] %@", currentUUID as CVarArg, uuidString)
             }
