@@ -5,6 +5,7 @@ network_version=json.loads((root/'Scripts/dependencies.json').read_text())['comm
 with tempfile.TemporaryDirectory(prefix='showbook-adapter-') as temp:
  p=Path(temp);(p/'Sources/Adapter').mkdir(parents=True)
  shutil.copy2(root / 'ShowBook/Domain/Entities/Models.swift', p / 'Sources/Adapter/Models.swift')
+ shutil.copy2(root / 'ShowBook/Domain/Entities/CountryModel.swift', p / 'Sources/Adapter/CountryModel.swift')
  shutil.copy2(root / 'ShowBook/Data/Network/NetworkClass.swift', p / 'Sources/Adapter/NetworkClass.swift')
  shutil.copy2(root/'ShowBook/Developer/AppRuntime.swift',p/'Sources/Adapter/AppRuntime.swift')
  shutil.copytree(root/'TestSupport/NetworkingTests',p/'Tests/AdapterTests')

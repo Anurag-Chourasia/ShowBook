@@ -3,22 +3,6 @@ import LocalizationKit
 import DesignTokensKit
 import UIComponentsKit
 
-enum DiscoverSortOption: String, CaseIterable, Identifiable {
-    case title = "Title"
-    case average = "Average"
-    case hits = "Hits"
-
-    var id: String { rawValue }
-
-    var titleKeyPath: KeyPath<ShowBookStrings, String> {
-        switch self {
-        case .title: return \.discoverSortTitle
-        case .average: return \.discoverSortAverage
-        case .hits: return \.discoverSortHits
-        }
-    }
-}
-
 struct DiscoverView: View {
     @StateObject private var model: DiscoverViewModel
     @State private var category: DiscoverCategory = .fiction
@@ -31,36 +15,13 @@ struct DiscoverView: View {
     }
 
     private var displayedBooks: [Book] {
-        guard let sort else { return model.books }
-        switch sort {
-        case .title: return model.books.sorted { $0.title.localizedStandardCompare($1.title) == .orderedAscending }
-        case .average: return model.books.sorted { ($0.availableRating?.average ?? -1) > ($1.availableRating?.average ?? -1) }
-        case .hits: return model.books.sorted { ($0.ratingsCount ?? -1) > ($1.ratingsCount ?? -1) }
-        }
+        sort?.sort(model.books) ?? model.books
     }
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: \.sixteen) {
-                VStack(alignment: .leading, spacing: \.eight) {
-                    Text(\.discover).font(\.title).accessibilityAddTraits(.isHeader)
-                    Text(\.discoverSubtitle)
-                        .font(\.body).foregroundColor(\.secondary)
-                    Picker(selection: $category) {
-                        ForEach(DiscoverCategory.allCases) { Text($0.titleKeyPath).tag($0) }
-                    } label: {
-                        Text(\.discoverCategory)
-                    }
-                    .pickerStyle(.menu)
-                    .accessibilityIdentifier(.discoverCategory)
-                    if let date = model.cachedAt {
-                        let dateText = date.formatted(
-                            .dateTime.year().month().day().locale(LocalizationController.shared.locale)
-                        )
-                        Text(\.discoverCached, arguments: [dateText])
-                            .font(\.caption).foregroundColor(\.secondary)
-                    }
-                }.padding(.horizontal, \.sixteen)
+                categoryHeader
                 if model.loading {
                     ProgressView { Text(\.discoverFinding) }.frame(maxWidth: .infinity)
                 } else if let message = model.message {
@@ -71,41 +32,9 @@ struct DiscoverView: View {
                     actions: { Button(\.retry) { reload += 1 } }
                     .padding(\.sixteen)
                 } else if model.books.isEmpty {
-                    Text(\.noBooksCategory)
-                        .font(\.body).padding(\.sixteen)
+                    Text(\.noBooksCategory).font(\.body).padding(\.sixteen)
                 } else {
-                    HStack {
-                        Menu {
-                            Section {
-                                ForEach(DiscoverSortOption.allCases) { option in
-                                    Button { sort = option } label: {
-                                        if sort == option {
-                                            Label(Text(option.titleKeyPath), \.checkmark)
-                                        } else {
-                                            Text(option.titleKeyPath)
-                                        }
-                                    }
-                                }
-                            }
-                            Section {
-                                Button(role: .destructive) { sort = nil } label: {
-                                    Text(\.actionClear)
-                                }
-                            }
-                        } label: {
-                            if let sort {
-                                Label(Text(sort.titleKeyPath), \.arrowUpArrowDown)
-                            } else {
-                                Label(Text(\.sortBy), \.arrowUpArrowDown)
-                            }
-                        }
-                        .accessibilityIdentifier(.discoverSortMenu)
-                        Spacer()
-                        BookLayoutPicker(selection: $layout)
-                    }
-                    .font(\.subheadline)
-                    .padding(.horizontal, \.sixteen)
-                    BookCollection(books: displayedBooks, layoutOverride: layout)
+                    sortAndCatalogView
                 }
             }.padding(.vertical, \.sixteen)
         }
@@ -115,15 +44,53 @@ struct DiscoverView: View {
         .task(id: reload) { if reload > 0 { await model.load(category, refresh: true) } }
         .refreshable { await model.load(category, refresh: true) }
     }
-}
 
-private extension DiscoverCategory {
-    var titleKeyPath: KeyPath<ShowBookStrings, String> {
-        switch self {
-        case .fiction: return \.categoryFiction
-        case .mystery: return \.categoryMystery
-        case .science: return \.categoryScience
-        case .history: return \.categoryHistory
+    private var categoryHeader: some View {
+        VStack(alignment: .leading, spacing: \.eight) {
+            Text(\.discover).font(\.title).accessibilityAddTraits(.isHeader)
+            Text(\.discoverSubtitle).font(\.body).foregroundColor(\.secondary)
+            Picker(selection: $category) {
+                ForEach(DiscoverCategory.allCases) { Text($0.titleKeyPath).tag($0) }
+            } label: { Text(\.discoverCategory) }
+            .pickerStyle(.menu)
+            .accessibilityIdentifier(.discoverCategory)
+            if let date = model.cachedAt {
+                let dateText = date.formatted(
+                    .dateTime.year().month().day().locale(LocalizationController.shared.locale)
+                )
+                Text(\.discoverCached, arguments: [dateText]).font(\.caption).foregroundColor(\.secondary)
+            }
+        }.padding(.horizontal, \.sixteen)
+    }
+
+    private var sortAndCatalogView: some View {
+        VStack(alignment: .leading, spacing: \.sixteen) {
+            HStack {
+                Menu {
+                    Section {
+                        ForEach(DiscoverSortOption.allCases) { option in
+                            Button { sort = option } label: {
+                                if sort == option {
+                                    Label(Text(option.titleKeyPath), \.checkmark)
+                                } else {
+                                    Text(option.titleKeyPath)
+                                }
+                            }
+                        }
+                    }
+                    Section {
+                        Button(role: .destructive) { sort = nil } label: { Text(\.actionClear) }
+                    }
+                } label: {
+                    Label(sort != nil ? Text(sort!.titleKeyPath) : Text(\.sortBy), \.arrowUpArrowDown)
+                }
+                .accessibilityIdentifier(.discoverSortMenu)
+                Spacer()
+                BookLayoutPicker(selection: $layout)
+            }
+            .font(\.subheadline)
+            .padding(.horizontal, \.sixteen)
+            BookCollection(books: displayedBooks, layoutOverride: layout)
         }
     }
 }

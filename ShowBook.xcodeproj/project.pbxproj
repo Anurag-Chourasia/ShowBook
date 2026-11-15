@@ -103,6 +103,18 @@
 		C10300000000000000000016 /* BookRatingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10300000000000000000015 /* BookRatingView.swift */; };
 		C10300000000000000000018 /* BookItemDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10300000000000000000017 /* BookItemDetailsView.swift */; };
 		C1030000000000000000001A /* BookmarkButton+Inits.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10300000000000000000019 /* BookmarkButton+Inits.swift */; };
+		C10400000000000000000002 /* ShowBookToolsModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10400000000000000000001 /* ShowBookToolsModifier.swift */; };
+		C10400000000000000000004 /* DiscoverSortOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10400000000000000000003 /* DiscoverSortOption.swift */; };
+		C10400000000000000000006 /* BookDetailsError.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10400000000000000000005 /* BookDetailsError.swift */; };
+		C10400000000000000000008 /* LibraryEdition.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10400000000000000000007 /* LibraryEdition.swift */; };
+		C1040000000000000000000A /* CountryModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10400000000000000000009 /* CountryModel.swift */; };
+		C1040000000000000000000C /* Persistence+Country.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1040000000000000000000B /* Persistence+Country.swift */; };
+		C10400000000000000000010 /* Persistence+Migration.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1040000000000000000000F /* Persistence+Migration.swift */; };
+		C10400000000000000000012 /* Persistence+Protocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10400000000000000000011 /* Persistence+Protocols.swift */; };
+		C10400000000000000000014 /* NSManagedObject+Convenience.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10400000000000000000013 /* NSManagedObject+Convenience.swift */; };
+		C10400000000000000000016 /* Persistence+BookQueries.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10400000000000000000015 /* Persistence+BookQueries.swift */; };
+		C1040000000000000000000E /* Persistence+Books.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1040000000000000000000D /* Persistence+Books.swift */; };
+		C10400000000000000000018 /* Persistence+Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10400000000000000000017 /* Persistence+Configuration.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -214,6 +226,18 @@
 		C10300000000000000000015 /* BookRatingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BookRatingView.swift"; sourceTree = "<group>"; };
 		C10300000000000000000017 /* BookItemDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BookItemDetailsView.swift"; sourceTree = "<group>"; };
 		C10300000000000000000019 /* BookmarkButton+Inits.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BookmarkButton+Inits.swift"; sourceTree = "<group>"; };
+		C10400000000000000000001 /* ShowBookToolsModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ShowBookToolsModifier.swift"; sourceTree = "<group>"; };
+		C10400000000000000000003 /* DiscoverSortOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DiscoverSortOption.swift"; sourceTree = "<group>"; };
+		C10400000000000000000005 /* BookDetailsError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BookDetailsError.swift"; sourceTree = "<group>"; };
+		C10400000000000000000007 /* LibraryEdition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LibraryEdition.swift"; sourceTree = "<group>"; };
+		C10400000000000000000009 /* CountryModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CountryModel.swift"; sourceTree = "<group>"; };
+		C1040000000000000000000B /* Persistence+Country.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Persistence+Country.swift"; sourceTree = "<group>"; };
+		C1040000000000000000000F /* Persistence+Migration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Persistence+Migration.swift"; sourceTree = "<group>"; };
+		C10400000000000000000011 /* Persistence+Protocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Persistence+Protocols.swift"; sourceTree = "<group>"; };
+		C10400000000000000000013 /* NSManagedObject+Convenience.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSManagedObject+Convenience.swift"; sourceTree = "<group>"; };
+		C10400000000000000000015 /* Persistence+BookQueries.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Persistence+BookQueries.swift"; sourceTree = "<group>"; };
+		C1040000000000000000000D /* Persistence+Books.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Persistence+Books.swift"; sourceTree = "<group>"; };
+		C10400000000000000000017 /* Persistence+Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Persistence+Configuration.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -346,6 +370,12 @@
 				3403E2B42C7065190063E7D0 /* Models.swift */,
 				680000000000000000000001 /* DiscoverEntities.swift */,
 				680000000000000000000003 /* BookDetailsEntities.swift */,
+			
+				C10400000000000000000005 /* BookDetailsError.swift */,
+			
+				C10400000000000000000007 /* LibraryEdition.swift */,
+			
+				C10400000000000000000009 /* CountryModel.swift */,
 			);
 			path = Entities;
 			sourceTree = "<group>";
@@ -439,6 +469,21 @@
 			children = (
 				3403E2732C7064320063E7D0 /* Persistence.swift */,
 				3403E2752C7064320063E7D0 /* ShowBook.xcdatamodeld */,
+			
+				C1040000000000000000000B /* Persistence+Country.swift */,
+			
+			
+				C1040000000000000000000F /* Persistence+Migration.swift */,
+			
+				C10400000000000000000011 /* Persistence+Protocols.swift */,
+			
+				C10400000000000000000013 /* NSManagedObject+Convenience.swift */,
+			
+				C10400000000000000000015 /* Persistence+BookQueries.swift */,
+			
+				C1040000000000000000000D /* Persistence+Books.swift */,
+			
+				C10400000000000000000017 /* Persistence+Configuration.swift */,
 			);
 			path = Persistence;
 			sourceTree = "<group>";
@@ -492,6 +537,8 @@
 			isa = PBXGroup;
 			children = (
 				3403E2782C7064320063E7D0 /* ContentView.swift */,
+			
+				C10400000000000000000001 /* ShowBookToolsModifier.swift */,
 			);
 			path = ContentView;
 			sourceTree = "<group>";
@@ -514,6 +561,8 @@
 			isa = PBXGroup;
 			children = (
 				A27000000000000000000003 /* DiscoverView.swift */,
+			
+				C10400000000000000000003 /* DiscoverSortOption.swift */,
 			);
 			path = Discover;
 			sourceTree = "<group>";
@@ -845,6 +894,21 @@
 				C10300000000000000000016 /* BookRatingView.swift in Sources */,
 				C10300000000000000000018 /* BookItemDetailsView.swift in Sources */,
 				C1030000000000000000001A /* BookmarkButton+Inits.swift in Sources */,
+			
+				C10400000000000000000002 /* ShowBookToolsModifier.swift in Sources */,
+				C10400000000000000000004 /* DiscoverSortOption.swift in Sources */,
+				C10400000000000000000006 /* BookDetailsError.swift in Sources */,
+				C10400000000000000000008 /* LibraryEdition.swift in Sources */,
+				C1040000000000000000000A /* CountryModel.swift in Sources */,
+				C1040000000000000000000C /* Persistence+Country.swift in Sources */,
+				C10400000000000000000010 /* Persistence+Migration.swift in Sources */,
+				C10400000000000000000012 /* Persistence+Protocols.swift in Sources */,
+			
+				C10400000000000000000014 /* NSManagedObject+Convenience.swift in Sources */,
+				C10400000000000000000016 /* Persistence+BookQueries.swift in Sources */,
+			
+				C1040000000000000000000E /* Persistence+Books.swift in Sources */,
+				C10400000000000000000018 /* Persistence+Configuration.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
