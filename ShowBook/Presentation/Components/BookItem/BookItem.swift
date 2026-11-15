@@ -17,75 +17,28 @@ struct BookItem: View {
         self.showsRatings = showsRatings
     }
 
-    private var imageURL: URL? {
-        guard let cover = item.coverI, cover > 0 else { return nil }
-        return LibraryCover.url(cover, size: .medium)
-    }
-    private var coverSize: CGSize { layout == .grid ? CatalogMetrics.coverGridSize : CatalogMetrics.coverListSize }
-
     var body: some View {
         CatalogTile(layout: layout, colors: SemanticColors(surface: \.groupedSecondary)) {
             if !dynamicTypeSize.isAccessibilitySize {
-                NavigationLink { BookDetailsView(book: item) } label: { cover }
+                NavigationLink { BookDetailsView(book: item) } label: { BookItemCover(item: item, layout: layout) }
                     .accessibilityLabel(Text(\.detailsFor, arguments: [item.title]))
                     .accessibilityHint(AppRuntime.coverPreviewEnabled ? Text(\.detailsPreviewHint) : Text(\.detailsOpens))
-                    .highPriorityGesture(LongPressGesture().onEnded { _ in if AppRuntime.coverPreviewEnabled { previewPresented = true } })
+                    .highPriorityGesture(LongPressGesture().onEnded { _ in
+                        if AppRuntime.coverPreviewEnabled { previewPresented = true }
+                    })
             }
         } details: {
             VStack(alignment: .leading, spacing: \.eight) {
                 NavigationLink { BookDetailsView(book: item) } label: {
-                    VStack(alignment: .leading, spacing: \.eight) {
-                Text(item.title)
-                    .font(\.headline)
-                    .foregroundColor(\.primary)
-                    .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : CatalogMetrics.listTitleLines)
-                if let author = item.authorName?.joined(separator: ", ").nilIfEmpty {
-                    Text(author)
-                        .font(\.footnote)
-                        .foregroundColor(\.secondary)
-                        .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : CatalogMetrics.listTitleLines)
-                } else {
-                    Text(\.detailsNoAuthor)
-                        .font(\.footnote)
-                        .foregroundColor(\.secondary)
-                        .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : CatalogMetrics.listTitleLines)
+                    BookItemDetailsView(item: item, showsRatings: showsRatings)
                 }
-                if showsRatings && AppRuntime.ratingsEnabled, let rating = item.availableRating {
-                if !dynamicTypeSize.isAccessibilitySize {
-                HStack(spacing: \.zero) {
-                    ForEach(0..<CatalogMetrics.maximumRating, id: \.self) { index in
-                        Image(Double(index) < rating.average.rounded(.down) ? \.starFill : \.star)
-                    }
-                }
-                .font(\.caption)
-                .foregroundColor(\.yellow)
-                .accessibilityHidden(true)
-                }
-                let avg = rating.average.formatted(
-                    .number.precision(.fractionLength(0...2)).locale(LocalizationController.shared.locale)
-                )
-                let count = rating.count.formatted(.number.locale(LocalizationController.shared.locale))
-                Text(\.detailsRatings, arguments: [avg, count])
-                    .font(\.caption)
-                    .foregroundColor(\.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-                } else if showsRatings && AppRuntime.ratingsEnabled {
-                    Text(\.notRated)
-                        .font(\.caption)
-                        .foregroundColor(\.secondary)
-                }
-                    }
-                }.buttonStyle(.plain)
+                .buttonStyle(.plain)
                 .accessibilityHint(\.detailsOpens)
-                if dynamicTypeSize.isAccessibilitySize {
-                    BookmarkButton(book: item, imageUrl: imageURL, persistenceController: persistenceController)
-                }
+                if dynamicTypeSize.isAccessibilitySize { bookmarkButton }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         } accessory: {
-            if !dynamicTypeSize.isAccessibilitySize {
-                BookmarkButton(book: item, imageUrl: imageURL, persistenceController: persistenceController)
-            }
+            if !dynamicTypeSize.isAccessibilitySize { bookmarkButton }
         }
         .accessibilityIdentifier(.bookTile(layout.rawValue))
         .accessibilityActions {
@@ -96,90 +49,11 @@ struct BookItem: View {
         }
     }
 
-    private var cover: some View {
-        Group {
-            if let data = item.image, let image = UIImage(data: data) {
-                Image(uiImage: image).resizable().scaledToFill()
-            } else if let imageURL {
-                RemoteImagePhaseView(url: imageURL) { phase in
-                    switch phase {
-                    case .success(let image): image.resizable().scaledToFill()
-                    case .empty, .loading: placeholder.overlay { ProgressView() }
-                    case .failure: placeholder
-                    }
-                }
-            } else { placeholder }
-        }
-        .frame(width: coverSize.width, height: coverSize.height)
-        .clipShape(RoundedRectangle(cornerRadius: CatalogMetrics.coverRadius))
-        .accessibilityHidden(true)
-    }
-
-    private var placeholder: some View {
-        Rectangle().fill(\.grouped)
-            .overlay { Image(\.bookClosed).foregroundColor(\.secondary) }
-    }
-}
-
-private extension String {
-    var nilIfEmpty: String? { isEmpty ? nil : self }
-}
-
-/// Search and bookmarks share the same saved preference and accessibility fallback.
-struct BookLayoutPicker: View {
-    var selection: Binding<CatalogLayout>? = nil
-    @AppStorage("bookCatalogLayout") private var storedLayout = CatalogLayout.list.rawValue
-    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-    @State private var showGridUnavailable = false
-
-    var body: some View {
-        let currentLayout = selection?.wrappedValue ?? CatalogLayout(rawValue: storedLayout) ?? .list
-        let resolved = currentLayout.resolved(isAccessibilitySize: dynamicTypeSize.isAccessibilitySize)
-        CatalogLayoutMenu(selection: resolved,
-                          isAccessibilitySize: dynamicTypeSize.isAccessibilitySize,
-                          onSelect: { layout in
-                              if let selection { selection.wrappedValue = layout }
-                              else { storedLayout = layout.rawValue }
-                          },
-                          onGridUnavailable: { showGridUnavailable = true })
-            .tint(\.primary)
-            .accessibilityIdentifier(.bookLayoutMenu)
-            .alert(Text(\.layoutListTitle), isPresented: $showGridUnavailable) {
-                Button(\.ok, role: .cancel) {}
-            } message: { Text(\.layoutReadability) }
-    }
-}
-
-struct BookCollection: View {
-    let books: [Book]
-    var layoutOverride: CatalogLayout? = nil
-    var showsRatings = true
-    var onLastAppear: () -> Void = {}
-    @AppStorage("bookCatalogLayout") private var storedLayout = CatalogLayout.list.rawValue
-    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-    private var layout: CatalogLayout {
-        let base = layoutOverride ?? CatalogLayout(rawValue: storedLayout) ?? .list
-        return base.resolved(isAccessibilitySize: dynamicTypeSize.isAccessibilitySize)
-    }
-
-    var body: some View {
-        Group {
-            if layout == .grid {
-                let col = GridItem(.adaptive(minimum: CatalogMetrics.bookGridMinimum), spacing: \.twelve)
-                LazyVGrid(columns: [col], spacing: \.twelve) {
-                    tiles
-                }
-            } else {
-                LazyVStack(spacing: \.twelve) { tiles }
-            }
-        }
-        .padding(.horizontal, \.sixteen)
-    }
-
-    private var tiles: some View {
-        ForEach(books) { book in
-            BookItem(item: book, layout: layout, showsRatings: showsRatings)
-                .onAppear { if book.id == books.last?.id { onLastAppear() } }
-        }
+    private var bookmarkButton: some View {
+        BookmarkButton(
+            book: item,
+            imageUrl: item.coverI.flatMap { LibraryCover.url($0, size: .medium) },
+            persistenceController: persistenceController
+        )
     }
 }

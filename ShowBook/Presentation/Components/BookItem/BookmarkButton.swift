@@ -21,26 +21,6 @@ struct BookmarkButton: View {
         _viewModel = StateObject(wrappedValue: BookmarkButtonViewModel(persistenceController: persistenceController))
     }
 
-    init(
-        book: Book,
-        imageUrl: URL? = nil,
-        bookmarkRepository: any BookmarkRepositoryProtocol,
-        persistenceController: PersistenceController
-    ) {
-        self.book = book
-        self.imageUrl = imageUrl
-        _viewModel = StateObject(wrappedValue: BookmarkButtonViewModel(
-            bookmarkRepository: bookmarkRepository,
-            persistenceController: persistenceController
-        ))
-    }
-
-    #if DEBUG
-    init(book: Book, imageUrl: URL? = nil) {
-        self.init(book: book, imageUrl: imageUrl, persistenceController: PersistenceController.inMemory())
-    }
-    #endif
-
     init(book: Book, imageUrl: URL? = nil, viewModel: @autoclosure @escaping () -> BookmarkButtonViewModel) {
         self.book = book
         self.imageUrl = imageUrl
@@ -71,11 +51,4 @@ struct BookmarkButton: View {
             .clipShape(Circle())
             .shadow(radius: DesignMetric.p3)
     }
-}
-
-#Preview {
-    BookmarkButton(
-        book: ShowBookStubProvider.stubBook(),
-        imageUrl: nil
-    )
 }

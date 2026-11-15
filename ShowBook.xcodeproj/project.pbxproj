@@ -90,6 +90,19 @@
 		40D1C4ABED7D49BDAE931CD7 /* DeveloperFixtureResourceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81AE220383BB4E2580143336 /* DeveloperFixtureResourceTests.swift */; };
 		36B4C88104B74B2EA6718218 /* SnapshotTestKit in Frameworks */ = {isa = PBXBuildFile; productRef = CBCF43FD400C414BAA2BE746 /* SnapshotTestKit */; };
 		F146194A44E9492F9A7B35B6 /* PortfolioSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87BB901AB8D24E8BA8B959B9 /* PortfolioSnapshot.swift */; };
+		C10300000000000000000002 /* LibraryCover.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10300000000000000000001 /* LibraryCover.swift */; };
+		C10300000000000000000004 /* BookCoverPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10300000000000000000003 /* BookCoverPreview.swift */; };
+		C10300000000000000000006 /* EditionDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10300000000000000000005 /* EditionDetailsView.swift */; };
+		C10300000000000000000008 /* DashboardSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10300000000000000000007 /* DashboardSearchView.swift */; };
+		C1030000000000000000000A /* DashboardSortFilterBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10300000000000000000009 /* DashboardSortFilterBar.swift */; };
+		C1030000000000000000000C /* DashboardBooksListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1030000000000000000000B /* DashboardBooksListView.swift */; };
+		C1030000000000000000000E /* ShowBookDeveloperView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1030000000000000000000D /* ShowBookDeveloperView.swift */; };
+		C10300000000000000000010 /* BookLayoutPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1030000000000000000000F /* BookLayoutPicker.swift */; };
+		C10300000000000000000012 /* BookCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10300000000000000000011 /* BookCollection.swift */; };
+		C10300000000000000000014 /* BookItemCover.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10300000000000000000013 /* BookItemCover.swift */; };
+		C10300000000000000000016 /* BookRatingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10300000000000000000015 /* BookRatingView.swift */; };
+		C10300000000000000000018 /* BookItemDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10300000000000000000017 /* BookItemDetailsView.swift */; };
+		C1030000000000000000001A /* BookmarkButton+Inits.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10300000000000000000019 /* BookmarkButton+Inits.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -188,6 +201,19 @@
 		C8122A766F8C4BE99DF91006 /* ShowBookV7.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ShowBookV7.xcdatamodel; sourceTree = "<group>"; };
 		81AE220383BB4E2580143336 /* DeveloperFixtureResourceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperFixtureResourceTests.swift; sourceTree = "<group>"; };
 		87BB901AB8D24E8BA8B959B9 /* PortfolioSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortfolioSnapshot.swift; sourceTree = "<group>"; };
+		C10300000000000000000001 /* LibraryCover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LibraryCover.swift"; sourceTree = "<group>"; };
+		C10300000000000000000003 /* BookCoverPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BookCoverPreview.swift"; sourceTree = "<group>"; };
+		C10300000000000000000005 /* EditionDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EditionDetailsView.swift"; sourceTree = "<group>"; };
+		C10300000000000000000007 /* DashboardSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DashboardSearchView.swift"; sourceTree = "<group>"; };
+		C10300000000000000000009 /* DashboardSortFilterBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DashboardSortFilterBar.swift"; sourceTree = "<group>"; };
+		C1030000000000000000000B /* DashboardBooksListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DashboardBooksListView.swift"; sourceTree = "<group>"; };
+		C1030000000000000000000D /* ShowBookDeveloperView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ShowBookDeveloperView.swift"; sourceTree = "<group>"; };
+		C1030000000000000000000F /* BookLayoutPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BookLayoutPicker.swift"; sourceTree = "<group>"; };
+		C10300000000000000000011 /* BookCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BookCollection.swift"; sourceTree = "<group>"; };
+		C10300000000000000000013 /* BookItemCover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BookItemCover.swift"; sourceTree = "<group>"; };
+		C10300000000000000000015 /* BookRatingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BookRatingView.swift"; sourceTree = "<group>"; };
+		C10300000000000000000017 /* BookItemDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BookItemDetailsView.swift"; sourceTree = "<group>"; };
+		C10300000000000000000019 /* BookmarkButton+Inits.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BookmarkButton+Inits.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -474,6 +500,12 @@
 			isa = PBXGroup;
 			children = (
 				3403E2AE2C7065190063E7D0 /* DashboardView.swift */,
+			
+				C10300000000000000000007 /* DashboardSearchView.swift */,
+			
+				C10300000000000000000009 /* DashboardSortFilterBar.swift */,
+			
+				C1030000000000000000000B /* DashboardBooksListView.swift */,
 			);
 			path = Dashboard;
 			sourceTree = "<group>";
@@ -498,6 +530,12 @@
 			isa = PBXGroup;
 			children = (
 				A23000000000000000000002 /* BookDetailsView.swift */,
+			
+				C10300000000000000000001 /* LibraryCover.swift */,
+			
+				C10300000000000000000003 /* BookCoverPreview.swift */,
+			
+				C10300000000000000000005 /* EditionDetailsView.swift */,
 			);
 			path = BookDetails;
 			sourceTree = "<group>";
@@ -517,6 +555,18 @@
 			children = (
 				3403E2A42C7065190063E7D0 /* BookItem.swift */,
 				3403E2A52C7065190063E7D0 /* BookmarkButton.swift */,
+			
+				C1030000000000000000000F /* BookLayoutPicker.swift */,
+			
+				C10300000000000000000011 /* BookCollection.swift */,
+			
+				C10300000000000000000013 /* BookItemCover.swift */,
+			
+				C10300000000000000000015 /* BookRatingView.swift */,
+			
+				C10300000000000000000017 /* BookItemDetailsView.swift */,
+			
+				C10300000000000000000019 /* BookmarkButton+Inits.swift */,
 			);
 			path = BookItem;
 			sourceTree = "<group>";
@@ -548,6 +598,8 @@
 				C10100000000000000000013 /* DeveloperSupportSectionView.swift */,
 				A27000000000000000000000 /* AppRuntime.swift */,
 				A27000000000000000000001 /* DeveloperSettingsView.swift */,
+			
+				C1030000000000000000000D /* ShowBookDeveloperView.swift */,
 			);
 			path = Developer;
 			sourceTree = "<group>";
@@ -779,6 +831,20 @@
 				3403E2BD2C7065190063E7D0 /* LandingView.swift in Sources */,
 				3403E2D42C7076010063E7D0 /* TextFieldWithDebounce.swift in Sources */,
 				3403E2B82C7065190063E7D0 /* BookmarkButton.swift in Sources */,
+			
+				C10300000000000000000002 /* LibraryCover.swift in Sources */,
+				C10300000000000000000004 /* BookCoverPreview.swift in Sources */,
+				C10300000000000000000006 /* EditionDetailsView.swift in Sources */,
+				C10300000000000000000008 /* DashboardSearchView.swift in Sources */,
+				C1030000000000000000000A /* DashboardSortFilterBar.swift in Sources */,
+				C1030000000000000000000C /* DashboardBooksListView.swift in Sources */,
+				C1030000000000000000000E /* ShowBookDeveloperView.swift in Sources */,
+				C10300000000000000000010 /* BookLayoutPicker.swift in Sources */,
+				C10300000000000000000012 /* BookCollection.swift in Sources */,
+				C10300000000000000000014 /* BookItemCover.swift in Sources */,
+				C10300000000000000000016 /* BookRatingView.swift in Sources */,
+				C10300000000000000000018 /* BookItemDetailsView.swift in Sources */,
+				C1030000000000000000001A /* BookmarkButton+Inits.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
