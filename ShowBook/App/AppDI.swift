@@ -9,20 +9,7 @@ import Foundation
 import CoreData
 import Combine
 import SwiftUI
-import CommonNetworkingKit
 import UIComponentsKit
-
-struct CommonNetworkingImageDataLoading: ImageDataLoading {
-    private let fetcher: any ImageDataFetching
-
-    init(fetcher: (any ImageDataFetching)? = nil) {
-        self.fetcher = fetcher ?? ImageDataFetcher(client: AppNetworking.client())
-    }
-
-    func loadImageData(from url: URL) async throws -> Data {
-        try await fetcher.fetchData(for: url)
-    }
-}
 
 final class AppDI: ObservableObject {
     static let shared = AppDI()
@@ -70,7 +57,8 @@ final class AppDI: ObservableObject {
     }
 
     var searchBooksUseCase: any SearchBooksUseCaseProtocol {
-        SearchBooksUseCase(repository: BookSearchRepositoryImpl(api: networkClass, cache: bookCatalogCache))
+        let repo = BookSearchRepositoryImpl(api: networkClass, cache: bookCatalogCache)
+        return SearchBooksUseCase(repository: repo)
     }
 
     var fetchDiscoverCategoryUseCase: any FetchDiscoverCategoryUseCaseProtocol {
@@ -83,69 +71,6 @@ final class AppDI: ObservableObject {
 
     var fetchBookEditionsUseCase: any FetchBookEditionsUseCaseProtocol {
         FetchBookEditionsUseCase(repository: bookDetailsService)
-    }
-
-    @MainActor
-    func makeUserViewModel() -> UserViewModel {
-        UserViewModel(persistenceController: persistenceController)
-    }
-
-    @MainActor
-    func makeBookmarkViewModel() -> BookmarkViewModel {
-        BookmarkViewModel(
-            fetchBookmarksUseCase: fetchBookmarksUseCase,
-            bookmarkRepository: bookmarkRepository,
-            persistenceController: persistenceController
-        )
-    }
-
-    @MainActor
-    func makeBookmarkButtonViewModel(book: Book? = nil, imageUrl: URL? = nil) -> BookmarkButtonViewModel {
-        let vm = BookmarkButtonViewModel(
-            toggleBookmarkUseCase: toggleBookmarkUseCase,
-            bookmarkRepository: bookmarkRepository,
-            persistenceController: persistenceController
-        )
-        if let book {
-            vm.configure(book: book, imageUrl: imageUrl)
-        }
-        return vm
-    }
-
-    @MainActor
-    func makeBookItemViewModel(item: Book) -> BookItemViewModel {
-        BookItemViewModel(
-            item: item,
-            bookmarkRepository: bookmarkRepository,
-            persistenceController: persistenceController
-        )
-    }
-
-    @MainActor
-    func makeDashboardViewModel() -> DashboardViewModel {
-        DashboardViewModel(
-            searchBooksUseCase: searchBooksUseCase,
-            api: networkClass,
-            cache: bookCatalogCache
-        )
-    }
-
-    @MainActor
-    func makeDiscoverViewModel() -> DiscoverViewModel {
-        DiscoverViewModel(
-            fetchDiscoverCategoryUseCase: fetchDiscoverCategoryUseCase,
-            service: discoverService
-        )
-    }
-
-    @MainActor
-    func makeBookDetailsViewModel(key: String?) -> BookDetailsViewModel {
-        BookDetailsViewModel(
-            key: key,
-            fetchBookDetailsUseCase: fetchBookDetailsUseCase,
-            fetchBookEditionsUseCase: fetchBookEditionsUseCase,
-            service: bookDetailsService
-        )
     }
 }
 

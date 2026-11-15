@@ -7,6 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C10100000000000000000002 /* CommonNetworkingImageDataLoading.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10100000000000000000001 /* CommonNetworkingImageDataLoading.swift */; };
+		C10100000000000000000004 /* AppDI+Factories.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10100000000000000000003 /* AppDI+Factories.swift */; };
+		C10100000000000000000006 /* BookRootViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10100000000000000000005 /* BookRootViews.swift */; };
+		C10100000000000000000008 /* StoreLoadErrorRecoveryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10100000000000000000007 /* StoreLoadErrorRecoveryView.swift */; };
+		C1010000000000000000000A /* AppLaunchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10100000000000000000009 /* AppLaunchView.swift */; };
+		C1010000000000000000000C /* ShowcaseBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1010000000000000000000B /* ShowcaseBadgeView.swift */; };
+		C1010000000000000000000E /* DebugSettingsPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1010000000000000000000D /* DebugSettingsPresenter.swift */; };
+		C10100000000000000000010 /* DeveloperPresetsSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1010000000000000000000F /* DeveloperPresetsSectionView.swift */; };
+		C10100000000000000000012 /* DeveloperDiagnosticsSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10100000000000000000011 /* DeveloperDiagnosticsSectionView.swift */; };
+		C10100000000000000000014 /* DeveloperSupportSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10100000000000000000013 /* DeveloperSupportSectionView.swift */; };
 		DA752D2B34EA542331C8A72E /* LocalizationAndRTLJourneyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 818F519200EDD7B6C4BCBE40 /* LocalizationAndRTLJourneyTests.swift */; };
 		DA752D2A34EA542331C8A72D /* AccessibilityJourneyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 818F519100EDD7B6C4BCBE3F /* AccessibilityJourneyTests.swift */; };
 		342B8AA22C7279B300EC41C8 /* RiskBasedIsolationAndConcurrencyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342B8AA12C7279B300EC41C8 /* RiskBasedIsolationAndConcurrencyTests.swift */; };
@@ -93,6 +103,16 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		C10100000000000000000001 /* CommonNetworkingImageDataLoading.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CommonNetworkingImageDataLoading.swift"; sourceTree = "<group>"; };
+		C10100000000000000000003 /* AppDI+Factories.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppDI+Factories.swift"; sourceTree = "<group>"; };
+		C10100000000000000000005 /* BookRootViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BookRootViews.swift"; sourceTree = "<group>"; };
+		C10100000000000000000007 /* StoreLoadErrorRecoveryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StoreLoadErrorRecoveryView.swift"; sourceTree = "<group>"; };
+		C10100000000000000000009 /* AppLaunchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppLaunchView.swift"; sourceTree = "<group>"; };
+		C1010000000000000000000B /* ShowcaseBadgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ShowcaseBadgeView.swift"; sourceTree = "<group>"; };
+		C1010000000000000000000D /* DebugSettingsPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DebugSettingsPresenter.swift"; sourceTree = "<group>"; };
+		C1010000000000000000000F /* DeveloperPresetsSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DeveloperPresetsSectionView.swift"; sourceTree = "<group>"; };
+		C10100000000000000000011 /* DeveloperDiagnosticsSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DeveloperDiagnosticsSectionView.swift"; sourceTree = "<group>"; };
+		C10100000000000000000013 /* DeveloperSupportSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DeveloperSupportSectionView.swift"; sourceTree = "<group>"; };
 		818F519200EDD7B6C4BCBE40 /* LocalizationAndRTLJourneyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizationAndRTLJourneyTests.swift; sourceTree = "<group>"; };
 		818F519100EDD7B6C4BCBE3F /* AccessibilityJourneyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityJourneyTests.swift; sourceTree = "<group>"; };
 		342B8AA12C7279B300EC41C8 /* RiskBasedIsolationAndConcurrencyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiskBasedIsolationAndConcurrencyTests.swift; sourceTree = "<group>"; };
@@ -254,6 +274,10 @@
 		B10000000000000000000001 /* App */ = {
 			isa = PBXGroup;
 			children = (
+				C10100000000000000000001 /* CommonNetworkingImageDataLoading.swift */,
+				C10100000000000000000003 /* AppDI+Factories.swift */,
+				C10100000000000000000005 /* BookRootViews.swift */,
+				C10100000000000000000007 /* StoreLoadErrorRecoveryView.swift */,
 				620000000000000000000009 /* AppDI.swift */,
 				3403E2712C7064320063E7D0 /* ShowBookApp.swift */,
 			);
@@ -516,6 +540,12 @@
 		B10000000000000000000006 /* Developer */ = {
 			isa = PBXGroup;
 			children = (
+				C10100000000000000000009 /* AppLaunchView.swift */,
+				C1010000000000000000000B /* ShowcaseBadgeView.swift */,
+				C1010000000000000000000D /* DebugSettingsPresenter.swift */,
+				C1010000000000000000000F /* DeveloperPresetsSectionView.swift */,
+				C10100000000000000000011 /* DeveloperDiagnosticsSectionView.swift */,
+				C10100000000000000000013 /* DeveloperSupportSectionView.swift */,
 				A27000000000000000000000 /* AppRuntime.swift */,
 				A27000000000000000000001 /* DeveloperSettingsView.swift */,
 			);
@@ -694,6 +724,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C10100000000000000000002 /* CommonNetworkingImageDataLoading.swift in Sources */,
+				C10100000000000000000004 /* AppDI+Factories.swift in Sources */,
+				C10100000000000000000006 /* BookRootViews.swift in Sources */,
+				C10100000000000000000008 /* StoreLoadErrorRecoveryView.swift in Sources */,
+				C1010000000000000000000A /* AppLaunchView.swift in Sources */,
+				C1010000000000000000000C /* ShowcaseBadgeView.swift in Sources */,
+				C1010000000000000000000E /* DebugSettingsPresenter.swift in Sources */,
+				C10100000000000000000010 /* DeveloperPresetsSectionView.swift in Sources */,
+				C10100000000000000000012 /* DeveloperDiagnosticsSectionView.swift in Sources */,
+				C10100000000000000000014 /* DeveloperSupportSectionView.swift in Sources */,
 				62000000000000000000000A /* AppDI.swift in Sources */,
 				620000000000000000000002 /* BookmarkRepositoryProtocol.swift in Sources */,
 				620000000000000000000004 /* UserPreferenceRepositoryProtocol.swift in Sources */,
