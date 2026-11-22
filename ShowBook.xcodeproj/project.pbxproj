@@ -116,6 +116,10 @@
 		C10400000000000000000016 /* Persistence+BookQueries.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10400000000000000000015 /* Persistence+BookQueries.swift */; };
 		C1040000000000000000000E /* Persistence+Books.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1040000000000000000000D /* Persistence+Books.swift */; };
 		C10400000000000000000018 /* Persistence+Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10400000000000000000017 /* Persistence+Configuration.swift */; };
+		C10400000000000000000022 /* UserSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10400000000000000000021 /* UserSettingsView.swift */; };
+		C10400000000000000000024 /* UserSettingsAccountSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10400000000000000000023 /* UserSettingsAccountSection.swift */; };
+		C10400000000000000000026 /* UserSettingsAboutSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10400000000000000000025 /* UserSettingsAboutSection.swift */; };
+		C10400000000000000000028 /* UserSettingsViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10400000000000000000027 /* UserSettingsViewTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -239,6 +243,10 @@
 		C10400000000000000000015 /* Persistence+BookQueries.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Persistence+BookQueries.swift"; sourceTree = "<group>"; };
 		C1040000000000000000000D /* Persistence+Books.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Persistence+Books.swift"; sourceTree = "<group>"; };
 		C10400000000000000000017 /* Persistence+Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Persistence+Configuration.swift"; sourceTree = "<group>"; };
+		C10400000000000000000021 /* UserSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserSettingsView.swift"; sourceTree = "<group>"; };
+		C10400000000000000000023 /* UserSettingsAccountSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserSettingsAccountSection.swift"; sourceTree = "<group>"; };
+		C10400000000000000000025 /* UserSettingsAboutSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserSettingsAboutSection.swift"; sourceTree = "<group>"; };
+		C10400000000000000000027 /* UserSettingsViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserSettingsViewTests.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -523,8 +531,19 @@
 				B10000000000000000000044 /* Discover */,
 				B10000000000000000000045 /* Bookmarks */,
 				B10000000000000000000046 /* BookDetails */,
+				C10400000000000000000020 /* UserSettings */,
 			);
 			path = Screens;
+			sourceTree = "<group>";
+		};
+		C10400000000000000000020 /* UserSettings */ = {
+			isa = PBXGroup;
+			children = (
+				C10400000000000000000021 /* UserSettingsView.swift */,
+				C10400000000000000000023 /* UserSettingsAccountSection.swift */,
+				C10400000000000000000025 /* UserSettingsAboutSection.swift */,
+			);
+			path = UserSettings;
 			sourceTree = "<group>";
 		};
 		B10000000000000000000040 /* LandingView */ = {
@@ -673,6 +692,7 @@
 				818F519100EDD7B6C4BCBE3F /* AccessibilityJourneyTests.swift */,
 				818F519200EDD7B6C4BCBE40 /* LocalizationAndRTLJourneyTests.swift */,
 				342B8A8F2C727CB800EC41C8 /* BookmarkButtonViewModelTests.swift */,
+				C10400000000000000000027 /* UserSettingsViewTests.swift */,
 			);
 			path = ShowBookTests;
 			sourceTree = "<group>";
@@ -912,6 +932,9 @@
 			
 				C1040000000000000000000E /* Persistence+Books.swift in Sources */,
 				C10400000000000000000018 /* Persistence+Configuration.swift in Sources */,
+				C10400000000000000000022 /* UserSettingsView.swift in Sources */,
+				C10400000000000000000024 /* UserSettingsAccountSection.swift in Sources */,
+				C10400000000000000000026 /* UserSettingsAboutSection.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -934,6 +957,7 @@
 				342B8A8E2C7279B300EC41C8 /* BookmarkViewModelTests.swift in Sources */,
 				342B8A8A2C71F97500EC41C8 /* UserViewModelTests.swift in Sources */,
 				680000000000000000000031 /* DomainUseCasesTests.swift in Sources */,
+				C10400000000000000000028 /* UserSettingsViewTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

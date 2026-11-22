@@ -20,7 +20,12 @@ class UserViewModel: ObservableObject {
         try controller.activateCloudIdentity(email: email, uuid: uuid)
     }
     var cloudSignOut: (() -> Void)?
+    var cloudDeleteAccount: (() -> Void)?
     var persistenceController: PersistenceController
+
+    var currentUserEmail: String? {
+        UserDefaults.standard.string(forKey: "LoggedInUserEmail")
+    }
 
     init(persistenceController: PersistenceController) {
         self.persistenceController = persistenceController
@@ -51,12 +56,26 @@ class UserViewModel: ObservableObject {
     }
 
     #if canImport(AuthKit)
-    func activateCloudAccount(user: AuthUser, signOut: @escaping () -> Void) {
-        activateCloudAccount(email: user.email ?? "", uuid: user.id, signOut: signOut)
+    func activateCloudAccount(
+        user: AuthUser,
+        signOut: @escaping () -> Void,
+        deleteAccount: (() -> Void)? = nil
+    ) {
+        activateCloudAccount(
+            email: user.email ?? "",
+            uuid: user.id,
+            signOut: signOut,
+            deleteAccount: deleteAccount
+        )
     }
     #endif
 
-    func activateCloudAccount(email: String, uuid: UUID, signOut: @escaping () -> Void) {
+    func activateCloudAccount(
+        email: String,
+        uuid: UUID,
+        signOut: @escaping () -> Void,
+        deleteAccount: (() -> Void)? = nil
+    ) {
         PersistenceController.invalidateBookmarkSession()
         isLoggedIn = false
         activationError = nil
@@ -73,6 +92,7 @@ class UserViewModel: ObservableObject {
             }
             currentUserUUID = uuid
             cloudSignOut = signOut
+            cloudDeleteAccount = deleteAccount
             isLoggedIn = true
             pendingActivation = nil
         } catch {
@@ -98,10 +118,21 @@ class UserViewModel: ObservableObject {
         activationError = nil
         PersistenceController.invalidateBookmarkSession()
         cloudSignOut = nil
+        cloudDeleteAccount = nil
         currentUserUUID = nil
         UserDefaults.standard.removeObject(forKey: "LoggedInUserUUID")
         UserDefaults.standard.removeObject(forKey: "LoggedInUserEmail")
         isLoggedIn = false
+    }
+
+    func deleteAccount() {
+        PersistenceController.invalidateBookmarkSession()
+        if let cloudDeleteAccount {
+            cloudDeleteAccount()
+            clearCloudAccount()
+            return
+        }
+        clearCloudAccount()
     }
 
     func logout() {

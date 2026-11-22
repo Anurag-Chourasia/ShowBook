@@ -31,8 +31,16 @@ struct LandingView: View {
                 AppAuthGate(
                     brand: .showBook,
                     backendFactory: appDI.authBackendFactory
-                ) { user, _ in
-                    Text(user.email ?? "")
+                ) { user, session in
+                    EmptyView()
+                        .task {
+                            userViewModel.activateCloudAccount(user: user, signOut: {
+                                Task { await session.signOut() }
+                            }, deleteAccount: {
+                                Task { await session.deleteAccount() }
+                            })
+                            showingAuthSheet = false
+                        }
                 }
             }
         }
