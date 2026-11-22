@@ -8,20 +8,28 @@ struct ShowBookTools: ViewModifier {
     var includeLayout: Bool
     var onLogout: (() -> Void)?
     @Environment(\.persistenceController) private var persistenceController
+    @Environment(\.userViewModel) private var environmentUserViewModel
     @State private var savedPresented = false
+    @State private var settingsPresented = false
     #if DEBUG
     @State private var developerPresented = false
     #endif
 
+    private var activeUserViewModel: UserViewModel {
+        environmentUserViewModel ?? UserViewModel(persistenceController: persistenceController)
+    }
+
     func body(content: Content) -> some View {
         content
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    menuContent
-                }
-            }
+            .toolbar { ToolbarItem(placement: .topBarTrailing) { menuContent } }
             .navigationDestination(isPresented: $savedPresented) {
                 BookmarkView(persistenceController: persistenceController)
+            }
+            .sheet(isPresented: $settingsPresented) {
+                UserSettingsView(
+                    userViewModel: activeUserViewModel,
+                    onDismiss: { settingsPresented = false }
+                )
             }
             #if DEBUG
             .sheet(isPresented: $developerPresented) {
@@ -40,6 +48,12 @@ struct ShowBookTools: ViewModifier {
 
     private var menuContent: some View {
         Menu {
+            Button { settingsPresented = true } label: {
+                Label(
+                    activeUserViewModel.currentUserEmail ?? String(\CommonStrings.accountTitle),
+                    \.personCropCircle
+                )
+            }
             if onLogout != nil {
                 Button { savedPresented = true } label: {
                     Label(Text(\.savedBooks), \.bookmark)

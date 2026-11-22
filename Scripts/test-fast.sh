@@ -52,7 +52,8 @@ xcrun xcodebuild test -project ShowBook.xcodeproj -scheme ShowBook \
     -only-testing:ShowBookTests/PersistenceRelationshipTests \
     -only-testing:ShowBookTests/BookmarkUUIDMigrationTests \
     -only-testing:ShowBookTests/RiskBasedIsolationAndConcurrencyTests \
-    -only-testing:ShowBookTests/DiscoverServiceTests
+    -only-testing:ShowBookTests/DiscoverServiceTests \
+    -only-testing:ShowBookTests/UserSettingsViewTests
 
 # 4. Governance Coverage Gate
 echo "--> Verifying governance coverage thresholds (Domain/Data >= 85%, ViewModels >= 80%)..."

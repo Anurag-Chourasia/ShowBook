@@ -18,10 +18,19 @@ private struct PersistenceControllerEnvironmentKey: EnvironmentKey {
     static let defaultValue: PersistenceController = AppDI.shared.persistenceController
 }
 
+private struct UserViewModelEnvironmentKey: EnvironmentKey {
+    static let defaultValue: UserViewModel? = nil
+}
+
 extension EnvironmentValues {
     var persistenceController: PersistenceController {
         get { self[PersistenceControllerEnvironmentKey.self] }
         set { self[PersistenceControllerEnvironmentKey.self] = newValue }
+    }
+
+    var userViewModel: UserViewModel? {
+        get { self[UserViewModelEnvironmentKey.self] }
+        set { self[UserViewModelEnvironmentKey.self] = newValue }
     }
 }
 
@@ -74,6 +83,7 @@ struct ShowBookApp: App {
             .environment(\.appDI, appDI)
             .imageDataLoader(appDI.imageDataLoader)
             .environmentObject(userViewModel)
+            .environment(\.userViewModel, userViewModel)
             .environment(\.managedObjectContext, persistenceController.container.viewContext)
             .environment(\.persistenceController, persistenceController)
             .environment(\.layoutDirection, localization.isRightToLeft ? .rightToLeft : .leftToRight)
