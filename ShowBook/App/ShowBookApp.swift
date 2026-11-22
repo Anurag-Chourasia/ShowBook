@@ -59,6 +59,7 @@ struct ShowBookApp: App {
                 } else if authenticationEnabled {
                     AppAuthGate(
                         brand: .showBook,
+                        backendFactory: appDI.authBackendFactory,
                         localizer: localization,
                         onSignedOut: { userViewModel.clearCloudAccount() }
                     ) { user, session in
