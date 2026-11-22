@@ -87,6 +87,7 @@
 		B589ADFBBB0E3489C7804265 /* UIComponentsKit in Frameworks */ = {isa = PBXBuildFile; productRef = 9E2E1528E27128C836A6B1F3 /* UIComponentsKit */; };
 		707CB511A5E94204B16E979D /* AuthKit in Frameworks */ = {isa = PBXBuildFile; productRef = A8552F2E4DE54001882E6C45; };
 		64747A8F205843C0AD4DFD3D /* AuthKitUI in Frameworks */ = {isa = PBXBuildFile; productRef = 770F1841516640DAB1D9DF87; };
+		M00800000000000000000001 /* AuthKitSupabase in Frameworks */ = {isa = PBXBuildFile; productRef = M00800000000000000000002 /* AuthKitSupabase */; };
 		40D1C4ABED7D49BDAE931CD7 /* DeveloperFixtureResourceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81AE220383BB4E2580143336 /* DeveloperFixtureResourceTests.swift */; };
 		36B4C88104B74B2EA6718218 /* SnapshotTestKit in Frameworks */ = {isa = PBXBuildFile; productRef = CBCF43FD400C414BAA2BE746 /* SnapshotTestKit */; };
 		F146194A44E9492F9A7B35B6 /* PortfolioSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87BB901AB8D24E8BA8B959B9 /* PortfolioSnapshot.swift */; };
@@ -247,6 +248,7 @@
 			files = (
 				707CB511A5E94204B16E979D,
 				64747A8F205843C0AD4DFD3D,
+				M00800000000000000000001 /* AuthKitSupabase in Frameworks */,
 				A25000000000000000000003 /* DeveloperProfileKit in Frameworks */,
 				4AAED97CED59ADF39CD524D6 /* CommonNetworking in Frameworks */,
 				6C8873A6A96AECA6153C5AA7 /* FoundationKit in Frameworks */,
@@ -695,6 +697,7 @@
 			packageProductDependencies = (
 				A8552F2E4DE54001882E6C45 /* AuthKit */,
 				770F1841516640DAB1D9DF87 /* AuthKitUI */,
+				M00800000000000000000002 /* AuthKitSupabase */,
 				A25000000000000000000002 /* DeveloperProfileKit */,
 				95732E385786F6E1232BBF15 /* CommonNetworking */,
 				945F817B0BE1541EEA799DBF /* FoundationKit */,
@@ -1330,6 +1333,7 @@
 		};
 		A8552F2E4DE54001882E6C45 /* AuthKit */ = {isa = XCSwiftPackageProductDependency; package = D841594D0C2F49D7BFC541D2; productName = AuthKit; };
 		770F1841516640DAB1D9DF87 /* AuthKitUI */ = {isa = XCSwiftPackageProductDependency; package = D841594D0C2F49D7BFC541D2; productName = AuthKitUI; };
+		M00800000000000000000002 /* AuthKitSupabase */ = {isa = XCSwiftPackageProductDependency; package = D841594D0C2F49D7BFC541D2; productName = AuthKitSupabase; };
 		CBCF43FD400C414BAA2BE746 /* SnapshotTestKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = E897403581594480A9A6F2C3 /* XCRemoteSwiftPackageReference "SnapshotTestKit" */;

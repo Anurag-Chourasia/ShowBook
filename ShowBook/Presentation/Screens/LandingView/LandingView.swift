@@ -11,6 +11,7 @@ import LocalizationKit
 import AuthKitUI
 
 struct LandingView: View {
+    @Environment(\.appDI) private var appDI
     @EnvironmentObject var userViewModel: UserViewModel
     @State private var showingAuthSheet = false
 
@@ -27,7 +28,10 @@ struct LandingView: View {
             .navigationBarTitleDisplayMode(.inline)
             .showBookTools()
             .sheet(isPresented: $showingAuthSheet) {
-                AppAuthGate(brand: .showBook) { user, _ in
+                AppAuthGate(
+                    brand: .showBook,
+                    backendFactory: appDI.authBackendFactory
+                ) { user, _ in
                     Text(user.email ?? "")
                 }
             }

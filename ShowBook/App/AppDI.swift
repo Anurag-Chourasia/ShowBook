@@ -10,6 +10,9 @@ import CoreData
 import Combine
 import SwiftUI
 import UIComponentsKit
+import AuthKit
+import AuthKitUI
+import AuthKitSupabase
 
 final class AppDI: ObservableObject {
     static let shared = AppDI()
@@ -22,6 +25,7 @@ final class AppDI: ObservableObject {
     let discoverService: any DiscoverServing
     let networkClass: NetworkClass
     let imageDataLoader: any ImageDataLoading
+    let authBackendFactory: AuthBackendFactory
 
     init(
         persistenceController: PersistenceController = .shared,
@@ -31,7 +35,8 @@ final class AppDI: ObservableObject {
         bookDetailsService: (any BookDetailsServing)? = nil,
         discoverService: (any DiscoverServing)? = nil,
         networkClass: NetworkClass = NetworkClass(),
-        imageDataLoader: (any ImageDataLoading)? = nil
+        imageDataLoader: (any ImageDataLoading)? = nil,
+        authBackendFactory: @escaping AuthBackendFactory = SupabaseBackendFactory.make
     ) {
         self.persistenceController = persistenceController
         self.bookmarkRepository = bookmarkRepository ?? BookmarkRepositoryImpl(
@@ -45,6 +50,7 @@ final class AppDI: ObservableObject {
         self.discoverService = discoverService ?? DiscoverService()
         self.networkClass = networkClass
         self.imageDataLoader = imageDataLoader ?? CommonNetworkingImageDataLoading()
+        self.authBackendFactory = authBackendFactory
     }
 
     // MARK: - Use Cases
