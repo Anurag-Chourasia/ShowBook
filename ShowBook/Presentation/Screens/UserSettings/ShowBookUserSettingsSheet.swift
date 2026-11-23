@@ -18,6 +18,7 @@ struct ShowBookUserSettingsSheet: View {
                 disclaimerTitle: String(\CommonStrings.profileDisclaimer),
                 disclaimerText: String(\ShowBookStrings.profileDisclaimer)
             ),
+            currentAppScheme: "showbook",
             onSignOut: {
                 userViewModel.logout()
                 onDismiss()

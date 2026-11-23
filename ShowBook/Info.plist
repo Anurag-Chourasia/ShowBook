@@ -20,10 +20,16 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>showbook-auth</string>
+				<string>showbook</string>
 			</array>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 		</dict>
+	</array>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>motivationdaily</string>
+		<string>mytv</string>
 	</array>
 	<key>CFBundleLocalizations</key>
 	<array>
