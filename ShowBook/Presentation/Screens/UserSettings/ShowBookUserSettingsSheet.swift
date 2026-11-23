@@ -16,8 +16,7 @@ struct ShowBookUserSettingsSheet: View {
                 version: AppRuntime.version,
                 build: AppRuntime.build,
                 disclaimerTitle: String(\CommonStrings.profileDisclaimer),
-                disclaimerText: String(\ShowBookStrings.profileDisclaimer),
-                developerProfileTitle: String(\ShowBookStrings.knowYourDeveloper)
+                disclaimerText: String(\ShowBookStrings.profileDisclaimer)
             ),
             onSignOut: {
                 userViewModel.logout()
@@ -28,30 +27,6 @@ struct ShowBookUserSettingsSheet: View {
                 onDismiss()
             },
             onDismiss: onDismiss
-        ) {
-            #if DEBUG
-            ShowBookDeveloperProfileContainer()
-            #else
-            EmptyView()
-            #endif
-        }
+        )
     }
 }
-
-#if DEBUG
-private struct ShowBookDeveloperProfileContainer: View {
-    @Environment(\.dismiss) private var dismiss
-
-    var body: some View {
-        NavigationStack {
-            ShowBookDeveloperView()
-                .toolbar {
-                    ToolbarItem(placement: .topBarLeading) {
-                        Button { dismiss() } label: { Image(\.close) }
-                            .accessibilityLabel(\.developerCloseProfile)
-                    }
-                }
-        }
-    }
-}
-#endif
