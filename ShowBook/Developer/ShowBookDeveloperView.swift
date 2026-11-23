@@ -21,9 +21,32 @@ struct ShowBookDeveloperView: View {
             disclaimer: disclaimer
         ), layout: CatalogLayout(rawValue: storedLayout) ?? .list)
         .tint(\.blue)
+        .background(\.background)
         .navigationTitle(\.knowYourDeveloper)
         .showBookTools(includeDeveloper: false, includeLayout: true)
         .navigationBarTitleDisplayMode(.inline)
+        #if os(iOS)
+        .toolbarBackground(.visible, for: .navigationBar)
+        .toolbarBackground(BrandPalette.current.background, for: .navigationBar)
+        #endif
+        .applySheetPresentationBackground()
+    }
+}
+
+private extension View {
+    @ViewBuilder
+    func applySheetPresentationBackground() -> some View {
+        #if os(iOS)
+        if #available(iOS 16.4, *) {
+            self
+                .presentationBackground(BrandPalette.current.background)
+                .presentationDragIndicator(.visible)
+        } else {
+            self
+        }
+        #else
+        self
+        #endif
     }
 }
 #endif

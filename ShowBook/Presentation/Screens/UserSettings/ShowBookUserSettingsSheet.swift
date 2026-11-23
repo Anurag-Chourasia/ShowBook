@@ -20,6 +20,8 @@ struct ShowBookUserSettingsSheet: View {
             ),
             currentAppScheme: "showbook",
             onSaveProfile: userViewModel.cloudUpdateProfile,
+            onSendOTP: userViewModel.cloudSendOTP,
+            onChangePassword: userViewModel.cloudChangePassword,
             onUpdatePassword: userViewModel.cloudUpdatePassword,
             onSignOut: {
                 userViewModel.logout()
@@ -31,5 +33,6 @@ struct ShowBookUserSettingsSheet: View {
             },
             onDismiss: onDismiss
         )
+        .tint(\.action)
     }
 }

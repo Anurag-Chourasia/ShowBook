@@ -22,12 +22,12 @@ class UserViewModel: ObservableObject {
     var cloudSignOut: (() -> Void)?
     var cloudDeleteAccount: (() -> Void)?
     var cloudUpdateProfile: ((_ email: String?, _ first: String?, _ last: String?, _ phone: String?) -> Void)?
+    var cloudSendOTP: (() async throws -> Void)?
+    var cloudChangePassword: ((String, String, String) async throws -> Void)?
     var cloudUpdatePassword: ((String) async throws -> Void)?
     var persistenceController: PersistenceController
 
-    var currentUserEmail: String? {
-        UserDefaults.standard.string(forKey: "LoggedInUserEmail")
-    }
+    var currentUserEmail: String? { UserDefaults.standard.string(forKey: "LoggedInUserEmail") }
 
     #if canImport(AuthKit)
     var cloudUser: AuthUser?
@@ -43,9 +43,7 @@ class UserViewModel: ObservableObject {
     }
 
     #if DEBUG
-    convenience init() {
-        self.init(persistenceController: PersistenceController.inMemory())
-    }
+    convenience init() { self.init(persistenceController: PersistenceController.inMemory()) }
     #endif
 
     func setUpPersistenceController(controller: PersistenceController) {
@@ -59,6 +57,16 @@ class UserViewModel: ObservableObject {
            let uuid = UUID(uuidString: uuidString) {
             currentUserUUID = uuid
             isLoggedIn = true
+            #if canImport(AuthKit)
+            if cloudUser == nil {
+                cloudUser = AuthUser(
+                    id: uuid, email: currentUserEmail,
+                    firstName: UserDefaults.standard.string(forKey: "LoggedInUserFirstName"),
+                    lastName: UserDefaults.standard.string(forKey: "LoggedInUserLastName"),
+                    phone: UserDefaults.standard.string(forKey: "LoggedInUserPhone")
+                )
+            }
+            #endif
         } else {
             currentUserUUID = nil
             isLoggedIn = false
@@ -73,19 +81,39 @@ class UserViewModel: ObservableObject {
         deleteAccount: (() -> Void)? = nil
     ) {
         cloudUser = user
+        if let phone = user.phone { UserDefaults.standard.set(phone, forKey: "LoggedInUserPhone") }
+        if let first = user.firstName { UserDefaults.standard.set(first, forKey: "LoggedInUserFirstName") }
+        if let last = user.lastName { UserDefaults.standard.set(last, forKey: "LoggedInUserLastName") }
         if let session {
-            cloudUpdateProfile = { [weak session] email, first, last, phone in
-                Task { await session?.updateProfile(email: email, firstName: first, lastName: last, phone: phone) }
+            cloudUpdateProfile = { [weak self, weak session] email, first, last, phone in
+                Task {
+                    await session?.updateProfile(email: email, firstName: first, lastName: last, phone: phone)
+                    await MainActor.run {
+                        if let current = self?.cloudUser {
+                            self?.cloudUser = AuthUser(
+                                id: current.id, email: email ?? current.email,
+                                firstName: first ?? current.firstName, lastName: last ?? current.lastName,
+                                phone: phone ?? current.phone
+                            )
+                        }
+                        if let phone { UserDefaults.standard.set(phone, forKey: "LoggedInUserPhone") }
+                        if let first { UserDefaults.standard.set(first, forKey: "LoggedInUserFirstName") }
+                        if let last { UserDefaults.standard.set(last, forKey: "LoggedInUserLastName") }
+                    }
+                }
             }
             cloudUpdatePassword = { [weak session] password in
                 try await session?.updatePassword(password)
             }
+            cloudSendOTP = { [weak session] in
+                try await session?.sendPasswordResetOTP()
+            }
+            cloudChangePassword = { [weak session] current, new, otp in
+                await session?.changePassword(currentPassword: current, newPassword: new, otpCode: otp)
+            }
         }
         activateCloudAccount(
-            email: user.email ?? "",
-            uuid: user.id,
-            signOut: signOut,
-            deleteAccount: deleteAccount
+            email: user.email ?? "", uuid: user.id, signOut: signOut, deleteAccount: deleteAccount
         )
     }
     #endif
@@ -140,27 +168,30 @@ class UserViewModel: ObservableObject {
         cloudSignOut = nil
         cloudDeleteAccount = nil
         currentUserUUID = nil
-        UserDefaults.standard.removeObject(forKey: "LoggedInUserUUID")
-        UserDefaults.standard.removeObject(forKey: "LoggedInUserEmail")
+        ["LoggedInUserUUID", "LoggedInUserEmail", "LoggedInUserPhone",
+         "LoggedInUserFirstName", "LoggedInUserLastName"].forEach { UserDefaults.standard.removeObject(forKey: $0) }
+        #if canImport(AuthKit)
+        cloudUser = nil
+        #endif
         isLoggedIn = false
     }
 
     func deleteAccount() {
         PersistenceController.invalidateBookmarkSession()
-        if let cloudDeleteAccount {
-            cloudDeleteAccount()
-            clearCloudAccount()
-            return
-        }
+        cloudDeleteAccount?()
         clearCloudAccount()
     }
 
     func logout() {
         PersistenceController.invalidateBookmarkSession()
+        let keys = ["LoggedInUserPhone", "LoggedInUserFirstName", "LoggedInUserLastName"]
+        keys.forEach { UserDefaults.standard.removeObject(forKey: $0) }
+        #if canImport(AuthKit)
+        cloudUser = nil
+        #endif
         if let cloudSignOut { cloudSignOut(); return }
         currentUserUUID = nil
-        UserDefaults.standard.removeObject(forKey: "LoggedInUserUUID")
-        UserDefaults.standard.removeObject(forKey: "LoggedInUserEmail")
+        ["LoggedInUserUUID", "LoggedInUserEmail"].forEach { UserDefaults.standard.removeObject(forKey: $0) }
         isLoggedIn = false
     }
 }

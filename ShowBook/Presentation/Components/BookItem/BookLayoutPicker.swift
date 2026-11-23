@@ -16,6 +16,8 @@ struct BookLayoutPicker: View {
         CatalogLayoutMenu(
             selection: resolved,
             isAccessibilitySize: dynamicTypeSize.isAccessibilitySize,
+            title: title(for: resolved),
+            titleForLayout: { title(for: $0) },
             onSelect: { layout in
                 if let selection { selection.wrappedValue = layout }
                 else { storedLayout = layout.rawValue }
@@ -27,5 +29,12 @@ struct BookLayoutPicker: View {
         .alert(Text(\.layoutListTitle), isPresented: $showGridUnavailable) {
             Button(\.ok, role: .cancel) {}
         } message: { Text(\.layoutReadability) }
+    }
+
+    private func title(for layout: CatalogLayout) -> String {
+        switch layout {
+        case .list: String(\CommonStrings.layoutList)
+        case .grid: String(\CommonStrings.layoutGrid)
+        }
     }
 }

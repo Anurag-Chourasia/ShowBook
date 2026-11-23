@@ -39,6 +39,7 @@ struct ShowBookApp: App {
     private let appDI: AppDI
     @ObservedObject private var persistenceController: PersistenceController
     @StateObject private var userViewModel: UserViewModel
+    @AppStorage("appAppearance") private var appearance: AppAppearance = .system
     private let localization = LocalizationController(initialLocale: .current)
 
     init() {
@@ -79,6 +80,7 @@ struct ShowBookApp: App {
                 }
             }
             .appAppearance()
+            .preferredColorScheme(appearance.colorScheme)
             .environment(\.designTokens, DesignTokensTheme(brand: .showBook))
             .environment(\.appDI, appDI)
             .imageDataLoader(appDI.imageDataLoader)

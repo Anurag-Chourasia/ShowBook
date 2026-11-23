@@ -49,10 +49,7 @@ struct ShowBookTools: ViewModifier {
     private var menuContent: some View {
         Menu {
             Button { settingsPresented = true } label: {
-                Label(
-                    activeUserViewModel.currentUserEmail ?? String(\CommonStrings.accountTitle),
-                    \.personCropCircle
-                )
+                Label(String(\CommonStrings.authSectionProfile), \.personCropCircle)
             }
             if onLogout != nil {
                 Button { savedPresented = true } label: {

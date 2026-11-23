@@ -35,6 +35,7 @@ struct DashboardView: View {
                 .alert(isPresented: $viewModel.logOutAlert) { logoutAlert }
                 if viewModel.isLoading { loadingOverlay }
             }
+            .background(\.background)
         }
     }
 
