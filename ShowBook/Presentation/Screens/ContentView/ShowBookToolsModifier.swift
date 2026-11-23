@@ -26,7 +26,7 @@ struct ShowBookTools: ViewModifier {
                 BookmarkView(persistenceController: persistenceController)
             }
             .sheet(isPresented: $settingsPresented) {
-                UserSettingsView(
+                ShowBookUserSettingsSheet(
                     userViewModel: activeUserViewModel,
                     onDismiss: { settingsPresented = false }
                 )

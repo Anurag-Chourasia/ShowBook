@@ -29,7 +29,7 @@ final class UserSettingsViewTests: XCTestCase {
         viewModel.checkLoginStatus()
 
         var dismissed = false
-        let view = UserSettingsView(
+        let view = ShowBookUserSettingsSheet(
             userViewModel: viewModel,
             onDismiss: { dismissed = true }
         )
@@ -45,7 +45,7 @@ final class UserSettingsViewTests: XCTestCase {
 
     func testUserSettingsViewRendersInGuestMode() {
         var dismissed = false
-        let view = UserSettingsView(
+        let view = ShowBookUserSettingsSheet(
             userViewModel: viewModel,
             onDismiss: { dismissed = true }
         )

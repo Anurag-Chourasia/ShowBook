@@ -116,9 +116,7 @@
 		C10400000000000000000016 /* Persistence+BookQueries.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10400000000000000000015 /* Persistence+BookQueries.swift */; };
 		C1040000000000000000000E /* Persistence+Books.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1040000000000000000000D /* Persistence+Books.swift */; };
 		C10400000000000000000018 /* Persistence+Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10400000000000000000017 /* Persistence+Configuration.swift */; };
-		C10400000000000000000022 /* UserSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10400000000000000000021 /* UserSettingsView.swift */; };
-		C10400000000000000000024 /* UserSettingsAccountSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10400000000000000000023 /* UserSettingsAccountSection.swift */; };
-		C10400000000000000000026 /* UserSettingsAboutSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10400000000000000000025 /* UserSettingsAboutSection.swift */; };
+		C10400000000000000000022 /* ShowBookUserSettingsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10400000000000000000021 /* ShowBookUserSettingsSheet.swift */; };
 		C10400000000000000000028 /* UserSettingsViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10400000000000000000027 /* UserSettingsViewTests.swift */; };
 /* End PBXBuildFile section */
 
@@ -243,9 +241,7 @@
 		C10400000000000000000015 /* Persistence+BookQueries.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Persistence+BookQueries.swift"; sourceTree = "<group>"; };
 		C1040000000000000000000D /* Persistence+Books.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Persistence+Books.swift"; sourceTree = "<group>"; };
 		C10400000000000000000017 /* Persistence+Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Persistence+Configuration.swift"; sourceTree = "<group>"; };
-		C10400000000000000000021 /* UserSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserSettingsView.swift"; sourceTree = "<group>"; };
-		C10400000000000000000023 /* UserSettingsAccountSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserSettingsAccountSection.swift"; sourceTree = "<group>"; };
-		C10400000000000000000025 /* UserSettingsAboutSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserSettingsAboutSection.swift"; sourceTree = "<group>"; };
+		C10400000000000000000021 /* ShowBookUserSettingsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ShowBookUserSettingsSheet.swift"; sourceTree = "<group>"; };
 		C10400000000000000000027 /* UserSettingsViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserSettingsViewTests.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -539,9 +535,7 @@
 		C10400000000000000000020 /* UserSettings */ = {
 			isa = PBXGroup;
 			children = (
-				C10400000000000000000021 /* UserSettingsView.swift */,
-				C10400000000000000000023 /* UserSettingsAccountSection.swift */,
-				C10400000000000000000025 /* UserSettingsAboutSection.swift */,
+				C10400000000000000000021 /* ShowBookUserSettingsSheet.swift */,
 			);
 			path = UserSettings;
 			sourceTree = "<group>";
@@ -932,9 +926,7 @@
 			
 				C1040000000000000000000E /* Persistence+Books.swift in Sources */,
 				C10400000000000000000018 /* Persistence+Configuration.swift in Sources */,
-				C10400000000000000000022 /* UserSettingsView.swift in Sources */,
-				C10400000000000000000024 /* UserSettingsAccountSection.swift in Sources */,
-				C10400000000000000000026 /* UserSettingsAboutSection.swift in Sources */,
+				C10400000000000000000022 /* ShowBookUserSettingsSheet.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1316,7 +1308,7 @@
 				version = 0.9.0;
 			};
 		};
-		D841594D0C2F49D7BFC541D2 /* AuthKit */ = {isa = XCRemoteSwiftPackageReference; repositoryURL = "https://github.com/Anurag-Chourasia/AuthKit.git"; requirement = {kind = exactVersion; version = 0.9.1; }; };
+		D841594D0C2F49D7BFC541D2 /* AuthKit */ = {isa = XCRemoteSwiftPackageReference; repositoryURL = "https://github.com/Anurag-Chourasia/AuthKit.git"; requirement = {kind = exactVersion; version = 0.10.0; }; };
 		E897403581594480A9A6F2C3 /* XCRemoteSwiftPackageReference "SnapshotTestKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Anurag-Chourasia/SnapshotTestKit.git";
