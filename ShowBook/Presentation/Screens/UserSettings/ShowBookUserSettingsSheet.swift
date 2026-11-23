@@ -19,6 +19,8 @@ struct ShowBookUserSettingsSheet: View {
                 disclaimerText: String(\ShowBookStrings.profileDisclaimer)
             ),
             currentAppScheme: "showbook",
+            onSaveProfile: userViewModel.cloudUpdateProfile,
+            onUpdatePassword: userViewModel.cloudUpdatePassword,
             onSignOut: {
                 userViewModel.logout()
                 onDismiss()

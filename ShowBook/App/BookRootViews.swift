@@ -36,7 +36,7 @@ struct CloudBookRoot: View {
         }
         .task(id: identity) {
             activatedIdentity = nil
-            userViewModel.activateCloudAccount(user: user, signOut: {
+            userViewModel.activateCloudAccount(user: user, session: session, signOut: {
                 Task { await session.signOut() }
             }, deleteAccount: {
                 Task { await session.deleteAccount() }

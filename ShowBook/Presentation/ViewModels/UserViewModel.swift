@@ -21,6 +21,8 @@ class UserViewModel: ObservableObject {
     }
     var cloudSignOut: (() -> Void)?
     var cloudDeleteAccount: (() -> Void)?
+    var cloudUpdateProfile: ((_ email: String?, _ first: String?, _ last: String?, _ phone: String?) -> Void)?
+    var cloudUpdatePassword: ((String) async throws -> Void)?
     var persistenceController: PersistenceController
 
     var currentUserEmail: String? {
@@ -28,9 +30,10 @@ class UserViewModel: ObservableObject {
     }
 
     #if canImport(AuthKit)
+    var cloudUser: AuthUser?
     var authUser: AuthUser? {
         guard isLoggedIn, let uuid = currentUserUUID else { return nil }
-        return AuthUser(id: uuid, email: currentUserEmail)
+        return cloudUser ?? AuthUser(id: uuid, email: currentUserEmail)
     }
     #endif
 
@@ -65,9 +68,19 @@ class UserViewModel: ObservableObject {
     #if canImport(AuthKit)
     func activateCloudAccount(
         user: AuthUser,
+        session: SessionManager? = nil,
         signOut: @escaping () -> Void,
         deleteAccount: (() -> Void)? = nil
     ) {
+        cloudUser = user
+        if let session {
+            cloudUpdateProfile = { [weak session] email, first, last, phone in
+                Task { await session?.updateProfile(email: email, firstName: first, lastName: last, phone: phone) }
+            }
+            cloudUpdatePassword = { [weak session] password in
+                try await session?.updatePassword(password)
+            }
+        }
         activateCloudAccount(
             email: user.email ?? "",
             uuid: user.id,
