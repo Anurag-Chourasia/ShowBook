@@ -27,6 +27,13 @@ class UserViewModel: ObservableObject {
         UserDefaults.standard.string(forKey: "LoggedInUserEmail")
     }
 
+    #if canImport(AuthKit)
+    var authUser: AuthUser? {
+        guard isLoggedIn, let uuid = currentUserUUID else { return nil }
+        return AuthUser(id: uuid, email: currentUserEmail)
+    }
+    #endif
+
     init(persistenceController: PersistenceController) {
         self.persistenceController = persistenceController
         checkLoginStatus()
