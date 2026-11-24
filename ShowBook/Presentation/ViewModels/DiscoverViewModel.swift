@@ -13,6 +13,7 @@ final class DiscoverViewModel: ObservableObject {
     @Published private(set) var loading = false
     @Published private(set) var message: String?
     @Published private(set) var cachedAt: Date?
+    private var currentCategory: DiscoverCategory?
     private var requestID = UUID()
     private let fetchDiscoverCategoryUseCase: any FetchDiscoverCategoryUseCaseProtocol
 
@@ -33,8 +34,11 @@ final class DiscoverViewModel: ObservableObject {
         requestID = id
         loading = true
         message = nil
-        cachedAt = nil
-        books = []
+        if currentCategory != category {
+            currentCategory = category
+            books = []
+            cachedAt = nil
+        }
         defer { if requestID == id { loading = false } }
         do {
             let result = try await fetchDiscoverCategoryUseCase.execute(category: category, refresh: refresh)

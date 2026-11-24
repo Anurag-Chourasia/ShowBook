@@ -21,22 +21,29 @@ struct DiscoverView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: \.sixteen) {
+                if model.message != nil {
+                    OfflineBannerView(messageKeyPath: \.offlineMessage)
+                        .padding(.horizontal, \.sixteen)
+                        .transition(.move(edge: .top).combined(with: .opacity))
+                }
                 categoryHeader
-                if model.loading {
+                if model.loading && model.books.isEmpty {
                     ProgressView { Text(\.discoverFinding) }.frame(maxWidth: .infinity)
-                } else if let message = model.message {
+                } else if let message = model.message, model.books.isEmpty {
                     StateMessage {
                         Image(\.wifiExclamationmark)
                     } title: { Text(\.discoverUnavailable) }
                     detail: { Text(message) }
                     actions: { Button(\.retry) { reload += 1 } }
-                    .padding(\.sixteen)
+                    .padding(.horizontal, \.sixteen)
                 } else if model.books.isEmpty {
-                    Text(\.noBooksCategory).font(\.body).padding(\.sixteen)
+                    Text(\.noBooksCategory).font(\.body).padding(.horizontal, \.sixteen)
                 } else {
                     sortAndCatalogView
                 }
-            }.padding(.vertical, \.sixteen)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.vertical, \.sixteen)
         }
         .tint(\.primary)
         .accessibilityIdentifier(.discoverScreen)

@@ -130,6 +130,9 @@ class BookItemViewModelTests: XCTestCase {
 
 @MainActor final class BookCatalogRenderingTests: XCTestCase {
     func testListGridAndAccessibleCardsRenderInBothAppearances() throws {
+        guard SnapshotDevice.current == .iPhone11 else {
+            throw XCTSkip("Skipping base iPhone 11 snapshot test on \(SnapshotDevice.current?.rawValue ?? "unknown device")")
+        }
         let book = Book(title: "A long book title that remains readable in list and grid",
                         ratingsAverage: 4.5, ratingsCount: 123, authorName: ["Example Author"], coverI: nil, image: nil)
         for (name, layout, width, type, scheme) in [

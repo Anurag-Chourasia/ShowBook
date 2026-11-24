@@ -80,7 +80,6 @@ struct ShowBookApp: App {
                 }
             }
             .appAppearance()
-            .preferredColorScheme(appearance.colorScheme)
             .environment(\.designTokens, DesignTokensTheme(brand: .showBook))
             .environment(\.appDI, appDI)
             .imageDataLoader(appDI.imageDataLoader)

@@ -109,7 +109,7 @@ class UserViewModel: ObservableObject {
                 try await session?.sendPasswordResetOTP()
             }
             cloudChangePassword = { [weak session] current, new, otp in
-                await session?.changePassword(currentPassword: current, newPassword: new, otpCode: otp)
+                try await session?.changePassword(currentPassword: current, newPassword: new, otpCode: otp)
             }
         }
         activateCloudAccount(
