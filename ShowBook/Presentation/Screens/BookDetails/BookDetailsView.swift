@@ -18,7 +18,10 @@ struct BookDetailsView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: \.twenty) {
-                LibraryCover(coverID: model.work?.covers?.first(where: { $0 > 0 }) ?? book.coverI, savedImage: book.image)
+                LibraryCover(
+                    coverID: model.work?.covers?.first(where: { $0 > 0 }) ?? book.coverI,
+                    savedImage: book.image ?? persistenceController.bookExists(book)?.image
+                )
                     .frame(maxWidth: .infinity)
                 Text(model.work?.title ?? book.title).font(\.title).accessibilityAddTraits(.isHeader)
                 if let authors = book.authorName, !authors.isEmpty {

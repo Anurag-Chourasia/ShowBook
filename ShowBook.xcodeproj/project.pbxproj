@@ -104,6 +104,7 @@
 		C10300000000000000000016 /* BookRatingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10300000000000000000015 /* BookRatingView.swift */; };
 		C10300000000000000000018 /* BookItemDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10300000000000000000017 /* BookItemDetailsView.swift */; };
 		C1030000000000000000001A /* BookmarkButton+Inits.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10300000000000000000019 /* BookmarkButton+Inits.swift */; };
+		C1030000000000000000001C /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1030000000000000000001B /* NetworkMonitor.swift */; };
 		C10400000000000000000002 /* ShowBookToolsModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10400000000000000000001 /* ShowBookToolsModifier.swift */; };
 		C10400000000000000000004 /* DiscoverSortOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10400000000000000000003 /* DiscoverSortOption.swift */; };
 		C10400000000000000000006 /* BookDetailsError.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10400000000000000000005 /* BookDetailsError.swift */; };
@@ -229,6 +230,7 @@
 		C10300000000000000000015 /* BookRatingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BookRatingView.swift"; sourceTree = "<group>"; };
 		C10300000000000000000017 /* BookItemDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BookItemDetailsView.swift"; sourceTree = "<group>"; };
 		C10300000000000000000019 /* BookmarkButton+Inits.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BookmarkButton+Inits.swift"; sourceTree = "<group>"; };
+		C1030000000000000000001B /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NetworkMonitor.swift"; sourceTree = "<group>"; };
 		C10400000000000000000001 /* ShowBookToolsModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ShowBookToolsModifier.swift"; sourceTree = "<group>"; };
 		C10400000000000000000003 /* DiscoverSortOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DiscoverSortOption.swift"; sourceTree = "<group>"; };
 		C10400000000000000000005 /* BookDetailsError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BookDetailsError.swift"; sourceTree = "<group>"; };
@@ -466,6 +468,7 @@
 				3403E2B52C7065190063E7D0 /* NetworkClass.swift */,
 				A27000000000000000000002 /* DiscoverService.swift */,
 				A23000000000000000000000 /* BookDetailsService.swift */,
+				C1030000000000000000001B /* NetworkMonitor.swift */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -911,6 +914,7 @@
 				C10300000000000000000016 /* BookRatingView.swift in Sources */,
 				C10300000000000000000018 /* BookItemDetailsView.swift in Sources */,
 				C1030000000000000000001A /* BookmarkButton+Inits.swift in Sources */,
+				C1030000000000000000001C /* NetworkMonitor.swift in Sources */,
 			
 				C10400000000000000000002 /* ShowBookToolsModifier.swift in Sources */,
 				C10400000000000000000004 /* DiscoverSortOption.swift in Sources */,
@@ -1306,7 +1310,7 @@
 				version = 0.11.0;
 			};
 		};
-		D841594D0C2F49D7BFC541D2 /* AuthKit */ = {isa = XCRemoteSwiftPackageReference; repositoryURL = "https://github.com/Anurag-Chourasia/AuthKit.git"; requirement = {kind = exactVersion; version = 0.18.0; }; };
+		D841594D0C2F49D7BFC541D2 /* AuthKit */ = {isa = XCRemoteSwiftPackageReference; repositoryURL = "https://github.com/Anurag-Chourasia/AuthKit.git"; requirement = {kind = exactVersion; version = 0.19.1; }; };
 		E897403581594480A9A6F2C3 /* XCRemoteSwiftPackageReference "SnapshotTestKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Anurag-Chourasia/SnapshotTestKit.git";
